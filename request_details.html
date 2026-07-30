@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détails de la Demande d'Intervention - Agence Urbaine</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="intervention.css">
+    <link rel="stylesheet" href="request_details.css">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="brand">
+                <div class="logo-wrapper">
+                    <svg class="agency-logo" viewBox="0 0 60 60" fill="none">
+                        <rect width="60" height="60" rx="14" fill="url(#logo-grad-det)"/>
+                        <path d="M18 42V24L30 16L42 24V42H34V32H26V42H18Z" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 46H48" stroke="#4895EF" stroke-width="2.5" stroke-linecap="round"/>
+                        <circle cx="30" cy="23" r="3" fill="#4895EF"/>
+                        <defs>
+                            <linearGradient id="logo-grad-det" x1="0" y1="0" x2="60" y2="60" gradientUnits="userSpaceOnUse">
+                                <stop stop-color="#3A0CA3"/>
+                                <stop offset="1" stop-color="#4361EE"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-title">AGENCE URBAINE</span>
+                    <span class="brand-subtitle">ROYAUME DU MAROC</span>
+                </div>
+            </a>
+
+            <nav class="nav-links">
+                <a href="index.html" class="nav-item">Accueil</a>
+                <a href="intervention.html" class="nav-item">Nouvelle Demande</a>
+                <a href="my_requests.html" class="nav-item">Mes Demandes</a>
+                <a href="login.html" class="nav-item nav-btn">Connexion</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="details-main">
+        <div class="container">
+            
+            <!-- Details Header Bar -->
+            <div class="details-bar">
+                <div class="details-left">
+                    <a href="my_requests.html" class="back-link">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="19" y1="12" x2="5" y2="12"></line>
+                            <polyline points="12 19 5 12 12 5"></polyline>
+                        </svg>
+                        Retour aux demandes
+                    </a>
+                    <h2 id="req-detail-title">Procès-Verbal d'Intervention N° INT-2026-XXXX</h2>
+                </div>
+                <div class="details-right">
+                    <button type="button" class="btn btn-primary" onclick="window.print()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Télécharger PDF / Imprimer PV
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Layout Split: Left Printable Document, Right Workflow Timeline -->
+            <div class="details-grid">
+                
+                <!-- Left: Official Printable Document -->
+                <div class="a4-document" id="printable-pv">
+                    
+                    <!-- Document Header -->
+                    <div class="doc-header-table">
+                        <div class="doc-header-cell doc-logo-cell">
+                            <svg class="official-seal" viewBox="0 0 60 60" fill="none">
+                                <rect width="60" height="60" rx="8" fill="#1C2541"/>
+                                <path d="M18 42V24L30 16L42 24V42H34V32H26V42H18Z" fill="#FFFFFF"/>
+                            </svg>
+                            <div class="doc-agency-name">
+                                <strong>AGENCE URBAINE</strong>
+                                <span>ROYAUME DU MAROC</span>
+                            </div>
+                        </div>
+
+                        <div class="doc-header-cell doc-title-cell">
+                            <h1>PROCÈS-VERBAL D'INTERVENTION</h1>
+                        </div>
+
+                        <div class="doc-header-cell doc-meta-cell">
+                            <div class="meta-row"><strong>Code :</strong> <span id="pv-code">FM-SI-04</span></div>
+                            <div class="meta-row"><strong>Version :</strong> <span id="pv-version">02</span></div>
+                            <div class="meta-row"><strong>Date d'application :</strong> <span id="pv-appdate">01/02/2026</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Banner Request Number & Status -->
+                    <div class="doc-banner-title" style="display: flex; justify-content: space-between; align-items: center;">
+                        <h2 style="margin: 0;">DEMANDE D'INTERVENTION N° <span id="pv-id">INT-2026-XXXX</span></h2>
+                        <span id="pv-status-badge" class="pv-badge">STATUT</span>
+                    </div>
+
+                    <!-- Section 1: Information Générale -->
+                    <div class="doc-section">
+                        <div class="doc-section-header">1. Information Générale de la Demande</div>
+                        <table class="doc-table">
+                            <tr>
+                                <th style="width: 25%;">Date d'émission</th>
+                                <td id="pv-date" style="width: 25%;">—</td>
+                                <th style="width: 25%;">Priorité</th>
+                                <td id="pv-priority" style="width: 25%;">—</td>
+                            </tr>
+                            <tr>
+                                <th>Émetteur</th>
+                                <td id="pv-emitter">—</td>
+                                <th>Département</th>
+                                <td id="pv-dept">—</td>
+                            </tr>
+                            <tr>
+                                <th>Nature de l'intervention</th>
+                                <td colspan="3" id="pv-category">—</td>
+                            </tr>
+                            <tr>
+                                <th>Anomalie détectée</th>
+                                <td colspan="3" id="pv-anomaly" style="white-space: pre-line;">—</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- Section 2: Vérification de la Panne -->
+                    <div class="doc-section">
+                        <div class="doc-section-header">2. Vérification de la Panne (Diagnostic Technicien)</div>
+                        <table class="doc-table">
+                            <tr>
+                                <th style="width: 25%;">Date d'analyse</th>
+                                <td id="pv-verif-date" style="width: 25%;">Non complété</td>
+                                <th style="width: 25%;">Vérifié par (Analyste)</th>
+                                <td id="pv-verif-by" style="width: 25%;">En attente</td>
+                            </tr>
+                            <tr>
+                                <th>Recommandation</th>
+                                <td colspan="3" id="pv-verif-recom">Diagnostic en cours par l'administrateur de département.</td>
+                            </tr>
+                            <tr>
+                                <th>Nature d'intervention</th>
+                                <td colspan="3" id="pv-verif-type">Interne / Externe</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- Section 3: Intervention -->
+                    <div class="doc-section">
+                        <div class="doc-section-header">3. Réalisation de l'Intervention</div>
+                        <table class="doc-table">
+                            <tr>
+                                <th style="width: 25%;">Date d'intervention</th>
+                                <td id="pv-interv-date" style="width: 25%;">—</td>
+                                <th style="width: 25%;">Intervenant</th>
+                                <td id="pv-interv-by" style="width: 25%;">—</td>
+                            </tr>
+                            <tr>
+                                <th>Service réalisé</th>
+                                <td colspan="3" id="pv-interv-type">—</td>
+                            </tr>
+                            <tr>
+                                <th>Observations</th>
+                                <td colspan="3" id="pv-interv-obs">—</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- Section 4: Résultat de l'Intervention -->
+                    <div class="doc-section">
+                        <div class="doc-section-header">4. Résultat & Clôture de l'Intervention</div>
+                        <table class="doc-table">
+                            <tr>
+                                <th style="width: 25%;">Efficacité</th>
+                                <td id="pv-result-eff" style="width: 25%;">—</td>
+                                <th style="width: 25%;">Statut Final</th>
+                                <td id="pv-result-status" style="width: 25%;">—</td>
+                            </tr>
+                            <tr>
+                                <th>Remarques complémentaires</th>
+                                <td colspan="3" id="pv-result-notes">—</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- Signatures Render Block -->
+                    <div class="doc-section">
+                        <div class="doc-section-header">5. Empreintes Numériques & Approbations</div>
+                        <div class="signatures-grid">
+                            <div class="signature-box">
+                                <div class="sig-title">Visa Émetteur</div>
+                                <div id="pv-sig-emitter-render" class="sig-render-wrapper">
+                                    <span class="text-muted">Signature numérisée</span>
+                                </div>
+                            </div>
+                            <div class="signature-box">
+                                <div class="sig-title">Visa Chef de Département / Intervenant</div>
+                                <div id="pv-sig-admin-render" class="sig-render-wrapper">
+                                    <span class="text-muted">En attente de validation</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Right: Workflow Timeline Side Card -->
+                <div class="timeline-sidebar">
+                    <div class="sidebar-card">
+                        <h3>Historique du Workflow</h3>
+                        <p class="sidebar-sub">Traçabilité complète des actions sur cette demande</p>
+
+                        <div class="timeline" id="timeline-events">
+                            <!-- Populated via JS -->
+                        </div>
+                    </div>
+
+                    <div class="sidebar-card dept-info-card">
+                        <h3>Département Affecté</h3>
+                        <div class="dept-badge-large" id="dept-large">SI</div>
+                        <p id="dept-fullname">Service Informatique et Systèmes d'Information</p>
+                        <div class="info-row">
+                            <span>Responsable :</span>
+                            <strong id="dept-manager">Administrateur SI</strong>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-bottom-content text-center">
+            <p>© <span id="current-year">2026</span> Agence Urbaine — Registre Numérique d'Intervention</p>
+        </div>
+    </footer>
+
+    <script src="request_details.js"></script>
+</body>
+</html>

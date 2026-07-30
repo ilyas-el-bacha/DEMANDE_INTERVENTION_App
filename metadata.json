@@ -1,0 +1,6 @@
+{
+  "name": "Agence Urbaine - Portail d'Intervention",
+  "description": "Plateforme interne officielle de gestion et suivi des demandes d'intervention IT et équipements pour l'Agence Urbaine.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

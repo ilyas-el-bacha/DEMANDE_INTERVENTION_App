@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes Demandes d'Intervention - Agence Urbaine</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="my_requests.css">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="brand">
+                <div class="logo-wrapper">
+                    <svg class="agency-logo" viewBox="0 0 60 60" fill="none">
+                        <rect width="60" height="60" rx="14" fill="url(#logo-grad-req)"/>
+                        <path d="M18 42V24L30 16L42 24V42H34V32H26V42H18Z" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 46H48" stroke="#4895EF" stroke-width="2.5" stroke-linecap="round"/>
+                        <circle cx="30" cy="23" r="3" fill="#4895EF"/>
+                        <defs>
+                            <linearGradient id="logo-grad-req" x1="0" y1="0" x2="60" y2="60" gradientUnits="userSpaceOnUse">
+                                <stop stop-color="#3A0CA3"/>
+                                <stop offset="1" stop-color="#4361EE"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-title">AGENCE URBAINE</span>
+                    <span class="brand-subtitle">ROYAUME DU MAROC</span>
+                </div>
+            </a>
+
+            <nav class="nav-links">
+                <a href="index.html" class="nav-item">Accueil</a>
+                <a href="intervention.html" class="nav-item">Nouvelle Demande</a>
+                <a href="my_requests.html" class="nav-item active">Mes Demandes</a>
+                <a href="login.html" class="nav-item nav-btn">Connexion</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="requests-main">
+        <div class="container">
+            
+            <!-- Page Banner -->
+            <div class="requests-header">
+                <div>
+                    <div class="badge-official">Suivi Numérique des Demandes</div>
+                    <h2>Mes Demandes d'Intervention</h2>
+                    <p>Consultez le statut de vos demandes et accédez aux procès-verbaux d'intervention.</p>
+                </div>
+                <a href="intervention.html" class="btn btn-primary">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Nouvelle Demande
+                </a>
+            </div>
+
+            <!-- Filter & Search Controls Bar -->
+            <div class="filters-card">
+                <div class="search-box">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="search-input" placeholder="Rechercher par N° de demande, émetteur ou mot-clé...">
+                </div>
+
+                <div class="filter-controls">
+                    <select id="filter-status" class="filter-select">
+                        <option value="ALL">Tous les statuts</option>
+                        <option value="En attente">En attente</option>
+                        <option value="En cours">En cours</option>
+                        <option value="Résolue">Résolue</option>
+                        <option value="Rejetée">Rejetée</option>
+                    </select>
+
+                    <select id="filter-dept" class="filter-select">
+                        <option value="ALL">Tous les départements</option>
+                        <option value="SI">SI - Système d'Information</option>
+                        <option value="DAF">DAF - Admin & Finances</option>
+                        <option value="DGUR">DGUR - Gestion Urbaine</option>
+                        <option value="DET">DET - Études Techniques</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Table Container -->
+            <div class="table-container-card">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>N° Demande</th>
+                            <th>Date d'émission</th>
+                            <th>Émetteur</th>
+                            <th>Département</th>
+                            <th>Nature d'Intervention</th>
+                            <th>Statut</th>
+                            <th style="text-align: right;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="requests-tbody">
+                        <!-- Loaded dynamically via JS -->
+                    </tbody>
+                </table>
+
+                <!-- Empty State -->
+                <div id="empty-state" class="empty-state" style="display: none;">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <h3>Aucune demande trouvée</h3>
+                    <p>Aucune demande d'intervention ne correspond à vos critères de recherche.</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-bottom-content text-center">
+            <p>© <span id="current-year">2026</span> Agence Urbaine — Système de Suivi d'Intervention</p>
+        </div>
+    </footer>
+
+    <script src="my_requests.js"></script>
+</body>
+</html>

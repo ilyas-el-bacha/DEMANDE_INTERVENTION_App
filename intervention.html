@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulaire Officiel - Demande d'Intervention | Agence Urbaine</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="intervention.css">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="brand">
+                <div class="logo-wrapper">
+                    <svg class="agency-logo" viewBox="0 0 60 60" fill="none">
+                        <rect width="60" height="60" rx="14" fill="url(#logo-grad-int)"/>
+                        <path d="M18 42V24L30 16L42 24V42H34V32H26V42H18Z" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 46H48" stroke="#4895EF" stroke-width="2.5" stroke-linecap="round"/>
+                        <circle cx="30" cy="23" r="3" fill="#4895EF"/>
+                        <defs>
+                            <linearGradient id="logo-grad-int" x1="0" y1="0" x2="60" y2="60" gradientUnits="userSpaceOnUse">
+                                <stop stop-color="#3A0CA3"/>
+                                <stop offset="1" stop-color="#4361EE"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-title">AGENCE URBAINE</span>
+                    <span class="brand-subtitle">ROYAUME DU MAROC</span>
+                </div>
+            </a>
+
+            <nav class="nav-links">
+                <a href="index.html" class="nav-item">Accueil</a>
+                <a href="intervention.html" class="nav-item active">Nouvelle Demande</a>
+                <a href="my_requests.html" class="nav-item">Mes Demandes</a>
+                <a href="login.html" class="nav-item nav-btn">Connexion</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="document-main">
+        <div class="container">
+            <!-- Alert notification box -->
+            <div id="alert-box" class="alert-box" style="display: none;"></div>
+
+            <!-- Page Title Bar -->
+            <div class="form-title-bar">
+                <div>
+                    <h2>Saisie de Demande d'Intervention</h2>
+                    <p>Formulaire réglementaire numérisé selon le système de management de la qualité de l'Agence Urbaine.</p>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="window.print()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                            <rect x="6" y="14" width="12" height="8"></rect>
+                        </svg>
+                        Aperçu Impression
+                    </button>
+                </div>
+            </div>
+
+            <!-- Official A4 Paper Document Container -->
+            <div class="a4-document" id="printable-document">
+                <form id="intervention-form">
+                    
+                    <!-- Official Header -->
+                    <div class="doc-header-table">
+                        <div class="doc-header-cell doc-logo-cell">
+                            <svg class="official-seal" viewBox="0 0 60 60" fill="none">
+                                <rect width="60" height="60" rx="8" fill="#1C2541"/>
+                                <path d="M18 42V24L30 16L42 24V42H34V32H26V42H18Z" fill="#FFFFFF"/>
+                            </svg>
+                            <div class="doc-agency-name">
+                                <strong>AGENCE URBAINE</strong>
+                                <span>ROYAUME DU MAROC</span>
+                            </div>
+                        </div>
+
+                        <div class="doc-header-cell doc-title-cell">
+                            <h1>DEMANDE D'INTERVENTION</h1>
+                        </div>
+
+                        <div class="doc-header-cell doc-meta-cell">
+                            <div class="meta-row"><strong>Code :</strong> FM-SI-04</div>
+                            <div class="meta-row"><strong>Version :</strong> 02</div>
+                            <div class="meta-row"><strong>Date d'application :</strong> 01/02/2026</div>
+                        </div>
+                    </div>
+
+                    <!-- Banner Request Number -->
+                    <div class="doc-banner-title">
+                        <h2>DEMANDE D'INTERVENTION N° <span id="auto-request-id">INT-2026-0005</span></h2>
+                    </div>
+
+                    <!-- Nature d'intervention (Checkboxes) -->
+                    <div class="doc-section">
+                        <div class="doc-section-header">Nature d'intervention</div>
+                        <div class="doc-checkboxes-grid">
+                            <label class="doc-checkbox-label">
+                                <input type="checkbox" name="nature" value="Matériel informatique" checked>
+                                <span class="custom-checkbox"></span>
+                                Matériel informatique
+                            </label>
+                            <label class="doc-checkbox-label">
+                                <input type="checkbox" name="nature" value="Moyen de communication">
+                                <span class="custom-checkbox"></span>
+                                Moyen de communication
+                            </label>
+                            <label class="doc-checkbox-label">
+                                <input type="checkbox" name="nature" value="Voiture de service">
+                                <span class="custom-checkbox"></span>
+                                Voiture de service
+                            </label>
+                            <label class="doc-checkbox-label">
+                                <input type="checkbox" name="nature" value="Mobilier de bureau et matériel de bureau">
+                                <span class="custom-checkbox"></span>
+                                Mobilier de bureau et matériel de bureau
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Information Table -->
+                    <div class="doc-section">
+                        <div class="doc-section-header">Informations Émetteur & Demande</div>
+                        <table class="doc-table">
+                            <tr>
+                                <th style="width: 25%;">Date d'émission</th>
+                                <td style="width: 75%;">
+                                    <input type="date" id="doc-date" class="doc-input" required>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Émetteur (Nom & Prénom)</th>
+                                <td>
+                                    <input type="text" id="doc-emitter" class="doc-input" placeholder="ex: M. Youssef BENALI" required>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Département / Service</th>
+                                <td>
+                                    <select id="doc-department" class="doc-select" required>
+                                        <option value="SI">SI — Service Informatique & Systèmes d'Information</option>
+                                        <option value="DAF">DAF — Direction Administrative et Financière</option>
+                                        <option value="DGUR">DGUR — Direction de la Gestion Urbaine & Réglementation</option>
+                                        <option value="DET">DET — Direction des Études Techniques</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Niveau de Priorité</th>
+                                <td>
+                                    <select id="doc-priority" class="doc-select" required>
+                                        <option value="Moyenne" selected>Moyenne (Traitement sous 24h)</option>
+                                        <option value="Haute">Haute (Traitement sous 12h)</option>
+                                        <option value="Urgente">Urgente (Bloquant - Traitement Immédiat)</option>
+                                        <option value="Basse">Basse (Planifiée)</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Anomalie détectée</th>
+                                <td>
+                                    <textarea id="doc-anomaly" class="doc-textarea" rows="4" placeholder="Décrivez de manière précise l'anomalie constatée, l'équipement concerné et la localisation (N° Bureau/Étage)..." required></textarea>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- Signatures Section -->
+                    <div class="doc-section">
+                        <div class="doc-section-header">Signatures & Visas</div>
+                        <div class="signatures-grid">
+                            <!-- Visa Emetteur with Canvas Pad -->
+                            <div class="signature-box">
+                                <div class="sig-title">Visa Émetteur</div>
+                                <p class="sig-sub">Signez ci-dessous à l'aide de votre souris ou écran tactile</p>
+                                <div class="canvas-wrapper">
+                                    <canvas id="signature-pad-emitter" width="400" height="130"></canvas>
+                                </div>
+                                <div class="sig-controls">
+                                    <button type="button" class="btn-sig-clear" id="clear-sig-emitter">Effacer la signature</button>
+                                </div>
+                            </div>
+
+                            <!-- Visa Chef de Departement -->
+                            <div class="signature-box">
+                                <div class="sig-title">Visa du Chef du Département / Division</div>
+                                <p class="sig-sub">Réservé pour approbation hiérarchique lors du routage</p>
+                                <div class="dept-stamp-placeholder">
+                                    <div class="stamp-circle">
+                                        <span>ROYAUME DU MAROC</span>
+                                        <strong>AGENCE URBAINE</strong>
+                                        <span>VISA DÉPARTEMENT</span>
+                                    </div>
+                                    <p class="stamp-note">Tampon numérique auto-validé à l'affectation</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Footer Submit -->
+                    <div class="doc-footer-submit">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="22" y1="2" x2="11" y2="13"></line>
+                                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                            </svg>
+                            Valider et Transmettre la Demande
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-bottom-content text-center">
+            <p>© <span id="current-year">2026</span> Agence Urbaine — Document Numérisé Conforme SMQ ISO 9001</p>
+        </div>
+    </footer>
+
+    <script src="intervention.js"></script>
+</body>
+</html>

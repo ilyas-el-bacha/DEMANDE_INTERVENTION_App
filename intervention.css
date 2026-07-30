@@ -1,0 +1,354 @@
+/* Intervention Request Page Stylesheet (intervention.css) */
+.document-main {
+    padding: 3rem 0;
+    background: #070D1E;
+    min-height: calc(100vh - 160px);
+}
+
+.form-title-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.form-title-bar h2 {
+    font-size: 1.8rem;
+    font-weight: 800;
+}
+
+.form-title-bar p {
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+}
+
+/* Official A4 Document Container */
+.a4-document {
+    background: #FFFFFF;
+    color: #0F172A;
+    width: 100%;
+    max-width: 920px;
+    margin: 0 auto 3rem;
+    padding: 2.5rem;
+    border-radius: 4px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+    font-family: Arial, Helvetica, sans-serif;
+    border: 1px solid #CBD5E1;
+}
+
+/* Header Table */
+.doc-header-table {
+    display: grid;
+    grid-template-columns: 2fr 3fr 2fr;
+    border: 2px solid #000000;
+    margin-bottom: 1.5rem;
+}
+
+.doc-header-cell {
+    padding: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-right: 1px solid #000000;
+}
+
+.doc-header-cell:last-child {
+    border-right: none;
+}
+
+.doc-logo-cell {
+    align-items: center;
+    text-align: center;
+    gap: 0.4rem;
+}
+
+.official-seal {
+    width: 42px;
+    height: 42px;
+}
+
+.doc-agency-name {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.doc-agency-name strong {
+    font-size: 0.85rem;
+    color: #1E293B;
+    line-height: 1.1;
+}
+
+.doc-agency-name span {
+    font-size: 0.62rem;
+    color: #64748B;
+    letter-spacing: 0.5px;
+}
+
+.doc-title-cell {
+    align-items: center;
+    text-align: center;
+    background: #F8FAFC;
+}
+
+.doc-title-cell h1 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #1E3A8A;
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+
+.doc-meta-cell {
+    font-size: 0.75rem;
+    color: #334155;
+    background: #FFFFFF;
+    line-height: 1.6;
+}
+
+/* Banner Title */
+.doc-banner-title {
+    background: #1E3A8A;
+    color: #FFFFFF;
+    padding: 0.75rem 1rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    border: 1px solid #1E3A8A;
+}
+
+.doc-banner-title h2 {
+    font-size: 1.25rem;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: 1px;
+}
+
+/* Sections */
+.doc-section {
+    margin-bottom: 1.75rem;
+    border: 1px solid #000000;
+}
+
+.doc-section-header {
+    background: #E2E8F0;
+    color: #0F172A;
+    font-weight: 700;
+    font-size: 0.92rem;
+    padding: 0.5rem 0.85rem;
+    border-bottom: 1px solid #000000;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Checkboxes Grid */
+.doc-checkboxes-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.85rem 1.25rem;
+    padding: 1rem 1.25rem;
+    background: #FFFFFF;
+}
+
+.doc-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #1E293B;
+    cursor: pointer;
+}
+
+.doc-checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #1E3A8A;
+    cursor: pointer;
+}
+
+/* Document Table */
+.doc-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.doc-table th, .doc-table td {
+    border: 1px solid #000000;
+    padding: 0.65rem 0.85rem;
+    font-size: 0.88rem;
+}
+
+.doc-table th {
+    background: #F1F5F9;
+    color: #1E293B;
+    text-align: left;
+    font-weight: 700;
+}
+
+.doc-input, .doc-select, .doc-textarea {
+    width: 100%;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid #CBD5E1;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 0.88rem;
+    color: #0F172A;
+    background: #F8FAFC;
+}
+
+.doc-input:focus, .doc-select:focus, .doc-textarea:focus {
+    outline: none;
+    border-color: #1E3A8A;
+    background: #FFFFFF;
+    box-shadow: 0 0 0 2px rgba(30, 58, 138, 0.15);
+}
+
+/* Signatures Section */
+.signatures-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+    padding: 1.25rem;
+}
+
+.signature-box {
+    border: 1px dashed #94A3B8;
+    border-radius: 6px;
+    padding: 1rem;
+    background: #F8FAFC;
+    text-align: center;
+}
+
+.sig-title {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #1E3A8A;
+    margin-bottom: 0.25rem;
+}
+
+.sig-sub {
+    font-size: 0.75rem;
+    color: #64748B;
+    margin-bottom: 0.75rem;
+}
+
+.canvas-wrapper {
+    background: #FFFFFF;
+    border: 1px solid #CBD5E1;
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+}
+
+canvas {
+    touch-action: none;
+    cursor: crosshair;
+    background: #FFFFFF;
+}
+
+.sig-controls {
+    margin-top: 0.5rem;
+}
+
+.btn-sig-clear {
+    background: #E2E8F0;
+    border: none;
+    color: #475569;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-sig-clear:hover {
+    background: #CBD5E1;
+    color: #0F172A;
+}
+
+/* Stamp Placeholder */
+.dept-stamp-placeholder {
+    height: 140px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.stamp-circle {
+    width: 100px;
+    height: 100px;
+    border: 2px dashed #3B82F6;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    text-align: center;
+    color: #1D4ED8;
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.stamp-circle span {
+    font-size: 0.55rem;
+}
+
+.stamp-circle strong {
+    font-size: 0.65rem;
+}
+
+.stamp-note {
+    font-size: 0.72rem;
+    color: #64748B;
+}
+
+/* Footer Submit */
+.doc-footer-submit {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.btn-lg {
+    padding: 1rem 2.5rem;
+    font-size: 1.05rem;
+}
+
+/* Alert Box */
+.alert-box {
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.alert-success {
+    background: rgba(16, 185, 129, 0.2);
+    border: 1px solid var(--status-resolved);
+    color: #A7F3D0;
+}
+
+/* Print CSS Styles */
+@media print {
+    body {
+        background: #FFFFFF;
+        color: #000000;
+    }
+
+    .navbar, .footer, .form-title-bar, .doc-footer-submit, .sig-controls {
+        display: none !important;
+    }
+
+    .a4-document {
+        box-shadow: none;
+        border: none;
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+}

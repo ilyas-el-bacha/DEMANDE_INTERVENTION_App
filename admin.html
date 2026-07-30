@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration des Demandes d'Intervention - Agence Urbaine</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="my_requests.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="brand">
+                <div class="logo-wrapper">
+                    <svg class="agency-logo" viewBox="0 0 60 60" fill="none">
+                        <rect width="60" height="60" rx="14" fill="url(#logo-grad-adm)"/>
+                        <path d="M18 42V24L30 16L42 24V42H34V32H26V42H18Z" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 46H48" stroke="#4895EF" stroke-width="2.5" stroke-linecap="round"/>
+                        <circle cx="30" cy="23" r="3" fill="#4895EF"/>
+                        <defs>
+                            <linearGradient id="logo-grad-adm" x1="0" y1="0" x2="60" y2="60" gradientUnits="userSpaceOnUse">
+                                <stop stop-color="#3A0CA3"/>
+                                <stop offset="1" stop-color="#4361EE"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-title">AGENCE URBAINE</span>
+                    <span class="brand-subtitle">ROYAUME DU MAROC</span>
+                </div>
+            </a>
+
+            <nav class="nav-links">
+                <a href="index.html" class="nav-item">Accueil</a>
+                <a href="intervention.html" class="nav-item">Nouvelle Demande</a>
+                <a href="my_requests.html" class="nav-item">Mes Demandes</a>
+                <a href="admin.html" class="nav-item nav-btn active">Espace Admin</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="admin-main">
+        <div class="container">
+            
+            <!-- Admin Top Bar -->
+            <div class="admin-top-bar">
+                <div>
+                    <div class="badge-official">Panneau de Contrôle Départemental</div>
+                    <h2 id="admin-welcome-title">Tableau de Bord Administrateur — <span id="active-dept-code">SI</span></h2>
+                    <p id="active-dept-name">Service Informatique et Systèmes d'Information</p>
+                </div>
+
+                <!-- Active Department Switcher -->
+                <div class="dept-switcher-box">
+                    <label>Changer de Département Administré :</label>
+                    <div class="dept-tabs">
+                        <button type="button" class="dept-tab active" data-dept="SI">Admin SI</button>
+                        <button type="button" class="dept-tab" data-dept="DAF">Admin DAF</button>
+                        <button type="button" class="dept-tab" data-dept="DGUR">Admin DGUR</button>
+                        <button type="button" class="dept-tab" data-dept="DET">Admin DET</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Department Statistics Cards -->
+            <div class="stats-grid" style="margin-bottom: 2rem;">
+                <div class="stat-card">
+                    <div class="stat-icon-wrapper blue">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        </svg>
+                    </div>
+                    <div class="stat-details">
+                        <span class="stat-label">Demandes Affectées</span>
+                        <div class="stat-value-container">
+                            <span class="stat-value" id="admin-stat-total">0</span>
+                            <span class="stat-badge total" id="admin-stat-dept-tag">SI</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon-wrapper amber">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </div>
+                    <div class="stat-details">
+                        <span class="stat-label">En Attente de Traitement</span>
+                        <div class="stat-value-container">
+                            <span class="stat-value" id="admin-stat-pending">0</span>
+                            <span class="stat-badge pending">À vérifier</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon-wrapper purple">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                        </svg>
+                    </div>
+                    <div class="stat-details">
+                        <span class="stat-label">Interventions en Cours</span>
+                        <div class="stat-value-container">
+                            <span class="stat-value" id="admin-stat-progress">0</span>
+                            <span class="stat-badge progress">En cours</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon-wrapper green">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                    </div>
+                    <div class="stat-details">
+                        <span class="stat-label">Interventions Résolues</span>
+                        <div class="stat-value-container">
+                            <span class="stat-value" id="admin-stat-resolved">0</span>
+                            <span class="stat-badge resolved">Terminées</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters & Search Toolbar -->
+            <div class="filters-card">
+                <div class="search-box">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="admin-search" placeholder="Rechercher par N° demande, émetteur, mot-clé...">
+                </div>
+
+                <div class="filter-controls">
+                    <select id="admin-filter-status" class="filter-select">
+                        <option value="ALL">Tous les statuts</option>
+                        <option value="En attente">En attente</option>
+                        <option value="En cours">En cours</option>
+                        <option value="Résolue">Résolue</option>
+                        <option value="Rejetée">Rejetée</option>
+                    </select>
+
+                    <select id="admin-filter-priority" class="filter-select">
+                        <option value="ALL">Toutes les priorités</option>
+                        <option value="Urgente">Urgente</option>
+                        <option value="Haute">Haute</option>
+                        <option value="Moyenne">Moyenne</option>
+                        <option value="Basse">Basse</option>
+                    </select>
+
+                    <input type="date" id="admin-filter-date" class="filter-select">
+                </div>
+            </div>
+
+            <!-- Admin Requests Table -->
+            <div class="table-container-card">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>N° Demande</th>
+                            <th>Date</th>
+                            <th>Émetteur</th>
+                            <th>Priorité</th>
+                            <th>Nature d'Intervention</th>
+                            <th>Statut</th>
+                            <th style="text-align: right;">Actions Administration</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-tbody">
+                        <!-- Loaded dynamically -->
+                    </tbody>
+                </table>
+
+                <!-- Empty State -->
+                <div id="admin-empty-state" class="empty-state" style="display: none;">
+                    <h3>Aucune demande affectée à ce département</h3>
+                    <p>Les nouvelles demandes transmises par les employés s'afficheront automatiquement ici.</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Modal Form for Completing Official Intervention Form -->
+    <div id="admin-modal" class="modal-backdrop" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div>
+                        <h3 id="modal-req-id">Compléter le Procès-Verbal N° INT-2026-XXXX</h3>
+                        <p class="modal-sub">Formulaire d'analyse et de clôture d'intervention</p>
+                    </div>
+                    <button type="button" class="btn-close" id="close-modal">&times;</button>
+                </div>
+
+                <form id="admin-edit-form">
+                    <input type="hidden" id="modal-target-id">
+
+                    <div class="modal-body">
+                        
+                        <!-- Status & Priority Bar -->
+                        <div class="form-row gap-row">
+                            <div class="form-group flex-1">
+                                <label for="edit-status">Mettre à jour le Statut</label>
+                                <select id="edit-status" class="form-control">
+                                    <option value="En attente">En attente</option>
+                                    <option value="En cours">En cours (Intervention démarrée)</option>
+                                    <option value="Résolue">Résolue (Finalisée)</option>
+                                    <option value="Rejetée">Rejetée</option>
+                                </select>
+                            </div>
+                            <div class="form-group flex-1">
+                                <label for="edit-priority">Priorité</label>
+                                <select id="edit-priority" class="form-control">
+                                    <option value="Basse">Basse</option>
+                                    <option value="Moyenne">Moyenne</option>
+                                    <option value="Haute">Haute</option>
+                                    <option value="Urgente">Urgente</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Section: Verification de la Panne -->
+                        <div class="modal-section-title">1. Vérification de la Panne (Diagnostic)</div>
+                        <div class="form-row gap-row">
+                            <div class="form-group flex-1">
+                                <label for="verif-date">Date d'Analyse</label>
+                                <input type="date" id="verif-date" class="form-control" required>
+                            </div>
+                            <div class="form-group flex-1">
+                                <label for="verif-by">Vérifié par (Nom du Technicien)</label>
+                                <input type="text" id="verif-by" class="form-control" placeholder="ex: Technicien H. Mansouri" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="verif-recom">Recommandations & Diagnostic</label>
+                            <textarea id="verif-recom" class="form-control" rows="2" placeholder="Diagnostic détaillé de la panne constatée et solution préconisée..." required></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Nature du traitement :</label>
+                            <div class="radio-group">
+                                <label><input type="radio" name="verif-type" value="Interne" checked> Intervention Interne</label>
+                                <label><input type="radio" name="verif-type" value="Externe"> Prestataire Externe</label>
+                            </div>
+                        </div>
+
+                        <!-- Section: Intervention -->
+                        <div class="modal-section-title">2. Réalisation de l'Intervention</div>
+                        <div class="form-row gap-row">
+                            <div class="form-group flex-1">
+                                <label for="interv-date">Date de Réalisation</label>
+                                <input type="date" id="interv-date" class="form-control">
+                            </div>
+                            <div class="form-group flex-1">
+                                <label for="interv-type">Type de Service Effectué</label>
+                                <input type="text" id="interv-type" class="form-control" placeholder="ex: Remplacement composant, dépannage réseau">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="interv-obs">Observations Technicien</label>
+                            <textarea id="interv-obs" class="form-control" rows="2" placeholder="Observations et travaux réalisés..."></textarea>
+                        </div>
+
+                        <!-- Section: Result of Intervention -->
+                        <div class="modal-section-title">3. Résultat & Clôture</div>
+                        <div class="form-row gap-row">
+                            <div class="form-group flex-1">
+                                <label for="result-eff">Résultat d'Intervention</label>
+                                <select id="result-eff" class="form-control">
+                                    <option value="true">Effective (100% Fonctionnel)</option>
+                                    <option value="false">Non Effective (Traitement complémentaire requis)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="result-notes">Remarques Complémentaires</label>
+                            <textarea id="result-notes" class="form-control" rows="2" placeholder="Notes de clôture..."></textarea>
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="cancel-modal">Annuler</button>
+                        <button type="submit" class="btn btn-primary">
+                            Enregistrer et Mettre à jour le PV
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container footer-bottom-content text-center">
+            <p>© <span id="current-year">2026</span> Agence Urbaine — Espace d'Administration Sécurisé</p>
+        </div>
+    </footer>
+
+    <script src="admin.js"></script>
+</body>
+</html>
