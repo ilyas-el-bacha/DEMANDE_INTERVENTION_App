@@ -145,13 +145,19 @@ function renderTable(requests) {
     });
 }
 
-window.deleteMyRequest = function(reqId) {
+window.deleteMyRequest = async function(reqId) {
     const target = allRequests.find(r => r.id === reqId);
     if (!target) return;
 
-    if (!confirm(`Voulez-vous vraiment supprimer la demande ${reqId} ?\n\nCette opération supprimera la demande ainsi que ses statistiques associées.`)) {
-        return;
-    }
+    const confirmed = await window.showCustomConfirm({
+        title: "Confirmer la suppression",
+        message: `Voulez-vous vraiment supprimer la demande ${reqId} ?\n\nCette opération est irréversible et mettra automatiquement à jour les statistiques en temps réel.`,
+        confirmText: "🗑️ Oui, Supprimer",
+        cancelText: "Annuler",
+        type: "danger"
+    });
+
+    if (!confirmed) return;
 
     // Filter out deleted request
     const updated = allRequests.filter(r => r.id !== reqId);
@@ -160,7 +166,12 @@ window.deleteMyRequest = function(reqId) {
     // Refresh memory list & UI
     loadRequests();
 
-    alert(`Demande ${reqId} supprimée avec succès. Les statistiques en temps réel ont été mises à jour.`);
+    await window.showCustomAlert({
+        title: "Demande supprimée",
+        message: `La demande N° ${reqId} a été supprimée avec succès.`,
+        buttonText: "D'accord",
+        type: "success"
+    });
 };
 
 function initFilterAndSearch() {

@@ -297,7 +297,7 @@ function renderSuperAdminPanel() {
     }
 }
 
-window.approveAdminUser = function(userId) {
+window.approveAdminUser = async function(userId) {
     const users = getUsers();
     const target = users.find(u => u.id === userId);
     if (!target) return;
@@ -305,15 +305,29 @@ window.approveAdminUser = function(userId) {
     target.status = 'approved';
     saveUsers(users);
     renderSuperAdminPanel();
-    alert(`Le compte administrateur de ${target.name} pour le département ${target.department} a été APPROUVÉ. L'administrateur peut maintenant se connecter.`);
+
+    await window.showCustomAlert({
+        title: "Compte Administrateur Approuvé",
+        message: `Le compte administrateur de ${target.name || target.firstName + ' ' + target.lastName} pour le département ${target.department} a été APPROUVÉ.\n\nL'administrateur peut maintenant se connecter.`,
+        buttonText: "D'accord",
+        type: "success"
+    });
 };
 
-window.rejectAdminUser = function(userId) {
+window.rejectAdminUser = async function(userId) {
     const users = getUsers();
     const target = users.find(u => u.id === userId);
     if (!target) return;
 
-    if (!confirm(`Voulez-vous vraiment rejeter la demande d'inscription de ${target.name} ?`)) return;
+    const confirmed = await window.showCustomConfirm({
+        title: "Rejeter l'administrateur",
+        message: `Voulez-vous vraiment rejeter la demande d'inscription de ${target.name || target.firstName + ' ' + target.lastName} (${target.department}) ?`,
+        confirmText: "Rejeter la demande",
+        cancelText: "Annuler",
+        type: "danger"
+    });
+
+    if (!confirmed) return;
 
     target.status = 'rejected';
     saveUsers(users);
@@ -453,10 +467,16 @@ function saveAdminEdit() {
     filterAndRenderAdminTable();
 }
 
-window.deleteRequest = function(id) {
-    if (!confirm(`Voulez-vous vraiment supprimer la demande ${id} ? Cette action est irréversible.`)) {
-        return;
-    }
+window.deleteRequest = async function(id) {
+    const confirmed = await window.showCustomConfirm({
+        title: "Confirmer la suppression",
+        message: `Voulez-vous vraiment supprimer la demande ${id} ? Cette action est irréversible et mettra à jour les statistiques en temps réel.`,
+        confirmText: "🗑️ Supprimer",
+        cancelText: "Annuler",
+        type: "danger"
+    });
+
+    if (!confirmed) return;
 
     allRequests = allRequests.filter(r => r.id !== id);
     saveRequests(allRequests);

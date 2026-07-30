@@ -133,20 +133,32 @@ function setElemText(id, text) {
     if (elem) elem.textContent = text;
 }
 
-window.deleteCurrentRequest = function() {
+window.deleteCurrentRequest = async function() {
     const urlParams = new URLSearchParams(window.location.search);
     const requestId = urlParams.get('id');
     if (!requestId) return;
 
-    if (!confirm(`Voulez-vous vraiment supprimer définitivement la demande d'intervention N° ${requestId} ?`)) {
-        return;
-    }
+    const confirmed = await window.showCustomConfirm({
+        title: "Confirmer la suppression",
+        message: `Voulez-vous vraiment supprimer définitivement la demande d'intervention N° ${requestId} ?\n\nCette action est irréversible.`,
+        confirmText: "🗑️ Oui, Supprimer",
+        cancelText: "Annuler",
+        type: "danger"
+    });
+
+    if (!confirmed) return;
 
     const requests = getRequests();
     const updated = requests.filter(r => r.id !== requestId);
     saveRequests(updated);
 
-    alert(`La demande N° ${requestId} a été supprimée avec succès.`);
+    await window.showCustomAlert({
+        title: "Demande supprimée",
+        message: `La demande N° ${requestId} a été supprimée avec succès.`,
+        buttonText: "Continuer",
+        type: "success"
+    });
+
     window.location.href = 'my_requests.html';
 };
 
