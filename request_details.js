@@ -3,8 +3,6 @@
  * Request Details & Official PV Render Logic (request_details.js)
  */
 
-const STORAGE_KEY = 'au_intervention_requests';
-
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const requestId = urlParams.get('id');
@@ -18,12 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function loadAndRenderRequest(id) {
-    let requests = [];
-    try {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored) requests = JSON.parse(stored);
-    } catch (e) {}
-
+    const requests = getRequests();
     const req = requests.find(r => r.id === id);
 
     if (!req) {
@@ -139,6 +132,23 @@ function setElemText(id, text) {
     const elem = document.getElementById(id);
     if (elem) elem.textContent = text;
 }
+
+window.deleteCurrentRequest = function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const requestId = urlParams.get('id');
+    if (!requestId) return;
+
+    if (!confirm(`Voulez-vous vraiment supprimer définitivement la demande d'intervention N° ${requestId} ?`)) {
+        return;
+    }
+
+    const requests = getRequests();
+    const updated = requests.filter(r => r.id !== requestId);
+    saveRequests(updated);
+
+    alert(`La demande N° ${requestId} a été supprimée avec succès.`);
+    window.location.href = 'my_requests.html';
+};
 
 function escapeHtml(str) {
     if (!str) return '';

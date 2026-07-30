@@ -1,94 +1,185 @@
 /**
  * AGENCE URBAINE - PORTAIL D'INTERVENTION
- * Authentication Logic (login.js)
+ * Authentication Controller (login.js)
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    initRoleTabs();
-    initAdminPresets();
-    initForms();
+    initTabs();
+    initEmployeeLoginForm();
+    initAdminLoginForm();
+    initSuperAdminLoginForm();
+    initPresets();
 });
 
-function initRoleTabs() {
-    const tabEmployee = document.getElementById('tab-employee');
-    const tabAdmin = document.getElementById('tab-admin');
-    const formEmployee = document.getElementById('form-employee');
-    const formAdmin = document.getElementById('form-admin');
+function initTabs() {
+    const tabs = document.querySelectorAll('.role-tab');
+    const forms = document.querySelectorAll('.auth-form');
 
-    if (!tabEmployee || !tabAdmin) return;
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            forms.forEach(f => f.classList.remove('active'));
 
-    tabEmployee.addEventListener('click', () => {
-        tabEmployee.classList.add('active');
-        tabAdmin.classList.remove('active');
-        formEmployee.classList.add('active');
-        formAdmin.classList.remove('active');
-    });
+            tab.classList.add('active');
+            const role = tab.getAttribute('data-role');
+            const targetForm = document.getElementById(`form-${role}`);
+            if (targetForm) targetForm.classList.add('active');
 
-    tabAdmin.addEventListener('click', () => {
-        tabAdmin.classList.add('active');
-        tabEmployee.classList.remove('active');
-        formAdmin.classList.add('active');
-        formEmployee.classList.remove('active');
+            hideLoginAlert();
+        });
     });
 }
 
-function initAdminPresets() {
-    const presetBtns = document.querySelectorAll('.preset-btn');
-    const adminDept = document.getElementById('admin-dept');
-    const adminEmail = document.getElementById('admin-email');
+function initEmployeeLoginForm() {
+    const form = document.getElementById('form-employee');
+    if (!form) return;
 
-    presetBtns.forEach(btn => {
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const email = document.getElementById('emp-email').value.trim().toLowerCase();
+        const password = document.getElementById('emp-password').value;
+
+        const users = getUsers();
+        const user = users.find(u => u.email.toLowerCase() === email);
+
+        if (!user || user.password !== password) {
+            showLoginAlert("Email ou mot de passe incorrect pour le compte employé.", 'danger');
+            return;
+        }
+
+        if (user.role !== 'employee') {
+            showLoginAlert("Ce compte n'est pas un compte employé. Veuillez utiliser l'onglet correspondant à votre rôle.", 'warning');
+            return;
+        }
+
+        // Set Active Session
+        setCurrentUser(user);
+
+        showLoginAlert(`Connexion réussie. Bienvenue ${user.name || user.firstName}!`, 'success');
+
+        setTimeout(() => {
+            window.location.href = 'my_requests.html';
+        }, 800);
+    });
+}
+
+function initAdminLoginForm() {
+    const form = document.getElementById('form-admin');
+    if (!form) return;
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const email = document.getElementById('admin-email').value.trim().toLowerCase();
+        const password = document.getElementById('admin-pass').value;
+
+        const users = getUsers();
+        const user = users.find(u => u.email.toLowerCase() === email);
+
+        if (!user || user.password !== password) {
+            showLoginAlert("Identifiants administrateur incorrects.", 'danger');
+            return;
+        }
+
+        if (user.role !== 'admin') {
+            showLoginAlert("Ce compte n'est pas un compte administrateur de département.", 'warning');
+            return;
+        }
+
+        // CHECK APPROVAL STATUS FOR ADMINS
+        if (user.status === 'pending') {
+            showLoginAlert("Votre compte administrateur est en attente d'approbation par le Super Administrateur.", 'warning');
+            return;
+        }
+
+        if (user.status === 'rejected') {
+            showLoginAlert("Votre demande d'inscription en tant qu'administrateur a été rejetée.", 'danger');
+            return;
+        }
+
+        // Set Active Session
+        setCurrentUser(user);
+
+        showLoginAlert(`Connexion Administrateur réussie. Direction ${user.department}.`, 'success');
+
+        setTimeout(() => {
+            window.location.href = 'admin.html';
+        }, 800);
+    });
+}
+
+function initSuperAdminLoginForm() {
+    const form = document.getElementById('form-superadmin');
+    if (!form) return;
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const email = document.getElementById('superadmin-email').value.trim().toLowerCase();
+        const password = document.getElementById('superadmin-pass').value;
+
+        const users = getUsers();
+        const user = users.find(u => u.email.toLowerCase() === email && u.role === 'superadmin');
+
+        if (!user || user.password !== password) {
+            showLoginAlert("Identifiants Super Administrateur incorrects.", 'danger');
+            return;
+        }
+
+        setCurrentUser(user);
+        showLoginAlert("Connexion Super Administrateur réussie. Redirection...", 'success');
+
+        setTimeout(() => {
+            window.location.href = 'admin.html';
+        }, 800);
+    });
+}
+
+function initPresets() {
+    // Admin presets
+    const adminPresets = document.querySelectorAll('.preset-btn');
+    adminPresets.forEach(btn => {
         btn.addEventListener('click', () => {
-            presetBtns.forEach(b => b.classList.remove('active-preset'));
+            adminPresets.forEach(b => b.classList.remove('active-preset'));
             btn.classList.add('active-preset');
 
-            const dept = btn.getAttribute('data-dept');
             const email = btn.getAttribute('data-email');
+            const emailInput = document.getElementById('admin-email');
+            const passInput = document.getElementById('admin-pass');
+            if (emailInput) emailInput.value = email;
+            if (passInput) passInput.value = 'admin';
+            hideLoginAlert();
+        });
+    });
 
-            if (adminDept) adminDept.value = dept;
-            if (adminEmail) adminEmail.value = email;
+    // Employee presets
+    const empPresets = document.querySelectorAll('.preset-emp-btn');
+    empPresets.forEach(btn => {
+        btn.addEventListener('click', () => {
+            empPresets.forEach(b => b.classList.remove('active-preset'));
+            btn.classList.add('active-preset');
+
+            const email = btn.getAttribute('data-email');
+            const pass = btn.getAttribute('data-pass');
+            const emailInput = document.getElementById('emp-email');
+            const passInput = document.getElementById('emp-password');
+            if (emailInput) emailInput.value = email;
+            if (passInput) passInput.value = pass;
+            hideLoginAlert();
         });
     });
 }
 
-function initForms() {
-    const formEmployee = document.getElementById('form-employee');
-    const formAdmin = document.getElementById('form-admin');
+function showLoginAlert(msg, type) {
+    const box = document.getElementById('login-alert');
+    if (!box) return;
+    box.textContent = msg;
+    box.className = `alert-box alert-${type}`;
+    box.style.display = 'block';
+}
 
-    if (formEmployee) {
-        formEmployee.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const name = document.getElementById('emp-name').value;
-            const dept = document.getElementById('emp-dept').value;
-            const email = document.getElementById('emp-email').value;
-
-            const session = {
-                role: 'employee',
-                name: name,
-                department: dept,
-                email: email
-            };
-
-            localStorage.setItem('au_current_user', JSON.stringify(session));
-            window.location.href = 'intervention.html';
-        });
-    }
-
-    if (formAdmin) {
-        formAdmin.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const dept = document.getElementById('admin-dept').value;
-            const email = document.getElementById('admin-email').value;
-
-            const session = {
-                role: 'admin',
-                name: `Chef de Département (${dept})`,
-                department: dept,
-                email: email
-            };
-
-            localStorage.setItem('au_current_user', JSON.stringify(session));
-            window.location.href = 'admin.html';
-        });
-    }
+function hideLoginAlert() {
+    const box = document.getElementById('login-alert');
+    if (box) box.style.display = 'none';
 }

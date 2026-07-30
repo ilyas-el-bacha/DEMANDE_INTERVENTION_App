@@ -688,3 +688,70 @@ a {
         grid-template-columns: 1fr;
     }
 }
+
+/* User session nav styles */
+.nav-user-info {
+    display: flex;
+    align-items: center;
+}
+
+.user-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    padding: 0.35rem 0.85rem;
+    border-radius: var(--radius-full);
+}
+
+.user-role-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.2rem 0.55rem;
+    border-radius: var(--radius-full);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.user-role-badge.employee {
+    background: rgba(76, 201, 240, 0.15);
+    color: var(--accent-cyan);
+}
+
+.user-role-badge.admin {
+    background: rgba(139, 92, 246, 0.2);
+    color: #C084FC;
+}
+
+.user-role-badge.superadmin {
+    background: rgba(239, 68, 68, 0.2);
+    color: #FCA5A5;
+}
+
+.user-name-text {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.btn-logout {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: var(--text-secondary);
+    padding: 0.3rem 0.65rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-logout:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.4);
+    color: #FCA5A5;
+}

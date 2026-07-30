@@ -3,7 +3,6 @@
  * Official Demande d'Intervention Form Logic (intervention.js)
  */
 
-const STORAGE_KEY = 'au_intervention_requests';
 let signaturePadCanvas = null;
 let signaturePadCtx = null;
 let isDrawing = false;
@@ -28,29 +27,25 @@ function initFormDefaults() {
 
     // 2. Generate Next Request ID
     const autoIdSpan = document.getElementById('auto-request-id');
-    let requests = [];
-    try {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored) requests = JSON.parse(stored);
-    } catch(e) {}
-
+    const requests = getRequests();
     const nextNumber = requests.length + 1;
     const padNumber = String(nextNumber).padStart(4, '0');
     const newId = `INT-2026-${padNumber}`;
     if (autoIdSpan) autoIdSpan.textContent = newId;
 
     // 3. User Session Prefill
-    try {
-        const currentUserStr = localStorage.getItem('au_current_user');
-        if (currentUserStr) {
-            const user = JSON.parse(currentUserStr);
-            const emitterInput = document.getElementById('doc-emitter');
-            const deptSelect = document.getElementById('doc-department');
+    const currentUser = getCurrentUser();
+    if (currentUser) {
+        const emitterInput = document.getElementById('doc-emitter');
+        const deptSelect = document.getElementById('doc-department');
 
-            if (emitterInput && user.name) emitterInput.value = user.name;
-            if (deptSelect && user.department) deptSelect.value = user.department;
+        if (emitterInput && (currentUser.name || currentUser.firstName)) {
+            emitterInput.value = currentUser.name || `${currentUser.firstName} ${currentUser.lastName}`;
         }
-    } catch(e) {}
+        if (deptSelect && currentUser.department) {
+            deptSelect.value = currentUser.department;
+        }
+    }
 }
 
 /**
@@ -135,13 +130,15 @@ function initFormSubmission() {
     form.addEventListener('submit', (e) => {
         e.preventDefault();
 
-        const alertBox = document.getElementById('alert-box');
         const requestId = document.getElementById('auto-request-id').textContent;
         const dateEmission = document.getElementById('doc-date').value;
         const emitter = document.getElementById('doc-emitter').value.trim();
         const department = document.getElementById('doc-department').value;
         const priority = document.getElementById('doc-priority').value;
         const anomaly = document.getElementById('doc-anomaly').value.trim();
+
+        const currentUser = getCurrentUser();
+        const emitterEmail = currentUser ? currentUser.email : `${emitter.toLowerCase().replace(/[^a-z]/g, '')}@agenceurbaine.ma`;
 
         // Selected Nature Checkboxes
         const checkboxes = document.querySelectorAll('input[name="nature"]:checked');
@@ -157,17 +154,15 @@ function initFormSubmission() {
             return;
         }
 
-        // Get signature image data URL
         const signatureDataUrl = signaturePadCanvas.toDataURL();
-
-        // Build Official Request Object
         const now = new Date();
         const formattedTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-        
+
         const newRequest = {
             id: requestId,
             date: dateEmission,
             emitter: emitter,
+            emitterEmail: emitterEmail,
             department: department,
             category: natureList.join(', '),
             natureList: natureList,
@@ -193,17 +188,10 @@ function initFormSubmission() {
             ]
         };
 
-        // Save to LocalStorage
-        let existingRequests = [];
-        try {
-            const stored = localStorage.getItem(STORAGE_KEY);
-            if (stored) existingRequests = JSON.parse(stored);
-        } catch(err) {}
-
+        const existingRequests = getRequests();
         existingRequests.unshift(newRequest);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(existingRequests));
+        saveRequests(existingRequests);
 
-        // Show Success Alert
         showAlert(`Demande ${requestId} enregistrée avec succès ! Redirection vers vos demandes en cours...`, 'success');
 
         setTimeout(() => {

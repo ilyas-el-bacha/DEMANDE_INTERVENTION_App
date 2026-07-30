@@ -1,34 +1,101 @@
 /**
  * AGENCE URBAINE - PORTAIL D'INTERVENTION
- * Administration Dashboard Logic (admin.js)
+ * Administration & Super Administrator Controller (admin.js)
  */
 
-const STORAGE_KEY = 'au_intervention_requests';
 let currentAdminDepartment = 'SI';
 let allRequests = [];
 let currentFilteredRequests = [];
+let currentUser = null;
 
 document.addEventListener('DOMContentLoaded', () => {
+    currentUser = getCurrentUser();
     initAdminSession();
     initDeptTabs();
     initFilterHandlers();
     initModalEvents();
     loadAdminRequests();
+    if (currentUser && currentUser.role === 'superadmin') {
+        renderSuperAdminPanel();
+    }
 });
 
 /**
- * Reads user session or defaults to SI
+ * Initializes session permissions & department restrictions
  */
 function initAdminSession() {
-    try {
-        const userStr = localStorage.getItem('au_current_user');
-        if (userStr) {
-            const user = JSON.parse(userStr);
-            if (user.role === 'admin' && user.department) {
-                currentAdminDepartment = user.department;
-            }
+    const bannerBox = document.getElementById('admin-access-banner');
+    const superPanel = document.getElementById('superadmin-panel');
+    const deptSwitcherLabel = document.getElementById('dept-switcher-label');
+    const btnTabAll = document.getElementById('btn-tab-all');
+
+    if (!currentUser) {
+        if (bannerBox) {
+            bannerBox.style.display = 'block';
+            bannerBox.innerHTML = `
+                <div class="user-banner-card" style="border-left-color: #EF4444; background: rgba(239, 68, 68, 0.1);">
+                    <div class="user-banner-info">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2">
+                            <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <div>
+                            <strong style="color: #FCA5A5;">Accès Restreint aux Administrateurs</strong>
+                            <p style="font-size: 0.85rem; color: #CBD5E1; margin: 0;">Seuls les Chefs de Département ou le Super Administrateur peuvent accéder à ce panneau. Veuillez vous connecter.</p>
+                        </div>
+                    </div>
+                    <div>
+                        <a href="login.html" class="btn btn-primary btn-sm">Se Connecter comme Admin</a>
+                    </div>
+                </div>
+            `;
         }
-    } catch(e) {}
+    } else if (currentUser.role === 'employee') {
+        if (bannerBox) {
+            bannerBox.style.display = 'block';
+            bannerBox.innerHTML = `
+                <div class="user-banner-card" style="border-left-color: #F59E0B; background: rgba(245, 158, 11, 0.1);">
+                    <div class="user-banner-info">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <div>
+                            <strong style="color: #FDE68A;">Profil Employé Détecté</strong>
+                            <p style="font-size: 0.85rem; color: #CBD5E1; margin: 0;">Vous êtes actuellement connecté en tant qu'employé (${currentUser.name}). Vous pouvez consulter vos demandes sur l'espace dédié.</p>
+                        </div>
+                    </div>
+                    <div>
+                        <a href="my_requests.html" class="btn btn-primary btn-sm">Consulter Mes Demandes</a>
+                    </div>
+                </div>
+            `;
+        }
+    } else if (currentUser.role === 'admin') {
+        // LOCK DEPARTMENT FOR DEPARTMENT ADMINS!
+        currentAdminDepartment = currentUser.department;
+        if (deptSwitcherLabel) {
+            deptSwitcherLabel.textContent = `Département Assigné Exclusif (${currentUser.department}) :`;
+        }
+
+        // Hide other department switcher tabs for department admin!
+        document.querySelectorAll('.dept-tab').forEach(tab => {
+            const dept = tab.getAttribute('data-dept');
+            if (dept !== currentUser.department) {
+                tab.style.display = 'none';
+            } else {
+                tab.style.display = 'inline-block';
+                tab.classList.add('active');
+            }
+        });
+    } else if (currentUser.role === 'superadmin') {
+        // SUPER ADMIN HAS FULL MULTI-DEPT ACCESS
+        if (superPanel) superPanel.style.display = 'block';
+        if (btnTabAll) btnTabAll.style.display = 'inline-block';
+        if (deptSwitcherLabel) deptSwitcherLabel.textContent = 'Sélection du Département à Superviser :';
+    }
 
     updateAdminUIHeader();
 }
@@ -38,7 +105,7 @@ function updateAdminUIHeader() {
     const nameElem = document.getElementById('active-dept-name');
     const tagElem = document.getElementById('admin-stat-dept-tag');
 
-    if (codeElem) codeElem.textContent = currentAdminDepartment;
+    if (codeElem) codeElem.textContent = currentAdminDepartment === 'ALL' ? 'TOUTES DIRECTIONS' : currentAdminDepartment;
     if (tagElem) tagElem.textContent = currentAdminDepartment;
 
     if (nameElem) {
@@ -47,10 +114,10 @@ function updateAdminUIHeader() {
             case 'DGUR': nameElem.textContent = 'Direction de la Gestion Urbaine & Réglementation'; break;
             case 'DET': nameElem.textContent = 'Direction des Études Techniques'; break;
             case 'SI': nameElem.textContent = 'Service Informatique et Systèmes d\'Information'; break;
+            case 'ALL': nameElem.textContent = 'Supervision Générale de Toutes les Directions'; break;
         }
     }
 
-    // Update Dept Tab Buttons Active state
     document.querySelectorAll('.dept-tab').forEach(tab => {
         if (tab.getAttribute('data-dept') === currentAdminDepartment) {
             tab.classList.add('active');
@@ -63,6 +130,11 @@ function updateAdminUIHeader() {
 function initDeptTabs() {
     document.querySelectorAll('.dept-tab').forEach(tab => {
         tab.addEventListener('click', () => {
+            // If department admin, prevent changing to unassigned dept
+            if (currentUser && currentUser.role === 'admin') {
+                if (tab.getAttribute('data-dept') !== currentUser.department) return;
+            }
+
             currentAdminDepartment = tab.getAttribute('data-dept');
             updateAdminUIHeader();
             filterAndRenderAdminTable();
@@ -71,23 +143,12 @@ function initDeptTabs() {
 }
 
 function loadAdminRequests() {
-    try {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored) {
-            allRequests = JSON.parse(stored);
-        } else {
-            allRequests = [];
-        }
-    } catch (e) {
-        allRequests = [];
-    }
-
+    allRequests = getRequests();
     filterAndRenderAdminTable();
 }
 
 /**
- * Enforces Strict Departmental Isolation:
- * An admin ONLY sees requests matching currentAdminDepartment.
+ * Filter requests by department permission and user criteria
  */
 function filterAndRenderAdminTable() {
     const searchVal = document.getElementById('admin-search')?.value.toLowerCase().trim() || '';
@@ -95,18 +156,23 @@ function filterAndRenderAdminTable() {
     const priorityVal = document.getElementById('admin-filter-priority')?.value || 'ALL';
     const dateVal = document.getElementById('admin-filter-date')?.value || '';
 
-    // 1. Strict Department Filter
-    const deptRequests = allRequests.filter(r => r.department === currentAdminDepartment);
+    // 1. Department Filter
+    let deptRequests = [];
+    if (currentAdminDepartment === 'ALL') {
+        deptRequests = [...allRequests];
+    } else {
+        deptRequests = allRequests.filter(r => r.department === currentAdminDepartment);
+    }
 
-    // 2. Departmental Stats
+    // 2. Update Stats
     updateAdminStats(deptRequests);
 
-    // 3. User Sub-Filters
+    // 3. User Criteria
     currentFilteredRequests = deptRequests.filter(req => {
         const matchSearch = !searchVal || 
             req.id.toLowerCase().includes(searchVal) ||
             req.emitter.toLowerCase().includes(searchVal) ||
-            req.anomaly.toLowerCase().includes(searchVal);
+            (req.anomaly && req.anomaly.toLowerCase().includes(searchVal));
 
         const matchStatus = (statusVal === 'ALL') || (req.status === statusVal);
         const matchPriority = (priorityVal === 'ALL') || (req.priority === priorityVal);
@@ -156,6 +222,7 @@ function renderAdminTable(requests) {
             <td><span class="req-id">${escapeHtml(req.id)}</span></td>
             <td>${escapeHtml(req.date)}</td>
             <td><strong>${escapeHtml(req.emitter)}</strong></td>
+            <td><span class="dept-badge">${escapeHtml(req.department || 'SI')}</span></td>
             <td><span class="stat-badge ${req.priority === 'Urgente' ? 'rejected' : 'total'}">${escapeHtml(req.priority || 'Moyenne')}</span></td>
             <td>${escapeHtml(req.category)}</td>
             <td><span class="status-badge ${statusClass}">● ${escapeHtml(req.status)}</span></td>
@@ -164,10 +231,10 @@ function renderAdminTable(requests) {
                     <a href="request_details.html?id=${encodeURIComponent(req.id)}" class="btn btn-secondary btn-icon" title="Voir PV">
                         👁 PV
                     </a>
-                    <button type="button" class="btn btn-primary btn-icon" onclick="openAdminEditModal('${req.id}')" title="Traiter la demande">
+                    <button type="button" class="btn btn-primary btn-icon" onclick="openAdminEditModal('${escapeHtml(req.id)}')" title="Traiter la demande">
                         ✏️ Traiter
                     </button>
-                    <button type="button" class="btn btn-danger btn-icon" onclick="deleteRequest('${req.id}')" title="Supprimer">
+                    <button type="button" class="btn btn-danger btn-icon" onclick="deleteRequest('${escapeHtml(req.id)}')" title="Supprimer">
                         🗑️
                     </button>
                 </div>
@@ -177,6 +244,81 @@ function renderAdminTable(requests) {
         tbody.appendChild(tr);
     });
 }
+
+function renderSuperAdminPanel() {
+    const users = getUsers();
+    const pendingAdmins = users.filter(u => u.role === 'admin' && u.status === 'pending');
+    const allAdmins = users.filter(u => u.role === 'admin' || u.role === 'superadmin');
+
+    setElemText('super-pending-badge', `${pendingAdmins.length} en attente`);
+    setElemText('super-total-badge', `${allAdmins.length} administrateurs`);
+
+    // 1. Pending Admins Table
+    const pendingTbody = document.getElementById('pending-admins-tbody');
+    if (pendingTbody) {
+        pendingTbody.innerHTML = '';
+        if (pendingAdmins.length === 0) {
+            pendingTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color: var(--text-muted); padding: 1rem;">Aucune demande d'inscription d'administrateur en attente.</td></tr>`;
+        } else {
+            pendingAdmins.forEach(adm => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${escapeHtml(adm.name || adm.firstName + ' ' + adm.lastName)}</strong><br><small style="color:var(--text-secondary);">${escapeHtml(adm.email)}</small></td>
+                    <td><span class="dept-badge">${escapeHtml(adm.department)}</span></td>
+                    <td>${escapeHtml(adm.createdAt || '2026-07-30')}</td>
+                    <td style="text-align: right;">
+                        <button type="button" class="btn-approve" onclick="approveAdminUser('${adm.id}')" title="Approuver le compte"> Approuver</button>
+                        <button type="button" class="btn-reject" onclick="rejectAdminUser('${adm.id}')" title="Rejeter la demande"> Rejeter</button>
+                    </td>
+                `;
+                pendingTbody.appendChild(tr);
+            });
+        }
+    }
+
+    // 2. All Admins Table
+    const allTbody = document.getElementById('all-admins-tbody');
+    if (allTbody) {
+        allTbody.innerHTML = '';
+        allAdmins.forEach(adm => {
+            const tr = document.createElement('tr');
+
+            let badge = `<span class="stat-badge resolved">Approuvé</span>`;
+            if (adm.status === 'pending') badge = `<span class="stat-badge pending">En attente</span>`;
+            if (adm.status === 'rejected') badge = `<span class="stat-badge rejected">Rejeté</span>`;
+
+            tr.innerHTML = `
+                <td><strong>${escapeHtml(adm.name || adm.firstName + ' ' + adm.lastName)}</strong><br><small style="color:var(--text-secondary);">${escapeHtml(adm.email)}</small></td>
+                <td><span class="dept-badge">${escapeHtml(adm.department)}</span></td>
+                <td>${badge}</td>
+            `;
+            allTbody.appendChild(tr);
+        });
+    }
+}
+
+window.approveAdminUser = function(userId) {
+    const users = getUsers();
+    const target = users.find(u => u.id === userId);
+    if (!target) return;
+
+    target.status = 'approved';
+    saveUsers(users);
+    renderSuperAdminPanel();
+    alert(`Le compte administrateur de ${target.name} pour le département ${target.department} a été APPROUVÉ. L'administrateur peut maintenant se connecter.`);
+};
+
+window.rejectAdminUser = function(userId) {
+    const users = getUsers();
+    const target = users.find(u => u.id === userId);
+    if (!target) return;
+
+    if (!confirm(`Voulez-vous vraiment rejeter la demande d'inscription de ${target.name} ?`)) return;
+
+    target.status = 'rejected';
+    saveUsers(users);
+    renderSuperAdminPanel();
+};
 
 function initFilterHandlers() {
     ['admin-search', 'admin-filter-status', 'admin-filter-priority', 'admin-filter-date'].forEach(id => {
@@ -301,11 +443,11 @@ function saveAdminEdit() {
     if (!req.history) req.history = [];
     req.history.push({
         date: formattedTime,
-        label: `Mise à jour par Chef ${currentAdminDepartment} : Statut passé à "${newStatus}"`
+        label: `Mise à jour par ${currentUser ? currentUser.name : 'Admin'} : Statut passé à "${newStatus}"`
     });
 
     // Save back to LocalStorage
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(allRequests));
+    saveRequests(allRequests);
 
     document.getElementById('admin-modal').style.display = 'none';
     filterAndRenderAdminTable();
@@ -317,7 +459,7 @@ window.deleteRequest = function(id) {
     }
 
     allRequests = allRequests.filter(r => r.id !== id);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(allRequests));
+    saveRequests(allRequests);
     filterAndRenderAdminTable();
 };
 
@@ -328,7 +470,10 @@ function setElemText(id, text) {
 
 function escapeHtml(str) {
     if (!str) return '';
-    return str.replace(/&/g, "&amp;")
-              .replace(/</g, "&lt;")
-              .replace(/>/g, "&gt;");
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }

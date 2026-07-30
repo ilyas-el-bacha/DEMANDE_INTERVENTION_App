@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="index.css">
     <link rel="stylesheet" href="my_requests.css">
+    <link rel="stylesheet" href="signup.css">
     <link rel="stylesheet" href="admin.css">
 </head>
 <body>
@@ -37,7 +38,7 @@
                 </div>
             </a>
 
-            <nav class="nav-links">
+            <nav class="nav-links" id="nav-links">
                 <a href="index.html" class="nav-item">Accueil</a>
                 <a href="intervention.html" class="nav-item">Nouvelle Demande</a>
                 <a href="my_requests.html" class="nav-item">Mes Demandes</a>
@@ -49,6 +50,63 @@
     <main class="admin-main">
         <div class="container">
             
+            <!-- Access Warning Banner if not Admin -->
+            <div id="admin-access-banner" style="display: none;"></div>
+
+            <!-- Super Admin Management Panel (rendered dynamically for Super Admin) -->
+            <div id="superadmin-panel" class="superadmin-card" style="display: none; margin-bottom: 2rem;">
+                <div class="superadmin-header">
+                    <div class="badge-superadmin">★ Contrôle Central Super Administrateur</div>
+                    <h2>Gestion des Administrateurs & Validation des Inscriptions</h2>
+                    <p>Approuvez ou rejetez les demandes d'inscription des administrateurs de département.</p>
+                </div>
+
+                <div class="superadmin-grid">
+                    <div class="superadmin-box">
+                        <h3>
+                            <span>Demandes en Attente d'Approbation</span>
+                            <span class="stat-badge pending" id="super-pending-badge">0 en attente</span>
+                        </h3>
+                        <div style="overflow-x: auto;">
+                            <table class="superadmin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Candidat / Email</th>
+                                        <th>Département</th>
+                                        <th>Date</th>
+                                        <th style="text-align: right;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pending-admins-tbody">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="superadmin-box">
+                        <h3>
+                            <span>Comptes Administrateurs Enregistrés</span>
+                            <span class="stat-badge total" id="super-total-badge">0 comptes</span>
+                        </h3>
+                        <div style="overflow-x: auto; max-height: 240px; overflow-y: auto;">
+                            <table class="superadmin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nom & Email</th>
+                                        <th>Département</th>
+                                        <th>Statut</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="all-admins-tbody">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Admin Top Bar -->
             <div class="admin-top-bar">
                 <div>
@@ -58,13 +116,14 @@
                 </div>
 
                 <!-- Active Department Switcher -->
-                <div class="dept-switcher-box">
-                    <label>Changer de Département Administré :</label>
-                    <div class="dept-tabs">
+                <div class="dept-switcher-box" id="dept-switcher-container">
+                    <label id="dept-switcher-label">Changer de Département Administré :</label>
+                    <div class="dept-tabs" id="dept-tabs-wrapper">
                         <button type="button" class="dept-tab active" data-dept="SI">Admin SI</button>
                         <button type="button" class="dept-tab" data-dept="DAF">Admin DAF</button>
                         <button type="button" class="dept-tab" data-dept="DGUR">Admin DGUR</button>
                         <button type="button" class="dept-tab" data-dept="DET">Admin DET</button>
+                        <button type="button" class="dept-tab" data-dept="ALL" id="btn-tab-all" style="display: none; background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.4); color: #FCA5A5;">Tous (Super)</button>
                     </div>
                 </div>
             </div>
@@ -173,6 +232,7 @@
                             <th>N° Demande</th>
                             <th>Date</th>
                             <th>Émetteur</th>
+                            <th>Département</th>
                             <th>Priorité</th>
                             <th>Nature d'Intervention</th>
                             <th>Statut</th>
@@ -313,6 +373,7 @@
         </div>
     </footer>
 
+    <script src="common.js"></script>
     <script src="admin.js"></script>
 </body>
 </html>

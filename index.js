@@ -35,41 +35,16 @@ function initCurrentYear() {
 }
 
 /**
- * Key storage constant shared across the Agence Urbaine platform
- */
-const STORAGE_KEY = 'au_intervention_requests';
-
-/**
- * Reads requests from LocalStorage and updates statistic counters dynamically
+ * Reads requests from LocalStorage via common.js and updates statistic counters dynamically
  */
 function loadAndAnimateStatistics() {
-    let requests = [];
-
-    try {
-        const storedData = localStorage.getItem(STORAGE_KEY);
-        if (storedData) {
-            requests = JSON.parse(storedData);
-        } else {
-            // Seeding initial sample data if localstorage is completely empty
-            // This guarantees a smooth demo experience while keeping default values available
-            requests = seedSampleData();
-        }
-    } catch (e) {
-        console.error("Erreur de lecture du LocalStorage:", e);
-        requests = [];
-    }
-
-    // Calculate Counts
-    const totalCount = requests.length;
-    const pendingCount = requests.filter(r => r.status === 'En attente' || r.status === 'Pending').length;
-    const progressCount = requests.filter(r => r.status === 'En cours' || r.status === 'In Progress').length;
-    const resolvedCount = requests.filter(r => r.status === 'Résolue' || r.status === 'Resolved').length;
+    const stats = typeof getRealtimeStats === 'function' ? getRealtimeStats() : { total: 0, pending: 0, progress: 0, resolved: 0 };
 
     // Animate Statistics Counter Displays
-    animateValue('stat-total', 0, totalCount, 1200);
-    animateValue('stat-pending', 0, pendingCount, 1200);
-    animateValue('stat-progress', 0, progressCount, 1200);
-    animateValue('stat-resolved', 0, resolvedCount, 1200);
+    animateValue('stat-total', 0, stats.total, 1000);
+    animateValue('stat-pending', 0, stats.pending, 1000);
+    animateValue('stat-progress', 0, stats.progress, 1000);
+    animateValue('stat-resolved', 0, stats.resolved, 1000);
 }
 
 /**

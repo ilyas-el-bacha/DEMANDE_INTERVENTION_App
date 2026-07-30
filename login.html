@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="index.css">
     <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="signup.css">
 </head>
 <body>
 
@@ -36,7 +37,7 @@
                 </div>
             </a>
 
-            <nav class="nav-links">
+            <nav class="nav-links" id="nav-links">
                 <a href="index.html" class="nav-item">Accueil</a>
                 <a href="intervention.html" class="nav-item">Nouvelle Demande</a>
                 <a href="my_requests.html" class="nav-item">Mes Demandes</a>
@@ -46,7 +47,7 @@
     </header>
 
     <main class="login-main">
-        <div class="container login-container">
+        <div class="container login-container" style="max-width: 580px;">
             <div class="login-card">
                 <div class="login-header">
                     <div class="badge-official">Espace d'Authentification Officiel</div>
@@ -54,43 +55,51 @@
                     <p>Veuillez sélectionner votre rôle pour accéder à votre espace de travail.</p>
                 </div>
 
+                <!-- Alert Message Banner -->
+                <div id="login-alert" class="alert-box" style="display: none; margin-bottom: 1.5rem;"></div>
+
                 <!-- Role Selector Tabs -->
                 <div class="role-selector">
                     <button type="button" class="role-tab active" id="tab-employee" data-role="employee">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                             <circle cx="12" cy="7" r="4"></circle>
                         </svg>
                         Employé
                     </button>
                     <button type="button" class="role-tab" id="tab-admin" data-role="admin">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                         </svg>
-                        Chef de Département (Admin)
+                        Admin Dept
+                    </button>
+                    <button type="button" class="role-tab" id="tab-superadmin" data-role="superadmin">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                        Super Admin
                     </button>
                 </div>
 
                 <!-- Employee Login Form -->
                 <form id="form-employee" class="auth-form active">
                     <div class="form-group">
-                        <label for="emp-name">Nom & Prénom de l'Émetteur</label>
-                        <input type="text" id="emp-name" class="form-control" placeholder="ex: M. Karim ALAMI" required value="M. Karim ALAMI">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="emp-dept">Département de Rattachement</label>
-                        <select id="emp-dept" class="form-control" required>
-                            <option value="SI">SI - Service Informatique & SI</option>
-                            <option value="DAF">DAF - Direction Administrative & Financière</option>
-                            <option value="DGUR">DGUR - Direction de la Gestion Urbaine</option>
-                            <option value="DET">DET - Direction des Études Techniques</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
                         <label for="emp-email">Email Professionnel</label>
-                        <input type="email" id="emp-email" class="form-control" placeholder="nom@agenceurbaine.ma" required value="karim.alami@agenceurbaine.ma">
+                        <input type="email" id="emp-email" class="form-control" placeholder="karim.alami@agenceurbaine.ma" required value="karim.alami@agenceurbaine.ma">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="emp-password">Mot de passe</label>
+                        <input type="password" id="emp-password" class="form-control" placeholder="••••••••" required value="user123">
+                    </div>
+
+                    <!-- Quick Employee Login Presets -->
+                    <div class="preset-title">Accès rapide comptes employés :</div>
+                    <div class="admin-presets" style="grid-template-columns: repeat(2, 1fr);">
+                        <button type="button" class="preset-emp-btn" data-email="karim.alami@agenceurbaine.ma" data-pass="user123">K. ALAMI (SI)</button>
+                        <button type="button" class="preset-emp-btn" data-email="sophia.bennani@agenceurbaine.ma" data-pass="user123">S. BENNANI (DAF)</button>
+                        <button type="button" class="preset-emp-btn" data-email="tarik.chraibi@agenceurbaine.ma" data-pass="user123">T. CHRAIBI (DET)</button>
+                        <button type="button" class="preset-emp-btn" data-email="ahmed.tazi@agenceurbaine.ma" data-pass="user123">A. TAZI (DGUR)</button>
                     </div>
 
                     <button type="submit" class="btn btn-primary btn-block">
@@ -105,37 +114,27 @@
                 <!-- Admin Login Form -->
                 <form id="form-admin" class="auth-form">
                     <div class="admin-notice">
-                        <strong>Comptes Administrateurs de Département :</strong>
-                        <p>Chaque administrateur accède exclusivement aux demandes affectées à sa direction.</p>
+                        <strong>Administrateurs de Département (DAF, DGUR, DET, SI) :</strong>
+                        <p>Chaque administrateur accède exclusivement aux demandes de sa direction. L'accès requiert l'approbation préalable du Super Administrateur.</p>
                     </div>
 
                     <div class="form-group">
-                        <label for="admin-dept">Sélectionner votre Département Administré</label>
-                        <select id="admin-dept" class="form-control" required>
-                            <option value="DAF">DAF — Direction Administrative et Financière</option>
-                            <option value="DGUR">DGUR — Direction de la Gestion Urbaine & Réglementation</option>
-                            <option value="DET">DET — Direction des Études Techniques</option>
-                            <option value="SI" selected>SI — Service Informatique et Systèmes d'Information</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="admin-email">Identifiant Administrateur (Email)</label>
-                        <input type="email" id="admin-email" class="form-control" placeholder="admin@agenceurbaine.ma" required value="si.admin@agenceurbaine.ma">
+                        <label for="admin-email">Email Administrateur</label>
+                        <input type="email" id="admin-email" class="form-control" placeholder="si.admin@agenceurbaine.ma" required value="si.admin@agenceurbaine.ma">
                     </div>
 
                     <div class="form-group">
                         <label for="admin-pass">Mot de Passe Sécurisé</label>
-                        <input type="password" id="admin-pass" class="form-control" value="••••••••" required>
+                        <input type="password" id="admin-pass" class="form-control" value="admin" required>
                     </div>
 
                     <!-- Quick Admin Login Presets -->
                     <div class="preset-title">Accès rapide démonstration :</div>
                     <div class="admin-presets">
-                        <button type="button" class="preset-btn" data-dept="DAF" data-email="daf.admin@agenceurbaine.ma">Admin DAF</button>
-                        <button type="button" class="preset-btn" data-dept="DGUR" data-email="dgur.admin@agenceurbaine.ma">Admin DGUR</button>
-                        <button type="button" class="preset-btn" data-dept="DET" data-email="det.admin@agenceurbaine.ma">Admin DET</button>
-                        <button type="button" class="preset-btn active-preset" data-dept="SI" data-email="si.admin@agenceurbaine.ma">Admin SI</button>
+                        <button type="button" class="preset-btn" data-email="daf.admin@agenceurbaine.ma">Admin DAF</button>
+                        <button type="button" class="preset-btn" data-email="dgur.admin@agenceurbaine.ma">Admin DGUR</button>
+                        <button type="button" class="preset-btn" data-email="det.admin@agenceurbaine.ma">Admin DET</button>
+                        <button type="button" class="preset-btn active-preset" data-email="si.admin@agenceurbaine.ma">Admin SI</button>
                     </div>
 
                     <button type="submit" class="btn btn-primary btn-block">
@@ -145,6 +144,36 @@
                         </svg>
                     </button>
                 </form>
+
+                <!-- Super Admin Login Form -->
+                <form id="form-superadmin" class="auth-form">
+                    <div class="admin-notice" style="background: rgba(239, 68, 68, 0.15); border-left-color: #EF4444;">
+                        <strong>Espace Super Administrateur :</strong>
+                        <p>Gestion centrale des utilisateurs, approbation des inscriptions administrateurs et vue globale multi-départements.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="superadmin-email">Email Super Administrateur</label>
+                        <input type="email" id="superadmin-email" class="form-control" value="superadmin@agenceurbaine.ma" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="superadmin-pass">Mot de Passe</label>
+                        <input type="password" id="superadmin-pass" class="form-control" value="admin" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block" style="background: linear-gradient(135deg, #DC2626, #991B1B);">
+                        Se connecter au Panneau Super Admin
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                    </button>
+                </form>
+
+                <div class="auth-footer-link">
+                    Vous n'avez pas encore de compte ? <a href="signup.html">Créer un compte ici</a>
+                </div>
+
             </div>
         </div>
     </main>
@@ -155,6 +184,7 @@
         </div>
     </footer>
 
+    <script src="common.js"></script>
     <script src="login.js"></script>
 </body>
 </html>
