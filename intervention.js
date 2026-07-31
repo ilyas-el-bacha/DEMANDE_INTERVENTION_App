@@ -33,10 +33,12 @@ function initFormDefaults() {
     const newId = `INT-2026-${padNumber}`;
     if (autoIdSpan) autoIdSpan.textContent = newId;
 
-    // 3. User Session Check & Prefill
+    // 3. User Session Check & Form Lock/Prefill
     const currentUser = getCurrentUser();
     const loginReqBanner = document.getElementById('login-required-banner');
     const loggedUserBanner = document.getElementById('logged-user-banner');
+    const form = document.getElementById('intervention-form');
+    const printableDoc = document.getElementById('printable-document');
     const emitterInput = document.getElementById('doc-emitter');
     const deptSelect = document.getElementById('doc-department');
 
@@ -44,13 +46,40 @@ function initFormDefaults() {
         if (loginReqBanner) loginReqBanner.style.display = 'block';
         if (loggedUserBanner) loggedUserBanner.style.display = 'none';
 
+        // Lock all form fields
+        if (form) {
+            const allElements = form.querySelectorAll('input, select, textarea, button');
+            allElements.forEach(el => {
+                el.disabled = true;
+            });
+        }
+
         if (emitterInput) {
             emitterInput.value = '';
-            emitterInput.placeholder = 'Connexion requise pour remplir l\'émetteur';
-            emitterInput.disabled = true;
+            emitterInput.placeholder = 'Nom & Prénom de l\'Émetteur';
         }
-        if (deptSelect) {
-            deptSelect.disabled = true;
+
+        // Add visual overlay indicator / listener for locked form interaction
+        if (printableDoc) {
+            printableDoc.style.cursor = 'not-allowed';
+
+            let isModalActive = false;
+            const handleLockedClick = (e) => {
+                if (isModalActive) return;
+                isModalActive = true;
+
+                window.showCustomAlert({
+                    title: "Connexion Obligatoire",
+                    message: "Connexion requise pour remplir et soumettre une demande d'intervention.\n\nVeuillez vous connecter avec votre compte employé.",
+                    buttonText: "Se Connecter",
+                    type: "warning"
+                }).then(() => {
+                    isModalActive = false;
+                    window.location.href = 'login.html?required=1&redirect=intervention.html';
+                });
+            };
+
+            printableDoc.addEventListener('click', handleLockedClick);
         }
     } else {
         if (loginReqBanner) loginReqBanner.style.display = 'none';
@@ -65,23 +94,32 @@ function initFormDefaults() {
 
         const userName = currentUser.name || `${currentUser.firstName} ${currentUser.lastName}`;
 
+        // Enable form fields
+        if (form) {
+            const allElements = form.querySelectorAll('input, select, textarea, button');
+            allElements.forEach(el => {
+                el.disabled = false;
+            });
+        }
+
+        // Prefill and lock Émetteur & Department
         if (emitterInput) {
             emitterInput.value = userName;
             emitterInput.readOnly = true;
-            emitterInput.disabled = false;
-            emitterInput.style.backgroundColor = 'rgba(67, 97, 238, 0.1)';
+            emitterInput.style.backgroundColor = 'rgba(67, 97, 238, 0.12)';
             emitterInput.style.color = '#93C5FD';
             emitterInput.style.fontWeight = '600';
             emitterInput.style.cursor = 'not-allowed';
-            emitterInput.title = 'Émetteur verrouillé sur le compte employé connecté';
+            emitterInput.title = 'Émetteur rempli automatiquement d\'après votre compte connecté';
         }
+
         if (deptSelect && currentUser.department) {
             deptSelect.value = currentUser.department;
-            deptSelect.style.backgroundColor = 'rgba(67, 97, 238, 0.1)';
+            deptSelect.style.backgroundColor = 'rgba(67, 97, 238, 0.12)';
             deptSelect.style.color = '#93C5FD';
             deptSelect.style.fontWeight = '600';
             deptSelect.style.pointerEvents = 'none';
-            deptSelect.title = 'Département verrouillé sur le compte employé connecté';
+            deptSelect.title = 'Département rempli automatiquement d\'après votre compte connecté';
         }
     }
 }
