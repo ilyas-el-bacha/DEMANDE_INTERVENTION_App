@@ -180,115 +180,16 @@ function getRequests() {
 function saveRequests(requests) {
     try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(requests));
+        window.dispatchEvent(new Event('storage'));
     } catch(e) {
         console.error('Erreur de sauvegarde des demandes:', e);
     }
 }
 
 function initSeedRequests() {
-    const initialRequests = [
-        {
-            id: 'INT-2026-0001',
-            date: '2026-07-28',
-            emitter: 'M. Karim ALAMI',
-            emitterEmail: 'karim.alami@agenceurbaine.ma',
-            department: 'SI',
-            category: 'Matériel informatique',
-            anomaly: 'Poste de travail principal ne démarre plus (bloc d\'alimentation défectueux) au bureau N° 104.',
-            status: 'En cours',
-            priority: 'Haute',
-            code: 'FM-SI-04',
-            version: '02',
-            appDate: '01/02/2026',
-            verification: {
-                dateAnalyse: '2026-07-28',
-                verifiedBy: 'Technicien SI - Y. Berrada',
-                recommendation: 'Remplacement du bloc d\'alimentation ATX 500W',
-                type: 'Interne',
-                signed: true
-            },
-            history: [
-                { date: '2026-07-28 09:15', label: 'Demande créée par M. Karim ALAMI' },
-                { date: '2026-07-28 09:30', label: 'Transmise au Service Informatique (SI)' },
-                { date: '2026-07-28 11:00', label: 'Diagnostic réalisé par Y. Berrada' }
-            ]
-        },
-        {
-            id: 'INT-2026-0002',
-            date: '2026-07-29',
-            emitter: 'Mme. Sophia BENNANI',
-            emitterEmail: 'sophia.bennani@agenceurbaine.ma',
-            department: 'DAF',
-            category: 'Mobilier de bureau et matériel de bureau',
-            anomaly: 'Fauteuil ergonomique de direction endommagé au niveau du vérin hydraulique.',
-            status: 'En attente',
-            priority: 'Moyenne',
-            code: 'FM-SI-04',
-            version: '02',
-            appDate: '01/02/2026',
-            history: [
-                { date: '2026-07-29 14:20', label: 'Demande créée par Mme. Sophia BENNANI' },
-                { date: '2026-07-29 14:22', label: 'Transmise à la Direction Administrative et Financière (DAF)' }
-            ]
-        },
-        {
-            id: 'INT-2026-0003',
-            date: '2026-07-25',
-            emitter: 'M. Tarik CHRAIBI',
-            emitterEmail: 'tarik.chraibi@agenceurbaine.ma',
-            department: 'DET',
-            category: 'Matériel informatique',
-            anomaly: 'Traceur de cartes A0 (HP DesignJet) bloqué lors de l\'impression des plans d\'aménagement.',
-            status: 'Résolue',
-            priority: 'Haute',
-            code: 'FM-SI-04',
-            version: '02',
-            appDate: '01/02/2026',
-            verification: {
-                dateAnalyse: '2026-07-25',
-                verifiedBy: 'Chef DET - H. Mansouri',
-                recommendation: 'Nettoyage des têtes d\'impression et mise à jour du pilote',
-                type: 'Interne',
-                signed: true
-            },
-            intervention: {
-                date: '2026-07-26',
-                type: 'Maintenance préventive et corrective',
-                observations: 'Débourrage papier effectif et réalignement des têtes.'
-            },
-            result: {
-                effective: true,
-                notes: 'Imprimante et traceur A0 100% opérationnels.'
-            },
-            history: [
-                { date: '2026-07-25 10:00', label: 'Demande créée par M. Tarik CHRAIBI' },
-                { date: '2026-07-25 10:05', label: 'Transmise à la Direction des Études Techniques (DET)' },
-                { date: '2026-07-25 14:00', label: 'Diagnostic validé' },
-                { date: '2026-07-26 16:30', label: 'Intervention finalisée avec succès' }
-            ]
-        },
-        {
-            id: 'INT-2026-0004',
-            date: '2026-07-27',
-            emitter: 'M. Ahmed TAZI',
-            emitterEmail: 'ahmed.tazi@agenceurbaine.ma',
-            department: 'DGUR',
-            category: 'Voiture de service',
-            anomaly: 'Voyant de révision moteur allumé sur le véhicule de service N° 12-A-2024.',
-            status: 'En attente',
-            priority: 'Urgente',
-            code: 'FM-SI-04',
-            version: '02',
-            appDate: '01/02/2026',
-            history: [
-                { date: '2026-07-27 08:45', label: 'Demande créée par M. Ahmed TAZI' },
-                { date: '2026-07-27 08:47', label: 'Transmise à la Direction de la Gestion Urbaine (DGUR)' }
-            ]
-        }
-    ];
-
-    saveRequests(initialRequests);
-    return initialRequests;
+    const emptyRequests = [];
+    saveRequests(emptyRequests);
+    return emptyRequests;
 }
 
 function getCurrentUser() {

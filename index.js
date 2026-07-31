@@ -10,6 +10,10 @@ document.addEventListener('DOMContentLoaded', () => {
     loadAndAnimateStatistics();
 });
 
+window.addEventListener('storage', () => {
+    loadAndAnimateStatistics();
+});
+
 /**
  * Mobile Navigation Toggle
  */

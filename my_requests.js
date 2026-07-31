@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
     currentUser = getCurrentUser();
     renderUserContextBanner();
     loadRequests();
-    initFilterAndSearch();
 });
 
 window.addEventListener('storage', () => {
@@ -212,37 +211,6 @@ window.deleteMyRequest = async function(reqId) {
         type: "success"
     });
 };
-
-function initFilterAndSearch() {
-    const searchInput = document.getElementById('search-input');
-    const filterStatus = document.getElementById('filter-status');
-    const filterDept = document.getElementById('filter-dept');
-
-    const filterHandler = () => {
-        const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
-        const statusVal = filterStatus ? filterStatus.value : 'ALL';
-        const deptVal = filterDept ? filterDept.value : 'ALL';
-
-        const filtered = userRequests.filter(req => {
-            const matchQuery = !query || 
-                req.id.toLowerCase().includes(query) ||
-                req.emitter.toLowerCase().includes(query) ||
-                (req.anomaly && req.anomaly.toLowerCase().includes(query)) ||
-                (req.category && req.category.toLowerCase().includes(query));
-
-            const matchStatus = (statusVal === 'ALL') || (req.status === statusVal);
-            const matchDept = (deptVal === 'ALL') || (req.department === deptVal);
-
-            return matchQuery && matchStatus && matchDept;
-        });
-
-        renderTable(filtered);
-    };
-
-    if (searchInput) searchInput.addEventListener('input', filterHandler);
-    if (filterStatus) filterStatus.addEventListener('change', filterHandler);
-    if (filterDept) filterDept.addEventListener('change', filterHandler);
-}
 
 function escapeHtml(str) {
     if (!str) return '';

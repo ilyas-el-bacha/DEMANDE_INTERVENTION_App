@@ -20,6 +20,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+window.addEventListener('storage', () => {
+    allRequests = getRequests();
+    filterAndRenderAdminTable();
+});
+
 /**
  * Initializes session permissions & department restrictions
  */
@@ -76,20 +81,10 @@ function initAdminSession() {
     } else if (currentUser.role === 'admin') {
         // LOCK DEPARTMENT FOR DEPARTMENT ADMINS!
         currentAdminDepartment = currentUser.department;
-        if (deptSwitcherLabel) {
-            deptSwitcherLabel.textContent = `Département Assigné Exclusif (${currentUser.department}) :`;
+        const deptSwitcherBox = document.getElementById('dept-switcher-container');
+        if (deptSwitcherBox) {
+            deptSwitcherBox.style.display = 'none';
         }
-
-        // Hide other department switcher tabs for department admin!
-        document.querySelectorAll('.dept-tab').forEach(tab => {
-            const dept = tab.getAttribute('data-dept');
-            if (dept !== currentUser.department) {
-                tab.style.display = 'none';
-            } else {
-                tab.style.display = 'inline-block';
-                tab.classList.add('active');
-            }
-        });
     } else if (currentUser.role === 'superadmin') {
         // SUPER ADMIN HAS FULL MULTI-DEPT ACCESS
         if (superPanel) superPanel.style.display = 'block';
