@@ -690,28 +690,28 @@ window.showCustomAlert = function(options = {}) {
         document.body.appendChild(backdrop);
 
         let resolved = false;
-        const close = () => {
+        const close = (actionClicked = false) => {
             if (resolved) return;
             resolved = true;
             backdrop.style.opacity = '0';
             backdrop.style.transition = 'opacity 0.2s ease';
             setTimeout(() => {
                 if (backdrop.parentNode) backdrop.parentNode.removeChild(backdrop);
-                resolve();
+                resolve(actionClicked);
             }, 200);
         };
 
-        document.getElementById('custom-modal-ok-btn').addEventListener('click', close);
-        document.getElementById('custom-modal-close-x').addEventListener('click', close);
+        document.getElementById('custom-modal-ok-btn').addEventListener('click', () => close(true));
+        document.getElementById('custom-modal-close-x').addEventListener('click', () => close(false));
 
         backdrop.addEventListener('click', (e) => {
-            if (e.target === backdrop) close();
+            if (e.target === backdrop) close(false);
         });
 
         const handleKeyDown = (e) => {
             if (e.key === 'Escape') {
                 document.removeEventListener('keydown', handleKeyDown);
-                close();
+                close(false);
             }
         };
         document.addEventListener('keydown', handleKeyDown);

@@ -73,9 +73,11 @@ function initFormDefaults() {
                     message: "Connexion requise pour remplir et soumettre une demande d'intervention.\n\nVeuillez vous connecter avec votre compte employé.",
                     buttonText: "Se Connecter",
                     type: "warning"
-                }).then(() => {
+                }).then((actionClicked) => {
                     isModalActive = false;
-                    window.location.href = 'login.html?required=1&redirect=intervention.html';
+                    if (actionClicked === true) {
+                        window.location.href = 'login.html?required=1&redirect=intervention.html';
+                    }
                 });
             };
 
@@ -213,8 +215,10 @@ function initFormSubmission() {
                 message: "Vous devez posséder un compte employé et être connecté pour soumettre une demande d'intervention.\n\nCliquez sur le bouton ci-dessous pour accéder au portail de connexion.",
                 buttonText: "Se Connecter",
                 type: "danger"
-            }).then(() => {
-                window.location.href = 'login.html?required=1&redirect=intervention.html';
+            }).then((actionClicked) => {
+                if (actionClicked === true) {
+                    window.location.href = 'login.html?required=1&redirect=intervention.html';
+                }
             });
             return;
         }
