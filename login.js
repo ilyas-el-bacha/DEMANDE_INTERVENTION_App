@@ -9,7 +9,27 @@ document.addEventListener('DOMContentLoaded', () => {
     initAdminLoginForm();
     initSuperAdminLoginForm();
     initPresets();
+    checkUrlParams();
 });
+
+function checkUrlParams() {
+    const urlParams = new URLSearchParams(window.location.search);
+
+    if (urlParams.get('registered') === '1') {
+        const email = urlParams.get('email');
+        const empEmailInput = document.getElementById('emp-email');
+        const empPassInput = document.getElementById('emp-password');
+        if (empEmailInput && email) {
+            empEmailInput.value = email;
+        }
+        if (empPassInput) {
+            empPassInput.value = '';
+        }
+        showLoginAlert("Votre compte employé a été créé avec succès ! Veuillez saisir votre mot de passe pour vous connecter.", 'success');
+    } else if (urlParams.get('required') === '1' || urlParams.get('redirect') === 'intervention.html') {
+        showLoginAlert("Connexion requise : Vous devez être connecté avec votre compte employé avant de pouvoir soumettre une demande d'intervention.", 'warning');
+    }
+}
 
 function initTabs() {
     const tabs = document.querySelectorAll('.role-tab');
@@ -58,8 +78,11 @@ function initEmployeeLoginForm() {
 
         showLoginAlert(`Connexion réussie. Bienvenue ${user.name || user.firstName}!`, 'success');
 
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirectUrl = urlParams.get('redirect') || 'intervention.html';
+
         setTimeout(() => {
-            window.location.href = 'my_requests.html';
+            window.location.href = redirectUrl;
         }, 800);
     });
 }

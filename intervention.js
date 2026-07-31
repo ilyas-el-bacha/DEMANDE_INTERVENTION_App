@@ -33,17 +33,55 @@ function initFormDefaults() {
     const newId = `INT-2026-${padNumber}`;
     if (autoIdSpan) autoIdSpan.textContent = newId;
 
-    // 3. User Session Prefill
+    // 3. User Session Check & Prefill
     const currentUser = getCurrentUser();
-    if (currentUser) {
-        const emitterInput = document.getElementById('doc-emitter');
-        const deptSelect = document.getElementById('doc-department');
+    const loginReqBanner = document.getElementById('login-required-banner');
+    const loggedUserBanner = document.getElementById('logged-user-banner');
+    const emitterInput = document.getElementById('doc-emitter');
+    const deptSelect = document.getElementById('doc-department');
 
-        if (emitterInput && (currentUser.name || currentUser.firstName)) {
-            emitterInput.value = currentUser.name || `${currentUser.firstName} ${currentUser.lastName}`;
+    if (!currentUser) {
+        if (loginReqBanner) loginReqBanner.style.display = 'block';
+        if (loggedUserBanner) loggedUserBanner.style.display = 'none';
+
+        if (emitterInput) {
+            emitterInput.value = '';
+            emitterInput.placeholder = 'Connexion requise pour remplir l\'émetteur';
+            emitterInput.disabled = true;
+        }
+        if (deptSelect) {
+            deptSelect.disabled = true;
+        }
+    } else {
+        if (loginReqBanner) loginReqBanner.style.display = 'none';
+        if (loggedUserBanner) {
+            loggedUserBanner.style.display = 'flex';
+            const bannerName = document.getElementById('banner-user-name');
+            const bannerDept = document.getElementById('banner-user-dept');
+            const userName = currentUser.name || `${currentUser.firstName} ${currentUser.lastName}`;
+            if (bannerName) bannerName.textContent = userName;
+            if (bannerDept) bannerDept.textContent = currentUser.department || 'Non spécifié';
+        }
+
+        const userName = currentUser.name || `${currentUser.firstName} ${currentUser.lastName}`;
+
+        if (emitterInput) {
+            emitterInput.value = userName;
+            emitterInput.readOnly = true;
+            emitterInput.disabled = false;
+            emitterInput.style.backgroundColor = 'rgba(67, 97, 238, 0.1)';
+            emitterInput.style.color = '#93C5FD';
+            emitterInput.style.fontWeight = '600';
+            emitterInput.style.cursor = 'not-allowed';
+            emitterInput.title = 'Émetteur verrouillé sur le compte employé connecté';
         }
         if (deptSelect && currentUser.department) {
             deptSelect.value = currentUser.department;
+            deptSelect.style.backgroundColor = 'rgba(67, 97, 238, 0.1)';
+            deptSelect.style.color = '#93C5FD';
+            deptSelect.style.fontWeight = '600';
+            deptSelect.style.pointerEvents = 'none';
+            deptSelect.title = 'Département verrouillé sur le compte employé connecté';
         }
     }
 }
@@ -130,6 +168,19 @@ function initFormSubmission() {
     form.addEventListener('submit', (e) => {
         e.preventDefault();
 
+        const currentUser = getCurrentUser();
+        if (!currentUser) {
+            window.showCustomAlert({
+                title: "Connexion Obligatoire",
+                message: "Vous devez posséder un compte employé et être connecté pour soumettre une demande d'intervention.\n\nCliquez sur le bouton ci-dessous pour accéder au portail de connexion.",
+                buttonText: "Se Connecter",
+                type: "danger"
+            }).then(() => {
+                window.location.href = 'login.html?required=1&redirect=intervention.html';
+            });
+            return;
+        }
+
         const requestId = document.getElementById('auto-request-id').textContent;
         const dateEmission = document.getElementById('doc-date').value;
         const emitter = document.getElementById('doc-emitter').value.trim();
@@ -137,7 +188,6 @@ function initFormSubmission() {
         const priority = document.getElementById('doc-priority').value;
         const anomaly = document.getElementById('doc-anomaly').value.trim();
 
-        const currentUser = getCurrentUser();
         const emitterEmail = currentUser ? currentUser.email : `${emitter.toLowerCase().replace(/[^a-z]/g, '')}@agenceurbaine.ma`;
 
         // Selected Nature Checkboxes

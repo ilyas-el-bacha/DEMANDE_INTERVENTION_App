@@ -78,35 +78,23 @@
 
                 <!-- Form: Employee Registration -->
                 <form id="form-register-employee" class="auth-form active">
-                    <div class="form-row gap-row">
-                        <div class="form-group flex-1">
-                            <label for="emp-firstname">Prénom *</label>
-                            <input type="text" id="emp-firstname" class="form-control" placeholder="ex: Youssef" required>
-                        </div>
-                        <div class="form-group flex-1">
-                            <label for="emp-lastname">Nom *</label>
-                            <input type="text" id="emp-lastname" class="form-control" placeholder="ex: BENALI" required>
-                        </div>
-                    </div>
-
-                    <div class="form-row gap-row">
-                        <div class="form-group flex-1">
-                            <label for="emp-id">Matricule / ID Employé (Optionnel)</label>
-                            <input type="text" id="emp-id" class="form-control" placeholder="ex: EMP-0518">
-                        </div>
-                        <div class="form-group flex-1">
-                            <label for="emp-department">Département *</label>
-                            <select id="emp-department" class="form-control" required>
-                                <option value="SI">SI - Service Informatique & SI</option>
-                                <option value="DAF">DAF - Direction Administrative & Financière</option>
-                                <option value="DGUR">DGUR - Direction de la Gestion Urbaine</option>
-                                <option value="DET">DET - Direction des Études Techniques</option>
-                            </select>
-                        </div>
+                    <div class="form-group">
+                        <label for="emp-emitter">Émetteur (Nom & Prénom de l'Employé) *</label>
+                        <input type="text" id="emp-emitter" class="form-control" placeholder="ex: M. Youssef BENALI" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="emp-email-signup">Email Professionnel *</label>
+                        <label for="emp-department">Département *</label>
+                        <select id="emp-department" class="form-control" required>
+                            <option value="SI">SI - Service Informatique & Systèmes d'Information</option>
+                            <option value="DAF">DAF - Direction Administrative & Financière</option>
+                            <option value="DGUR">DGUR - Direction de la Gestion Urbaine & Réglementation</option>
+                            <option value="DET">DET - Direction des Études Techniques</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="emp-email-signup">Adresse Email Professionnelle *</label>
                         <input type="email" id="emp-email-signup" class="form-control" placeholder="youssef.benali@agenceurbaine.ma" required>
                     </div>
 
@@ -128,7 +116,7 @@
                             <line x1="20" y1="8" x2="20" y2="14"></line>
                             <line x1="23" y1="11" x2="17" y2="11"></line>
                         </svg>
-                        Finaliser l'Inscription Employé
+                        Créer mon Compte Employé
                     </button>
                 </form>
 

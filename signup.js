@@ -41,9 +41,7 @@ function initEmployeeSignup() {
     form.addEventListener('submit', (e) => {
         e.preventDefault();
 
-        const firstName = document.getElementById('emp-firstname').value.trim();
-        const lastName = document.getElementById('emp-lastname').value.trim();
-        const empId = document.getElementById('emp-id').value.trim();
+        const emitter = document.getElementById('emp-emitter').value.trim();
         const department = document.getElementById('emp-department').value;
         const email = document.getElementById('emp-email-signup').value.trim().toLowerCase();
         const pass = document.getElementById('emp-pass-signup').value;
@@ -57,16 +55,21 @@ function initEmployeeSignup() {
         const users = getUsers();
         const existing = users.find(u => u.email.toLowerCase() === email);
         if (existing) {
-            showAlert("Cet adresse email est déjà utilisée par un autre compte.", 'danger');
+            showAlert("Cette adresse email est déjà utilisée par un autre compte.", 'danger');
             return;
         }
+
+        // Split name cleanly if needed
+        const nameParts = emitter.replace(/^(M\.|Mme\.|Dr\.)\s+/i, '').split(' ');
+        const firstName = nameParts[0] || emitter;
+        const lastName = nameParts.slice(1).join(' ') || '';
 
         const newUser = {
             id: 'usr-emp-' + Date.now(),
             firstName,
             lastName,
-            name: `M. ${firstName} ${lastName}`,
-            employeeId: empId || `EMP-${Math.floor(1000 + Math.random() * 9000)}`,
+            name: emitter,
+            employeeId: `EMP-${Math.floor(1000 + Math.random() * 9000)}`,
             email,
             password: pass,
             role: 'employee',
@@ -78,14 +81,11 @@ function initEmployeeSignup() {
         users.push(newUser);
         saveUsers(users);
 
-        // Auto Login Employee
-        setCurrentUser(newUser);
-
-        showAlert(`Compte Employé créé avec succès ! Bienvenue ${firstName}. Redirection vers vos demandes...`, 'success');
+        showAlert(`Compte Employé créé avec succès pour ${emitter} ! Vous pouvez maintenant vous connecter avec votre email et mot de passe. Redirection...`, 'success');
 
         setTimeout(() => {
-            window.location.href = 'my_requests.html';
-        }, 1500);
+            window.location.href = `login.html?registered=1&email=${encodeURIComponent(email)}`;
+        }, 1200);
     });
 }
 
