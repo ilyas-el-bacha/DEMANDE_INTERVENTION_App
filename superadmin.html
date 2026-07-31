@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accès Privé Direction - Agence Urbaine</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="signup.css">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="brand">
+                <div class="logo-wrapper">
+                    <svg class="agency-logo" viewBox="0 0 60 60" fill="none">
+                        <rect width="60" height="60" rx="14" fill="url(#logo-grad-sa)"/>
+                        <path d="M18 42V24L30 16L42 24V42H34V32H26V42H18Z" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 46H48" stroke="#4895EF" stroke-width="2.5" stroke-linecap="round"/>
+                        <circle cx="30" cy="23" r="3" fill="#4895EF"/>
+                        <defs>
+                            <linearGradient id="logo-grad-sa" x1="0" y1="0" x2="60" y2="60" gradientUnits="userSpaceOnUse">
+                                <stop stop-color="#1E1B4B"/>
+                                <stop offset="1" stop-color="#312E81"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-title">AGENCE URBAINE</span>
+                    <span class="brand-subtitle">ROYAUME DU MAROC</span>
+                </div>
+            </a>
+
+            <nav class="nav-links" id="nav-links">
+                <a href="index.html" class="nav-item">Accueil</a>
+                <a href="login.html" class="nav-item nav-btn">Portail Public</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="login-main">
+        <div class="container login-container" style="max-width: 520px;">
+            <div class="login-card" style="border-color: rgba(220, 38, 38, 0.3); background: linear-gradient(160deg, #18181B, #09090B);">
+                <div class="login-header">
+                    <div class="badge-official" style="background: rgba(220, 38, 38, 0.2); color: #F87171; border-color: rgba(220, 38, 38, 0.4);">
+                        Accès Réservé — Direction Générale
+                    </div>
+                    <h2>Portail Privé Super Administrateur</h2>
+                    <p>Accès restreint réservé au Super Administrateur de la plateforme.</p>
+                </div>
+
+                <div id="superadmin-alert" class="alert-box" style="display: none; margin-bottom: 1.5rem;"></div>
+
+                <form id="form-superadmin-private" class="auth-form active">
+                    <div class="form-group">
+                        <label for="sa-email">Identifiant Privé</label>
+                        <input type="email" id="sa-email" class="form-control" value="superadmin@agenceurbaine.ma" required style="background: rgba(255, 255, 255, 0.06);">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sa-pass">Mot de Passe Clé</label>
+                        <input type="password" id="sa-pass" class="form-control" value="admin" required style="background: rgba(255, 255, 255, 0.06);">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block" style="background: linear-gradient(135deg, #DC2626, #991B1B); border: none; margin-top: 1rem;">
+                        Accéder au Panneau Super Administrateur
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                    </button>
+                </form>
+
+                <div class="auth-footer-link" style="margin-top: 1.5rem; color: #71717A;">
+                    <a href="index.html" style="color: #A1A1AA; text-decoration: none;">&larr; Retour à la page d'accueil</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-bottom-content text-center">
+            <p>© <span id="current-year">2026</span> Agence Urbaine — Portail Réservé Direction</p>
+        </div>
+    </footer>
+
+    <script src="common.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('form-superadmin-private');
+            const alertBox = document.getElementById('superadmin-alert');
+
+            if (form) {
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const email = document.getElementById('sa-email').value.trim().toLowerCase();
+                    const password = document.getElementById('sa-pass').value;
+
+                    const users = getUsers();
+                    const user = users.find(u => u.email.toLowerCase() === email && u.role === 'superadmin');
+
+                    if (!user || user.password !== password) {
+                        if (alertBox) {
+                            alertBox.textContent = "Identifiants d'accès privé incorrects.";
+                            alertBox.className = "alert-box alert-danger";
+                            alertBox.style.display = "block";
+                        }
+                        return;
+                    }
+
+                    setCurrentUser(user);
+                    if (alertBox) {
+                        alertBox.textContent = "Authentification réussie. Connexion au Panneau de Contrôle Global...";
+                        alertBox.className = "alert-box alert-success";
+                        alertBox.style.display = "block";
+                    }
+
+                    setTimeout(() => {
+                        window.location.href = 'admin.html';
+                    }, 800);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

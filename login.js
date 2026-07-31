@@ -7,13 +7,17 @@ document.addEventListener('DOMContentLoaded', () => {
     initTabs();
     initEmployeeLoginForm();
     initAdminLoginForm();
-    initSuperAdminLoginForm();
     initPresets();
     checkUrlParams();
 });
 
 function checkUrlParams() {
     const urlParams = new URLSearchParams(window.location.search);
+
+    if (urlParams.get('portal') === 'superadmin' || urlParams.get('access') === 'superadmin') {
+        window.location.href = 'superadmin.html';
+        return;
+    }
 
     if (urlParams.get('registered') === '1') {
         const email = urlParams.get('email');
@@ -146,33 +150,6 @@ function initAdminLoginForm() {
         setCurrentUser(user);
 
         showLoginAlert(`Connexion Administrateur réussie. Direction ${user.department}.`, 'success');
-
-        setTimeout(() => {
-            window.location.href = 'admin.html';
-        }, 800);
-    });
-}
-
-function initSuperAdminLoginForm() {
-    const form = document.getElementById('form-superadmin');
-    if (!form) return;
-
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-
-        const email = document.getElementById('superadmin-email').value.trim().toLowerCase();
-        const password = document.getElementById('superadmin-pass').value;
-
-        const users = getUsers();
-        const user = users.find(u => u.email.toLowerCase() === email && u.role === 'superadmin');
-
-        if (!user || user.password !== password) {
-            showLoginAlert("Identifiants Super Administrateur incorrects.", 'danger');
-            return;
-        }
-
-        setCurrentUser(user);
-        showLoginAlert("Connexion Super Administrateur réussie. Redirection...", 'success');
 
         setTimeout(() => {
             window.location.href = 'admin.html';
