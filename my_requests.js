@@ -14,6 +14,24 @@ document.addEventListener('DOMContentLoaded', () => {
     initFilterAndSearch();
 });
 
+window.addEventListener('storage', () => {
+    loadRequests();
+});
+
+function updateGlobalStats() {
+    const stats = typeof getRealtimeStats === 'function' ? getRealtimeStats() : { total: 0, pending: 0, progress: 0, resolved: 0 };
+    
+    const totalEl = document.getElementById('stat-total');
+    const pendingEl = document.getElementById('stat-pending');
+    const progressEl = document.getElementById('stat-progress');
+    const resolvedEl = document.getElementById('stat-resolved');
+
+    if (totalEl) totalEl.textContent = stats.total;
+    if (pendingEl) pendingEl.textContent = stats.pending;
+    if (progressEl) progressEl.textContent = stats.progress;
+    if (resolvedEl) resolvedEl.textContent = stats.resolved;
+}
+
 function renderUserContextBanner() {
     const container = document.getElementById('user-context-container');
     if (!container) return;
@@ -82,19 +100,29 @@ function renderUserContextBanner() {
 
 function loadRequests() {
     allRequests = getRequests();
+    updateGlobalStats();
 
     if (currentUser && currentUser.role === 'employee') {
-        // STRICT FILTERING: Employees see ONLY their own requests!
+        // STRICT FILTERING: Logged-in employee sees ONLY their own intervention requests!
+        const userEmail = (currentUser.email || '').toLowerCase().trim();
+        const userName = (currentUser.name || `${currentUser.firstName} ${currentUser.lastName}`).toLowerCase().trim();
+        const userLastName = (currentUser.lastName || '').toLowerCase().trim();
+
         userRequests = allRequests.filter(req => {
-            return (req.emitterEmail && req.emitterEmail.toLowerCase() === currentUser.email.toLowerCase()) ||
-                   (req.emitter && req.emitter.toLowerCase().includes(currentUser.lastName.toLowerCase()));
+            const reqEmail = (req.emitterEmail || '').toLowerCase().trim();
+            const reqEmitter = (req.emitter || '').toLowerCase().trim();
+
+            if (reqEmail && userEmail && reqEmail === userEmail) return true;
+            if (reqEmitter && userName && reqEmitter === userName) return true;
+            if (reqEmitter && userLastName && reqEmitter.includes(userLastName)) return true;
+            return false;
         });
     } else if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'superadmin')) {
-        // Admins viewing this page see all or department requests
+        // Admins viewing this page see all requests
         userRequests = [...allRequests];
     } else {
-        // Guest mode fallback: display all demo requests but disable deletion
-        userRequests = [...allRequests];
+        // Unauthenticated guest: Private personal list is empty
+        userRequests = [];
     }
 
     renderTable(userRequests);
@@ -108,7 +136,18 @@ function renderTable(requests) {
     tbody.innerHTML = '';
 
     if (requests.length === 0) {
-        if (emptyState) emptyState.style.display = 'block';
+        if (emptyState) {
+            emptyState.style.display = 'block';
+            const emptyText = emptyState.querySelector('p');
+            const emptyTitle = emptyState.querySelector('h3');
+            if (!currentUser) {
+                if (emptyTitle) emptyTitle.textContent = "Accès restreint aux demandes";
+                if (emptyText) emptyText.textContent = "Vous devez vous connecter avec votre compte employé pour consulter vos demandes d'intervention personnelles.";
+            } else {
+                if (emptyTitle) emptyTitle.textContent = "Aucune demande trouvée";
+                if (emptyText) emptyText.textContent = "Vous n'avez actuellement aucune demande d'intervention enregistrée.";
+            }
+        }
         return;
     }
 
