@@ -74,18 +74,19 @@ function initEmployeeSignup() {
             password: pass,
             role: 'employee',
             department,
-            status: 'approved',
+            status: 'pending', // Pending approval by Department Admin!
             createdAt: new Date().toISOString().split('T')[0]
         };
 
         users.push(newUser);
         saveUsers(users);
 
-        showAlert(`Compte Employé créé avec succès pour ${emitter} ! Vous pouvez maintenant vous connecter avec votre email et mot de passe. Redirection...`, 'success');
+        form.reset();
 
-        setTimeout(() => {
-            window.location.href = `login.html?registered=1&email=${encodeURIComponent(email)}`;
-        }, 1200);
+        showAlert(
+            `Demande d'inscription enregistrée avec succès pour ${emitter} ! Votre compte pour le département ${department} est en ATTENTE D'APPROBATION par l'Administrateur du département ${department}. Vous ne pourrez vous connecter qu'une fois votre compte approuvé par votre Administrateur de Département.`,
+            'warning'
+        );
     });
 }
 

@@ -138,6 +138,22 @@ window.deleteCurrentRequest = async function() {
     const requestId = urlParams.get('id');
     if (!requestId) return;
 
+    const requests = getRequests();
+    const target = requests.find(r => r.id === requestId);
+    if (!target) return;
+
+    const currentUser = getCurrentUser();
+    const isPending = target.status === 'En attente' || target.status === 'Pending';
+    if (currentUser && currentUser.role === 'employee' && !isPending) {
+        await window.showCustomAlert({
+            title: "Suppression Impossible",
+            message: `La demande N° ${requestId} est actuellement en statut "${target.status}".\n\nUne fois le traitement engagé par l'Administrateur du Département, la demande devient un dossier administratif officiel et ne peut plus être supprimée par l'émetteur.`,
+            buttonText: "Compris",
+            type: "warning"
+        });
+        return;
+    }
+
     const confirmed = await window.showCustomConfirm({
         title: "Confirmer la suppression",
         message: `Voulez-vous vraiment supprimer définitivement la demande d'intervention N° ${requestId} ?\n\nCette action est irréversible.`,
@@ -148,7 +164,6 @@ window.deleteCurrentRequest = async function() {
 
     if (!confirmed) return;
 
-    const requests = getRequests();
     const updated = requests.filter(r => r.id !== requestId);
     saveRequests(updated);
 

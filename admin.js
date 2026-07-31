@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initFilterHandlers();
     initModalEvents();
     loadAdminRequests();
+    renderEmployeeManagementPanel();
     if (currentUser && currentUser.role === 'superadmin') {
         renderSuperAdminPanel();
     }
@@ -23,6 +24,10 @@ document.addEventListener('DOMContentLoaded', () => {
 window.addEventListener('storage', () => {
     allRequests = getRequests();
     filterAndRenderAdminTable();
+    renderEmployeeManagementPanel();
+    if (currentUser && currentUser.role === 'superadmin') {
+        renderSuperAdminPanel();
+    }
 });
 
 /**
@@ -133,6 +138,7 @@ function initDeptTabs() {
             currentAdminDepartment = tab.getAttribute('data-dept');
             updateAdminUIHeader();
             filterAndRenderAdminTable();
+            renderEmployeeManagementPanel();
         });
     });
 }
@@ -281,14 +287,103 @@ function renderSuperAdminPanel() {
             let badge = `<span class="stat-badge resolved">Approuvé</span>`;
             if (adm.status === 'pending') badge = `<span class="stat-badge pending">En attente</span>`;
             if (adm.status === 'rejected') badge = `<span class="stat-badge rejected">Rejeté</span>`;
+            if (adm.status === 'disabled') badge = `<span class="stat-badge disabled" style="background: #6B7280; color: #FFF;">Désactivé</span>`;
+
+            let actionsHtml = '';
+            if (adm.role !== 'superadmin') {
+                const toggleText = adm.status === 'disabled' ? 'Activer' : 'Désactiver';
+                const toggleClass = adm.status === 'disabled' ? 'btn-approve' : 'btn-reject';
+                actionsHtml = `
+                    <button type="button" class="${toggleClass}" onclick="toggleAdminStatus('${adm.id}')" style="font-size: 0.75rem; padding: 0.25rem 0.5rem; margin-right: 0.25rem;">${toggleText}</button>
+                    <button type="button" class="btn-reject" onclick="deleteAdminUser('${adm.id}')" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;" title="Supprimer le compte">Supprimer</button>
+                `;
+            } else {
+                actionsHtml = `<span style="font-size: 0.8rem; color: var(--primary-color); font-weight: 600;">Super Admin</span>`;
+            }
 
             tr.innerHTML = `
                 <td><strong>${escapeHtml(adm.name || adm.firstName + ' ' + adm.lastName)}</strong><br><small style="color:var(--text-secondary);">${escapeHtml(adm.email)}</small></td>
                 <td><span class="dept-badge">${escapeHtml(adm.department)}</span></td>
                 <td>${badge}</td>
+                <td style="text-align: right;">${actionsHtml}</td>
             `;
             allTbody.appendChild(tr);
         });
+    }
+}
+
+function renderEmployeeManagementPanel() {
+    const card = document.getElementById('emp-management-card');
+    if (!card) return;
+
+    const users = getUsers();
+    setElemText('emp-dept-title', currentAdminDepartment === 'ALL' ? 'Toutes Directions' : currentAdminDepartment);
+
+    let deptEmployees = [];
+    if (currentAdminDepartment === 'ALL') {
+        deptEmployees = users.filter(u => u.role === 'employee');
+    } else {
+        deptEmployees = users.filter(u => u.role === 'employee' && u.department === currentAdminDepartment);
+    }
+
+    const pendingEmp = deptEmployees.filter(u => u.status === 'pending');
+
+    setElemText('emp-pending-badge', `${pendingEmp.length} en attente`);
+    setElemText('emp-total-badge', `${deptEmployees.length} employés`);
+
+    // 1. Pending Employees Table
+    const pendingTbody = document.getElementById('pending-employees-tbody');
+    if (pendingTbody) {
+        pendingTbody.innerHTML = '';
+        if (pendingEmp.length === 0) {
+            pendingTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color: var(--text-muted); padding: 1rem;">Aucune demande d'inscription d'employé en attente pour ce département.</td></tr>`;
+        } else {
+            pendingEmp.forEach(emp => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${escapeHtml(emp.name || emp.firstName + ' ' + emp.lastName)}</strong><br><small style="color:var(--text-secondary);">${escapeHtml(emp.email)}</small></td>
+                    <td><span class="dept-badge">${escapeHtml(emp.department)}</span></td>
+                    <td>${escapeHtml(emp.createdAt || '2026-07-31')}</td>
+                    <td style="text-align: right;">
+                        <button type="button" class="btn-approve" onclick="approveEmployeeUser('${emp.id}')" title="Approuver l'employé"> Approuver</button>
+                        <button type="button" class="btn-reject" onclick="rejectEmployeeUser('${emp.id}')" title="Rejeter l'inscription"> Rejeter</button>
+                    </td>
+                `;
+                pendingTbody.appendChild(tr);
+            });
+        }
+    }
+
+    // 2. All Employees Table
+    const allTbody = document.getElementById('all-employees-tbody');
+    if (allTbody) {
+        allTbody.innerHTML = '';
+        if (deptEmployees.length === 0) {
+            allTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color: var(--text-muted); padding: 1rem;">Aucun employé enregistré pour ce département.</td></tr>`;
+        } else {
+            deptEmployees.forEach(emp => {
+                const tr = document.createElement('tr');
+
+                let badge = `<span class="stat-badge resolved">Approuvé</span>`;
+                if (emp.status === 'pending') badge = `<span class="stat-badge pending">En attente</span>`;
+                if (emp.status === 'rejected') badge = `<span class="stat-badge rejected">Rejeté</span>`;
+                if (emp.status === 'disabled') badge = `<span class="stat-badge disabled" style="background: #6B7280; color: #FFF;">Désactivé</span>`;
+
+                const toggleText = emp.status === 'disabled' ? 'Activer' : 'Désactiver';
+                const toggleClass = emp.status === 'disabled' ? 'btn-approve' : 'btn-reject';
+
+                tr.innerHTML = `
+                    <td><strong>${escapeHtml(emp.name || emp.firstName + ' ' + emp.lastName)}</strong><br><small style="color:var(--text-secondary);">${escapeHtml(emp.email)}</small></td>
+                    <td><span class="dept-badge">${escapeHtml(emp.department)}</span></td>
+                    <td>${badge}</td>
+                    <td style="text-align: right;">
+                        <button type="button" class="${toggleClass}" onclick="toggleEmployeeStatus('${emp.id}')" style="font-size: 0.75rem; padding: 0.25rem 0.5rem; margin-right: 0.25rem;">${toggleText}</button>
+                        <button type="button" class="btn-reject" onclick="deleteEmployeeUser('${emp.id}')" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;" title="Supprimer l'employé">Supprimer</button>
+                    </td>
+                `;
+                allTbody.appendChild(tr);
+            });
+        }
     }
 }
 
@@ -327,6 +422,103 @@ window.rejectAdminUser = async function(userId) {
     target.status = 'rejected';
     saveUsers(users);
     renderSuperAdminPanel();
+};
+
+window.toggleAdminStatus = function(userId) {
+    const users = getUsers();
+    const target = users.find(u => u.id === userId);
+    if (!target || target.role === 'superadmin') return;
+
+    target.status = target.status === 'disabled' ? 'approved' : 'disabled';
+    saveUsers(users);
+    renderSuperAdminPanel();
+};
+
+window.deleteAdminUser = async function(userId) {
+    const users = getUsers();
+    const target = users.find(u => u.id === userId);
+    if (!target || target.role === 'superadmin') return;
+
+    const confirmed = await window.showCustomConfirm({
+        title: "Supprimer l'administrateur",
+        message: `Voulez-vous vraiment supprimer définitivement le compte administrateur de ${target.name || target.firstName + ' ' + target.lastName} (${target.department}) ?`,
+        confirmText: "Supprimer",
+        cancelText: "Annuler",
+        type: "danger"
+    });
+
+    if (!confirmed) return;
+
+    const updated = users.filter(u => u.id !== userId);
+    saveUsers(updated);
+    renderSuperAdminPanel();
+};
+
+window.approveEmployeeUser = async function(userId) {
+    const users = getUsers();
+    const target = users.find(u => u.id === userId);
+    if (!target) return;
+
+    target.status = 'approved';
+    saveUsers(users);
+    renderEmployeeManagementPanel();
+
+    await window.showCustomAlert({
+        title: "Compte Employé Approuvé",
+        message: `Le compte employé de ${target.name || target.firstName + ' ' + target.lastName} (${target.department}) a été APPROUVÉ par l'Administrateur.\n\nL'employé peut désormais se connecter et soumettre ses demandes d'intervention.`,
+        buttonText: "D'accord",
+        type: "success"
+    });
+};
+
+window.rejectEmployeeUser = async function(userId) {
+    const users = getUsers();
+    const target = users.find(u => u.id === userId);
+    if (!target) return;
+
+    const confirmed = await window.showCustomConfirm({
+        title: "Rejeter l'employé",
+        message: `Voulez-vous vraiment rejeter la demande d'inscription de l'employé ${target.name || target.firstName + ' ' + target.lastName} (${target.department}) ?`,
+        confirmText: "Rejeter l'inscription",
+        cancelText: "Annuler",
+        type: "danger"
+    });
+
+    if (!confirmed) return;
+
+    target.status = 'rejected';
+    saveUsers(users);
+    renderEmployeeManagementPanel();
+};
+
+window.toggleEmployeeStatus = function(userId) {
+    const users = getUsers();
+    const target = users.find(u => u.id === userId);
+    if (!target) return;
+
+    target.status = target.status === 'disabled' ? 'approved' : 'disabled';
+    saveUsers(users);
+    renderEmployeeManagementPanel();
+};
+
+window.deleteEmployeeUser = async function(userId) {
+    const users = getUsers();
+    const target = users.find(u => u.id === userId);
+    if (!target) return;
+
+    const confirmed = await window.showCustomConfirm({
+        title: "Supprimer l'employé",
+        message: `Voulez-vous vraiment supprimer définitivement le compte de l'employé ${target.name || target.firstName + ' ' + target.lastName} (${target.department}) ?`,
+        confirmText: "Supprimer le compte",
+        cancelText: "Annuler",
+        type: "danger"
+    });
+
+    if (!confirmed) return;
+
+    const updated = users.filter(u => u.id !== userId);
+    saveUsers(updated);
+    renderEmployeeManagementPanel();
 };
 
 function initFilterHandlers() {

@@ -96,6 +96,7 @@
                                         <th>Nom & Email</th>
                                         <th>Département</th>
                                         <th>Statut</th>
+                                        <th style="text-align: right;">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="all-admins-tbody">
@@ -188,6 +189,61 @@
                         <div class="stat-value-container">
                             <span class="stat-value" id="admin-stat-resolved">0</span>
                             <span class="stat-badge resolved">Terminées</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Department Employee Approval & Management Panel -->
+            <div id="emp-management-card" class="superadmin-card" style="margin-bottom: 2rem;">
+                <div class="superadmin-header">
+                    <div class="badge-official">Gestion du Personnel Départemental</div>
+                    <h2 id="emp-management-title">Validation des Comptes Employés (<span id="emp-dept-title">SI</span>)</h2>
+                    <p id="emp-management-desc">Approuvez ou rejetez les demandes d'inscription des employés de votre département pour leur autoriser l'accès au portail.</p>
+                </div>
+
+                <div class="superadmin-grid">
+                    <div class="superadmin-box">
+                        <h3>
+                            <span>Inscriptions Employés en Attente</span>
+                            <span class="stat-badge pending" id="emp-pending-badge">0 en attente</span>
+                        </h3>
+                        <div style="overflow-x: auto;">
+                            <table class="superadmin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Employé / Email</th>
+                                        <th>Département</th>
+                                        <th>Date</th>
+                                        <th style="text-align: right;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pending-employees-tbody">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="superadmin-box">
+                        <h3>
+                            <span>Employés Enregistrés du Département</span>
+                            <span class="stat-badge total" id="emp-total-badge">0 employés</span>
+                        </h3>
+                        <div style="overflow-x: auto; max-height: 240px; overflow-y: auto;">
+                            <table class="superadmin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nom & Email</th>
+                                        <th>Département</th>
+                                        <th>Statut</th>
+                                        <th style="text-align: right;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="all-employees-tbody">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>

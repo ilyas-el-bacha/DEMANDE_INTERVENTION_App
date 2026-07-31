@@ -160,6 +160,17 @@ function renderTable(requests) {
         if (req.status === 'Résolue' || req.status === 'Resolved') statusClass = 'resolved';
         if (req.status === 'Rejetée' || req.status === 'Rejected') statusClass = 'rejected';
 
+        const isPending = req.status === 'En attente' || req.status === 'Pending';
+        const deleteButtonHtml = isPending ? `
+            <button type="button" class="btn btn-danger btn-sm" onclick="deleteMyRequest('${escapeHtml(req.id)}')" title="Supprimer la demande en attente">
+                🗑️ Supprimer
+            </button>
+        ` : `
+            <button type="button" class="btn btn-secondary btn-sm" disabled style="opacity: 0.55; cursor: not-allowed;" title="Traitement engagé : cette demande est un dossier administratif officiel et ne peut plus être supprimée.">
+                🔒 Dossier Officiel
+            </button>
+        `;
+
         tr.innerHTML = `
             <td><span class="req-id">${escapeHtml(req.id)}</span></td>
             <td>${escapeHtml(req.date || '2026-07-30')}</td>
@@ -172,9 +183,7 @@ function renderTable(requests) {
                     <a href="request_details.html?id=${encodeURIComponent(req.id)}" class="btn btn-secondary btn-sm" title="Consulter la fiche complète">
                         Détails
                     </a>
-                    <button type="button" class="btn btn-danger btn-sm" onclick="deleteMyRequest('${escapeHtml(req.id)}')" title="Supprimer définitivement la demande">
-                        🗑️ Supprimer
-                    </button>
+                    ${deleteButtonHtml}
                 </div>
             </td>
         `;
@@ -186,6 +195,18 @@ function renderTable(requests) {
 window.deleteMyRequest = async function(reqId) {
     const target = allRequests.find(r => r.id === reqId);
     if (!target) return;
+
+    // Restrict deletion to pending requests only
+    const isPending = target.status === 'En attente' || target.status === 'Pending';
+    if (!isPending) {
+        await window.showCustomAlert({
+            title: "Suppression Impossible",
+            message: `La demande N° ${reqId} est actuellement en statut "${target.status}".\n\nUne fois le traitement engagé par l'Administrateur du Département, la demande devient un dossier administratif officiel et ne peut plus être supprimée par l'émetteur.`,
+            buttonText: "Compris",
+            type: "warning"
+        });
+        return;
+    }
 
     const confirmed = await window.showCustomConfirm({
         title: "Confirmer la suppression",

@@ -73,6 +73,22 @@ function initEmployeeLoginForm() {
             return;
         }
 
+        // CHECK APPROVAL STATUS FOR EMPLOYEES
+        if (user.status === 'pending') {
+            showLoginAlert(`Votre compte employé est en attente d'approbation par l'Administrateur du Département (${user.department}). Vous ne pourrez vous connecter qu'une fois votre compte approuvé par l'administrateur de votre département.`, 'warning');
+            return;
+        }
+
+        if (user.status === 'rejected') {
+            showLoginAlert("Votre demande d'inscription en tant qu'employé a été rejetée par l'Administrateur de votre Département.", 'danger');
+            return;
+        }
+
+        if (user.status === 'disabled') {
+            showLoginAlert("Votre compte employé a été désactivé par l'Administrateur.", 'danger');
+            return;
+        }
+
         // Set Active Session
         setCurrentUser(user);
 
@@ -118,6 +134,11 @@ function initAdminLoginForm() {
 
         if (user.status === 'rejected') {
             showLoginAlert("Votre demande d'inscription en tant qu'administrateur a été rejetée.", 'danger');
+            return;
+        }
+
+        if (user.status === 'disabled') {
+            showLoginAlert("Votre compte administrateur a été désactivé par le Super Administrateur.", 'danger');
             return;
         }
 

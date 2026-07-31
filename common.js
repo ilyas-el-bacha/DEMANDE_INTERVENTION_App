@@ -29,6 +29,7 @@ function getUsers() {
 function saveUsers(users) {
     try {
         localStorage.setItem(USERS_KEY, JSON.stringify(users));
+        window.dispatchEvent(new Event('storage'));
     } catch(e) {
         console.error('Erreur de sauvegarde des utilisateurs:', e);
     }
@@ -159,6 +160,19 @@ function initSeedUsers() {
             department: 'DGUR',
             status: 'approved',
             createdAt: '2026-02-10'
+        },
+        {
+            id: 'usr-emp-pending-demo',
+            firstName: 'Youssef',
+            lastName: 'BENALI',
+            name: 'M. Youssef BENALI',
+            employeeId: 'EMP-0550',
+            email: 'youssef.benali@agenceurbaine.ma',
+            password: 'user123',
+            role: 'employee',
+            department: 'SI',
+            status: 'pending',
+            createdAt: '2026-07-31'
         }
     ];
 
