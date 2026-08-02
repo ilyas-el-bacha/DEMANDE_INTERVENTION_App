@@ -367,13 +367,25 @@ function renderSuperAdminPanel() {
         } else {
             pendingAdmins.forEach(adm => {
                 const tr = document.createElement('tr');
+                const fullName = adm.name || `${adm.firstName || ''} ${adm.lastName || ''}`.trim() || 'Administrateur';
                 tr.innerHTML = `
-                    <td><strong>${escapeHtml(adm.name || adm.firstName + ' ' + adm.lastName)}</strong><br><small style="color:var(--text-secondary);">${escapeHtml(adm.email)}</small></td>
+                    <td>
+                        <strong style="color: var(--text-primary); font-size: 0.95rem;">${escapeHtml(fullName)}</strong>
+                        <small style="color: var(--text-muted); font-size: 0.8rem; display: block; margin-top: 2px;">${escapeHtml(adm.email)}</small>
+                    </td>
                     <td><span class="dept-badge">${escapeHtml(adm.department)}</span></td>
-                    <td>${escapeHtml(adm.createdAt || '2026-07-30')}</td>
+                    <td><span style="font-size: 0.85rem; color: var(--text-secondary);">${escapeHtml(adm.createdAt || '2026-07-30')}</span></td>
                     <td style="text-align: right;">
-                        <button type="button" class="btn-approve" onclick="approveAdminUser('${adm.id}')" title="Approuver le compte">Approuver</button>
-                        <button type="button" class="btn-reject" onclick="rejectAdminUser('${adm.id}')" title="Rejeter la demande">Rejeter</button>
+                        <div class="action-btns-wrap">
+                            <button type="button" class="btn-action btn-action-approve" onclick="approveAdminUser('${adm.id}')" title="Approuver le compte">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span>Approuver</span>
+                            </button>
+                            <button type="button" class="btn-action btn-action-reject" onclick="rejectAdminUser('${adm.id}')" title="Rejeter la demande">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                <span>Rejeter</span>
+                            </button>
+                        </div>
                     </td>
                 `;
                 pendingTbody.appendChild(tr);
@@ -396,18 +408,39 @@ function renderSuperAdminPanel() {
                 if (adm.status === 'rejected') badge = `<span class="stat-badge rejected">Rejeté</span>`;
                 if (adm.status === 'disabled') badge = `<span class="stat-badge disabled" style="background: #6B7280; color: #FFF;">Désactivé</span>`;
 
-                const toggleText = adm.status === 'disabled' ? 'Activer' : 'Désactiver';
-                const toggleClass = adm.status === 'disabled' ? 'btn-approve' : 'btn-reject';
-                const actionsHtml = `
-                    <button type="button" class="${toggleClass}" onclick="toggleAdminStatus('${adm.id}')" style="font-size: 0.75rem; padding: 0.25rem 0.5rem; margin-right: 0.25rem;">${toggleText}</button>
-                    <button type="button" class="btn-reject" onclick="deleteAdminUser('${adm.id}')" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;" title="Supprimer le compte">Supprimer</button>
+                const isDisabled = adm.status === 'disabled';
+                const toggleBtnHtml = isDisabled
+                    ? `<button type="button" class="btn-action btn-action-enable" onclick="toggleAdminStatus('${adm.id}')" title="Activer le compte">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        <span>Activer</span>
+                       </button>`
+                    : `<button type="button" class="btn-action btn-action-disable" onclick="toggleAdminStatus('${adm.id}')" title="Désactiver le compte">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+                        <span>Désactiver</span>
+                       </button>`;
+
+                const deleteBtnHtml = `
+                    <button type="button" class="btn-action btn-action-delete" onclick="deleteAdminUser('${adm.id}')" title="Supprimer le compte">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                        <span>Supprimer</span>
+                    </button>
                 `;
 
+                const fullName = adm.name || `${adm.firstName || ''} ${adm.lastName || ''}`.trim() || 'Administrateur';
+
                 tr.innerHTML = `
-                    <td><strong>${escapeHtml(adm.name || adm.firstName + ' ' + adm.lastName)}</strong><br><small style="color:var(--text-secondary);">${escapeHtml(adm.email)}</small></td>
+                    <td>
+                        <strong style="color: var(--text-primary); font-size: 0.95rem;">${escapeHtml(fullName)}</strong>
+                        <small style="color: var(--text-muted); font-size: 0.8rem; display: block; margin-top: 2px;">${escapeHtml(adm.email)}</small>
+                    </td>
                     <td><span class="dept-badge">${escapeHtml(adm.department)}</span></td>
                     <td>${badge}</td>
-                    <td style="text-align: right;">${actionsHtml}</td>
+                    <td style="text-align: right;">
+                        <div class="action-btns-wrap">
+                            ${toggleBtnHtml}
+                            ${deleteBtnHtml}
+                        </div>
+                    </td>
                 `;
                 allTbody.appendChild(tr);
             });
@@ -494,13 +527,25 @@ function renderEmployeeManagementPanel() {
         } else {
             pendingEmp.forEach(emp => {
                 const tr = document.createElement('tr');
+                const fullName = emp.name || `${emp.firstName || ''} ${emp.lastName || ''}`.trim() || 'Employé';
                 tr.innerHTML = `
-                    <td><strong>${escapeHtml(emp.name || emp.firstName + ' ' + emp.lastName)}</strong><br><small style="color:var(--text-secondary);">${escapeHtml(emp.email)}</small></td>
+                    <td>
+                        <strong style="color: var(--text-primary); font-size: 0.95rem;">${escapeHtml(fullName)}</strong>
+                        <small style="color: var(--text-muted); font-size: 0.8rem; display: block; margin-top: 2px;">${escapeHtml(emp.email)}</small>
+                    </td>
                     <td><span class="dept-badge">${escapeHtml(emp.department)}</span></td>
-                    <td>${escapeHtml(emp.createdAt || '2026-07-31')}</td>
+                    <td><span style="font-size: 0.85rem; color: var(--text-secondary);">${escapeHtml(emp.createdAt || '2026-07-31')}</span></td>
                     <td style="text-align: right;">
-                        <button type="button" class="btn-approve" onclick="approveEmployeeUser('${emp.id}')" title="Approuver l'employé"> Approuver</button>
-                        <button type="button" class="btn-reject" onclick="rejectEmployeeUser('${emp.id}')" title="Rejeter l'inscription"> Rejeter</button>
+                        <div class="action-btns-wrap">
+                            <button type="button" class="btn-action btn-action-approve" onclick="approveEmployeeUser('${emp.id}')" title="Approuver l'employé">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span>Approuver</span>
+                            </button>
+                            <button type="button" class="btn-action btn-action-reject" onclick="rejectEmployeeUser('${emp.id}')" title="Rejeter l'inscription">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                <span>Rejeter</span>
+                            </button>
+                        </div>
                     </td>
                 `;
                 pendingTbody.appendChild(tr);
@@ -523,16 +568,38 @@ function renderEmployeeManagementPanel() {
                 if (emp.status === 'rejected') badge = `<span class="stat-badge rejected">Rejeté</span>`;
                 if (emp.status === 'disabled') badge = `<span class="stat-badge disabled" style="background: #6B7280; color: #FFF;">Désactivé</span>`;
 
-                const toggleText = emp.status === 'disabled' ? 'Activer' : 'Désactiver';
-                const toggleClass = emp.status === 'disabled' ? 'btn-approve' : 'btn-reject';
+                const isDisabled = emp.status === 'disabled';
+                const toggleBtnHtml = isDisabled
+                    ? `<button type="button" class="btn-action btn-action-enable" onclick="toggleEmployeeStatus('${emp.id}')" title="Activer l'employé">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        <span>Activer</span>
+                       </button>`
+                    : `<button type="button" class="btn-action btn-action-disable" onclick="toggleEmployeeStatus('${emp.id}')" title="Désactiver l'employé">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+                        <span>Désactiver</span>
+                       </button>`;
+
+                const deleteBtnHtml = `
+                    <button type="button" class="btn-action btn-action-delete" onclick="deleteEmployeeUser('${emp.id}')" title="Supprimer l'employé">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                        <span>Supprimer</span>
+                    </button>
+                `;
+
+                const fullName = emp.name || `${emp.firstName || ''} ${emp.lastName || ''}`.trim() || 'Employé';
 
                 tr.innerHTML = `
-                    <td><strong>${escapeHtml(emp.name || emp.firstName + ' ' + emp.lastName)}</strong><br><small style="color:var(--text-secondary);">${escapeHtml(emp.email)}</small></td>
+                    <td>
+                        <strong style="color: var(--text-primary); font-size: 0.95rem;">${escapeHtml(fullName)}</strong>
+                        <small style="color: var(--text-muted); font-size: 0.8rem; display: block; margin-top: 2px;">${escapeHtml(emp.email)}</small>
+                    </td>
                     <td><span class="dept-badge">${escapeHtml(emp.department)}</span></td>
                     <td>${badge}</td>
                     <td style="text-align: right;">
-                        <button type="button" class="${toggleClass}" onclick="toggleEmployeeStatus('${emp.id}')" style="font-size: 0.75rem; padding: 0.25rem 0.5rem; margin-right: 0.25rem;">${toggleText}</button>
-                        <button type="button" class="btn-reject" onclick="deleteEmployeeUser('${emp.id}')" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;" title="Supprimer l'employé">Supprimer</button>
+                        <div class="action-btns-wrap">
+                            ${toggleBtnHtml}
+                            ${deleteBtnHtml}
+                        </div>
                     </td>
                 `;
                 allTbody.appendChild(tr);
