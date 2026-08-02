@@ -262,17 +262,29 @@ function filterAndRenderAdminTable() {
 }
 
 function updateAdminStats(deptRequests) {
-    const requests = Array.isArray(deptRequests) ? deptRequests : getRequests();
+    const liveRequests = getRequests();
+    let requests = [];
+
+    if (currentUser && currentUser.role === 'superadmin') {
+        requests = liveRequests;
+    } else if (currentUser && currentUser.role === 'admin') {
+        requests = liveRequests.filter(r => r.department === currentUser.department);
+    } else if (Array.isArray(deptRequests)) {
+        requests = deptRequests;
+    } else {
+        requests = liveRequests;
+    }
+
     const total = requests.length;
     let pending = 0;
     let progress = 0;
     let resolved = 0;
 
     requests.forEach(r => {
-        const st = (r.status || '').toString().trim();
-        if (st === 'En attente' || st === 'Pending') pending++;
-        else if (st === 'En cours' || st === 'In Progress') progress++;
-        else if (st === 'Résolue' || st === 'Resolved') resolved++;
+        const norm = typeof getNormalizedStatus === 'function' ? getNormalizedStatus(r.status) : (r.status === 'En attente' ? 'pending' : (r.status === 'En cours' ? 'progress' : 'resolved'));
+        if (norm === 'pending') pending++;
+        else if (norm === 'progress') progress++;
+        else if (norm === 'resolved') resolved++;
     });
 
     setElemText('admin-stat-total', total);
@@ -339,22 +351,19 @@ function renderSuperAdminPanel() {
     const approvedDeptAdmins = deptAdminsTable.filter(u => u.status === 'approved' || !u.status);
 
     // 2. Employees: ONLY role === 'employee'
-    const employeeUsersTable = users.filter(u => u.role === 'employee');
-    const approvedEmployees = employeeUsersTable.filter(u => u.status === 'approved' || !u.status);
+    const approvedEmployees = users.filter(u => u.role === 'employee' && (u.status === 'approved' || !u.status));
 
     // Independent Stat Counters & Badges
     setElemText('super-stat-admins-count', approvedDeptAdmins.length);
-    setElemText('super-admins-total-badge', `${approvedDeptAdmins.length} administrateurs`);
-    setElemText('super-total-badge', `${approvedDeptAdmins.length} administrateurs`);
+    setElemText('super-admins-total-badge', `${approvedDeptAdmins.length} administrateurs actifs`);
+    setElemText('super-total-badge', `${approvedDeptAdmins.length} administrateurs actifs`);
     setElemText('super-pending-badge', `${pendingAdmins.length} en attente`);
 
     setElemText('super-stat-employees-count', approvedEmployees.length);
     setElemText('super-employees-total-badge', `${approvedEmployees.length} employés`);
-    setElemText('super-emp-table-badge', `${approvedEmployees.length} employés`);
 
-    // Ensure Global Requests Statistics reflect current live data directly from stored intervention requests
-    const requests = getRequests();
-    updateAdminStats(requests);
+    // Ensure Global Requests Statistics reflect live stored intervention requests
+    updateAdminStats();
 
     // 1. Pending Admins Table
     const pendingTbody = document.getElementById('pending-admins-tbody');
@@ -370,8 +379,8 @@ function renderSuperAdminPanel() {
                     <td><span class="dept-badge">${escapeHtml(adm.department)}</span></td>
                     <td>${escapeHtml(adm.createdAt || '2026-07-30')}</td>
                     <td style="text-align: right;">
-                        <button type="button" class="btn-approve" onclick="approveAdminUser('${adm.id}')" title="Approuver le compte"> Approuver</button>
-                        <button type="button" class="btn-reject" onclick="rejectAdminUser('${adm.id}')" title="Rejeter la demande"> Rejeter</button>
+                        <button type="button" class="btn-approve" onclick="approveAdminUser('${adm.id}')" title="Approuver le compte">Approuver</button>
+                        <button type="button" class="btn-reject" onclick="rejectAdminUser('${adm.id}')" title="Rejeter la demande">Rejeter</button>
                     </td>
                 `;
                 pendingTbody.appendChild(tr);
@@ -379,7 +388,7 @@ function renderSuperAdminPanel() {
         }
     }
 
-    // 2. Department Admins Table
+    // 2. Registered Department Admins Table
     const allTbody = document.getElementById('all-admins-tbody');
     if (allTbody) {
         allTbody.innerHTML = '';
@@ -408,38 +417,6 @@ function renderSuperAdminPanel() {
                     <td style="text-align: right;">${actionsHtml}</td>
                 `;
                 allTbody.appendChild(tr);
-            });
-        }
-    }
-
-    // 3. Registered Employees Table for Super Admin
-    const empTbody = document.getElementById('all-super-employees-tbody');
-    if (empTbody) {
-        empTbody.innerHTML = '';
-        if (employeeUsersTable.length === 0) {
-            empTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color: var(--text-muted); padding: 1rem;">Aucun employé enregistré.</td></tr>`;
-        } else {
-            employeeUsersTable.forEach(emp => {
-                const tr = document.createElement('tr');
-
-                let badge = `<span class="stat-badge resolved">Approuvé</span>`;
-                if (emp.status === 'pending') badge = `<span class="stat-badge pending">En attente</span>`;
-                if (emp.status === 'rejected') badge = `<span class="stat-badge rejected">Rejeté</span>`;
-                if (emp.status === 'disabled') badge = `<span class="stat-badge disabled" style="background: #6B7280; color: #FFF;">Désactivé</span>`;
-
-                const toggleText = emp.status === 'disabled' ? 'Activer' : 'Désactiver';
-                const toggleClass = emp.status === 'disabled' ? 'btn-approve' : 'btn-reject';
-
-                tr.innerHTML = `
-                    <td><strong>${escapeHtml(emp.name || emp.firstName + ' ' + emp.lastName)}</strong><br><small style="color:var(--text-secondary);">${escapeHtml(emp.email)}</small></td>
-                    <td><span class="dept-badge">${escapeHtml(emp.department)}</span><br><small style="color:var(--text-muted);">${escapeHtml(emp.employeeId || '-')}</small></td>
-                    <td>${badge}</td>
-                    <td style="text-align: right;">
-                        <button type="button" class="${toggleClass}" onclick="toggleEmployeeStatus('${emp.id}')" style="font-size: 0.75rem; padding: 0.25rem 0.5rem; margin-right: 0.25rem;">${toggleText}</button>
-                        <button type="button" class="btn-reject" onclick="deleteEmployeeUser('${emp.id}')" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;" title="Supprimer l'employé">Supprimer</button>
-                    </td>
-                `;
-                empTbody.appendChild(tr);
             });
         }
     }

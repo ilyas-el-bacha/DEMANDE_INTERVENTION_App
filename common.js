@@ -365,12 +365,48 @@ function logoutUser() {
     window.location.href = 'login.html';
 }
 
+function getNormalizedStatus(rawStatus) {
+    if (!rawStatus) return 'pending';
+    const s = String(rawStatus).trim().toLowerCase();
+
+    if (s === 'en attente' || s === 'pending' || s === 'nouveau' || s === 'nouvelle') {
+        return 'pending';
+    }
+
+    if (s === 'en cours' || s === 'in progress' || s === 'encours' || s === 'en-cours' || s === 'traitement') {
+        return 'progress';
+    }
+
+    if (
+        s === 'résolue' || s === 'resolue' || s === 'resolved' ||
+        s === 'approuvée' || s === 'approuvee' || s === 'approved' ||
+        s === 'terminée' || s === 'terminee' || s === 'completed' ||
+        s === 'traitée' || s === 'traitee' || s === 'signée' || s === 'signee' ||
+        s === 'résolu' || s === 'resolu' || s === 'clôturée' || s === 'cloturee'
+    ) {
+        return 'resolved';
+    }
+
+    if (s === 'rejetée' || s === 'rejete' || s === 'rejetee' || s === 'rejected') {
+        return 'rejected';
+    }
+
+    return 'pending';
+}
+
 function getRealtimeStats() {
     const requests = getRequests();
     const total = requests.length;
-    const pending = requests.filter(r => r.status === 'En attente' || r.status === 'Pending').length;
-    const progress = requests.filter(r => r.status === 'En cours' || r.status === 'In Progress').length;
-    const resolved = requests.filter(r => r.status === 'Résolue' || r.status === 'Resolved').length;
+    let pending = 0;
+    let progress = 0;
+    let resolved = 0;
+
+    requests.forEach(r => {
+        const norm = getNormalizedStatus(r.status);
+        if (norm === 'pending') pending++;
+        else if (norm === 'progress') progress++;
+        else if (norm === 'resolved') resolved++;
+    });
 
     return { total, pending, progress, resolved };
 }
