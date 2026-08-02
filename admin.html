@@ -57,14 +57,50 @@
             <div id="superadmin-panel" class="superadmin-card" style="display: none; margin-bottom: 2rem;">
                 <div class="superadmin-header">
                     <div class="badge-superadmin">★ Contrôle Central Super Administrateur</div>
-                    <h2>Gestion des Administrateurs & Validation des Inscriptions</h2>
-                    <p>Approuvez ou rejetez les demandes d'inscription des administrateurs de département.</p>
+                    <h2>Gestion des Comptes & Statistiques Utilisateurs</h2>
+                    <p>Supervision globale des administrateurs de département et des employés enregistrés.</p>
+                </div>
+
+                <!-- Independent Account Statistics Cards -->
+                <div class="stats-grid" style="margin-top: 1.25rem; margin-bottom: 1.5rem;">
+                    <div class="stat-card" style="border-color: rgba(59, 130, 246, 0.3); background: rgba(30, 58, 138, 0.15);">
+                        <div class="stat-icon-wrapper blue">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            </svg>
+                        </div>
+                        <div class="stat-details">
+                            <span class="stat-label">Administrateurs de Département Enregistrés</span>
+                            <div class="stat-value-container">
+                                <span class="stat-value" id="super-stat-admins-count">0</span>
+                                <span class="stat-badge total" id="super-admins-total-badge">0 administrateurs</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card" style="border-color: rgba(168, 85, 247, 0.3); background: rgba(88, 28, 135, 0.15);">
+                        <div class="stat-icon-wrapper purple">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                        </div>
+                        <div class="stat-details">
+                            <span class="stat-label">Employés Enregistrés</span>
+                            <div class="stat-value-container">
+                                <span class="stat-value" id="super-stat-employees-count">0</span>
+                                <span class="stat-badge progress" id="super-employees-total-badge">0 employés</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="superadmin-grid">
                     <div class="superadmin-box">
                         <h3>
-                            <span>Demandes en Attente d'Approbation</span>
+                            <span>Demandes en Attente d'Approbation (Admins)</span>
                             <span class="stat-badge pending" id="super-pending-badge">0 en attente</span>
                         </h3>
                         <div style="overflow-x: auto;">
@@ -86,8 +122,8 @@
 
                     <div class="superadmin-box">
                         <h3>
-                            <span>Comptes Administrateurs Enregistrés</span>
-                            <span class="stat-badge total" id="super-total-badge">0 comptes</span>
+                            <span>Administrateurs de Département</span>
+                            <span class="stat-badge total" id="super-total-badge">0 administrateurs</span>
                         </h3>
                         <div style="overflow-x: auto; max-height: 240px; overflow-y: auto;">
                             <table class="superadmin-table">
@@ -104,6 +140,29 @@
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Dedicated Table for Registered Employees -->
+                <div class="superadmin-box" style="margin-top: 1.5rem;">
+                    <h3>
+                        <span>Comptes Employés Enregistrés</span>
+                        <span class="stat-badge progress" id="super-emp-table-badge">0 employés</span>
+                    </h3>
+                    <div style="overflow-x: auto; max-height: 260px; overflow-y: auto;">
+                        <table class="superadmin-table">
+                            <thead>
+                                <tr>
+                                    <th>Nom & Email</th>
+                                    <th>Matricule / Département</th>
+                                    <th>Statut</th>
+                                    <th style="text-align: right;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="all-super-employees-tbody">
+                                <!-- Dynamic content -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>

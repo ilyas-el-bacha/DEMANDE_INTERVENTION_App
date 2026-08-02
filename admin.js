@@ -262,10 +262,18 @@ function filterAndRenderAdminTable() {
 }
 
 function updateAdminStats(deptRequests) {
-    const total = deptRequests.length;
-    const pending = deptRequests.filter(r => r.status === 'En attente' || r.status === 'Pending').length;
-    const progress = deptRequests.filter(r => r.status === 'En cours' || r.status === 'In Progress').length;
-    const resolved = deptRequests.filter(r => r.status === 'Résolue' || r.status === 'Resolved').length;
+    const requests = Array.isArray(deptRequests) ? deptRequests : getRequests();
+    const total = requests.length;
+    let pending = 0;
+    let progress = 0;
+    let resolved = 0;
+
+    requests.forEach(r => {
+        const st = (r.status || '').toString().trim();
+        if (st === 'En attente' || st === 'Pending') pending++;
+        else if (st === 'En cours' || st === 'In Progress') progress++;
+        else if (st === 'Résolue' || st === 'Resolved') resolved++;
+    });
 
     setElemText('admin-stat-total', total);
     setElemText('admin-stat-pending', pending);
@@ -324,12 +332,29 @@ function renderAdminTable(requests) {
 
 function renderSuperAdminPanel() {
     const users = getUsers();
-    const pendingAdmins = users.filter(u => u.role === 'admin' && u.status === 'pending');
-    const approvedDeptAdmins = users.filter(u => u.role === 'admin' && u.status === 'approved');
-    const deptAdminsTable = users.filter(u => u.role === 'admin');
 
-    setElemText('super-pending-badge', `${pendingAdmins.length} en attente`);
+    // 1. Department Administrators: ONLY role === 'admin'
+    const deptAdminsTable = users.filter(u => u.role === 'admin');
+    const pendingAdmins = deptAdminsTable.filter(u => u.status === 'pending');
+    const approvedDeptAdmins = deptAdminsTable.filter(u => u.status === 'approved' || !u.status);
+
+    // 2. Employees: ONLY role === 'employee'
+    const employeeUsersTable = users.filter(u => u.role === 'employee');
+    const approvedEmployees = employeeUsersTable.filter(u => u.status === 'approved' || !u.status);
+
+    // Independent Stat Counters & Badges
+    setElemText('super-stat-admins-count', approvedDeptAdmins.length);
+    setElemText('super-admins-total-badge', `${approvedDeptAdmins.length} administrateurs`);
     setElemText('super-total-badge', `${approvedDeptAdmins.length} administrateurs`);
+    setElemText('super-pending-badge', `${pendingAdmins.length} en attente`);
+
+    setElemText('super-stat-employees-count', approvedEmployees.length);
+    setElemText('super-employees-total-badge', `${approvedEmployees.length} employés`);
+    setElemText('super-emp-table-badge', `${approvedEmployees.length} employés`);
+
+    // Ensure Global Requests Statistics reflect current live data directly from stored intervention requests
+    const requests = getRequests();
+    updateAdminStats(requests);
 
     // 1. Pending Admins Table
     const pendingTbody = document.getElementById('pending-admins-tbody');
@@ -358,29 +383,65 @@ function renderSuperAdminPanel() {
     const allTbody = document.getElementById('all-admins-tbody');
     if (allTbody) {
         allTbody.innerHTML = '';
-        deptAdminsTable.forEach(adm => {
-            const tr = document.createElement('tr');
+        if (deptAdminsTable.length === 0) {
+            allTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color: var(--text-muted); padding: 1rem;">Aucun administrateur enregistré.</td></tr>`;
+        } else {
+            deptAdminsTable.forEach(adm => {
+                const tr = document.createElement('tr');
 
-            let badge = `<span class="stat-badge resolved">Approuvé</span>`;
-            if (adm.status === 'pending') badge = `<span class="stat-badge pending">En attente</span>`;
-            if (adm.status === 'rejected') badge = `<span class="stat-badge rejected">Rejeté</span>`;
-            if (adm.status === 'disabled') badge = `<span class="stat-badge disabled" style="background: #6B7280; color: #FFF;">Désactivé</span>`;
+                let badge = `<span class="stat-badge resolved">Approuvé</span>`;
+                if (adm.status === 'pending') badge = `<span class="stat-badge pending">En attente</span>`;
+                if (adm.status === 'rejected') badge = `<span class="stat-badge rejected">Rejeté</span>`;
+                if (adm.status === 'disabled') badge = `<span class="stat-badge disabled" style="background: #6B7280; color: #FFF;">Désactivé</span>`;
 
-            const toggleText = adm.status === 'disabled' ? 'Activer' : 'Désactiver';
-            const toggleClass = adm.status === 'disabled' ? 'btn-approve' : 'btn-reject';
-            const actionsHtml = `
-                <button type="button" class="${toggleClass}" onclick="toggleAdminStatus('${adm.id}')" style="font-size: 0.75rem; padding: 0.25rem 0.5rem; margin-right: 0.25rem;">${toggleText}</button>
-                <button type="button" class="btn-reject" onclick="deleteAdminUser('${adm.id}')" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;" title="Supprimer le compte">Supprimer</button>
-            `;
+                const toggleText = adm.status === 'disabled' ? 'Activer' : 'Désactiver';
+                const toggleClass = adm.status === 'disabled' ? 'btn-approve' : 'btn-reject';
+                const actionsHtml = `
+                    <button type="button" class="${toggleClass}" onclick="toggleAdminStatus('${adm.id}')" style="font-size: 0.75rem; padding: 0.25rem 0.5rem; margin-right: 0.25rem;">${toggleText}</button>
+                    <button type="button" class="btn-reject" onclick="deleteAdminUser('${adm.id}')" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;" title="Supprimer le compte">Supprimer</button>
+                `;
 
-            tr.innerHTML = `
-                <td><strong>${escapeHtml(adm.name || adm.firstName + ' ' + adm.lastName)}</strong><br><small style="color:var(--text-secondary);">${escapeHtml(adm.email)}</small></td>
-                <td><span class="dept-badge">${escapeHtml(adm.department)}</span></td>
-                <td>${badge}</td>
-                <td style="text-align: right;">${actionsHtml}</td>
-            `;
-            allTbody.appendChild(tr);
-        });
+                tr.innerHTML = `
+                    <td><strong>${escapeHtml(adm.name || adm.firstName + ' ' + adm.lastName)}</strong><br><small style="color:var(--text-secondary);">${escapeHtml(adm.email)}</small></td>
+                    <td><span class="dept-badge">${escapeHtml(adm.department)}</span></td>
+                    <td>${badge}</td>
+                    <td style="text-align: right;">${actionsHtml}</td>
+                `;
+                allTbody.appendChild(tr);
+            });
+        }
+    }
+
+    // 3. Registered Employees Table for Super Admin
+    const empTbody = document.getElementById('all-super-employees-tbody');
+    if (empTbody) {
+        empTbody.innerHTML = '';
+        if (employeeUsersTable.length === 0) {
+            empTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color: var(--text-muted); padding: 1rem;">Aucun employé enregistré.</td></tr>`;
+        } else {
+            employeeUsersTable.forEach(emp => {
+                const tr = document.createElement('tr');
+
+                let badge = `<span class="stat-badge resolved">Approuvé</span>`;
+                if (emp.status === 'pending') badge = `<span class="stat-badge pending">En attente</span>`;
+                if (emp.status === 'rejected') badge = `<span class="stat-badge rejected">Rejeté</span>`;
+                if (emp.status === 'disabled') badge = `<span class="stat-badge disabled" style="background: #6B7280; color: #FFF;">Désactivé</span>`;
+
+                const toggleText = emp.status === 'disabled' ? 'Activer' : 'Désactiver';
+                const toggleClass = emp.status === 'disabled' ? 'btn-approve' : 'btn-reject';
+
+                tr.innerHTML = `
+                    <td><strong>${escapeHtml(emp.name || emp.firstName + ' ' + emp.lastName)}</strong><br><small style="color:var(--text-secondary);">${escapeHtml(emp.email)}</small></td>
+                    <td><span class="dept-badge">${escapeHtml(emp.department)}</span><br><small style="color:var(--text-muted);">${escapeHtml(emp.employeeId || '-')}</small></td>
+                    <td>${badge}</td>
+                    <td style="text-align: right;">
+                        <button type="button" class="${toggleClass}" onclick="toggleEmployeeStatus('${emp.id}')" style="font-size: 0.75rem; padding: 0.25rem 0.5rem; margin-right: 0.25rem;">${toggleText}</button>
+                        <button type="button" class="btn-reject" onclick="deleteEmployeeUser('${emp.id}')" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;" title="Supprimer l'employé">Supprimer</button>
+                    </td>
+                `;
+                empTbody.appendChild(tr);
+            });
+        }
     }
 }
 
@@ -537,6 +598,7 @@ window.approveEmployeeUser = async function(userId) {
     target.status = 'approved';
     saveUsers(users);
     renderEmployeeManagementPanel();
+    if (currentUser && currentUser.role === 'superadmin') renderSuperAdminPanel();
 
     await window.showCustomAlert({
         title: "Compte Employé Approuvé",
@@ -564,6 +626,7 @@ window.rejectEmployeeUser = async function(userId) {
     target.status = 'rejected';
     saveUsers(users);
     renderEmployeeManagementPanel();
+    if (currentUser && currentUser.role === 'superadmin') renderSuperAdminPanel();
 };
 
 window.toggleEmployeeStatus = function(userId) {
@@ -574,6 +637,7 @@ window.toggleEmployeeStatus = function(userId) {
     target.status = target.status === 'disabled' ? 'approved' : 'disabled';
     saveUsers(users);
     renderEmployeeManagementPanel();
+    if (currentUser && currentUser.role === 'superadmin') renderSuperAdminPanel();
 };
 
 window.deleteEmployeeUser = async function(userId) {
@@ -594,6 +658,7 @@ window.deleteEmployeeUser = async function(userId) {
     const updated = users.filter(u => u.id !== userId);
     saveUsers(updated);
     renderEmployeeManagementPanel();
+    if (currentUser && currentUser.role === 'superadmin') renderSuperAdminPanel();
 };
 
 function initFilterHandlers() {
