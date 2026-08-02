@@ -90,11 +90,42 @@ function initAdminSession() {
         if (deptSwitcherBox) {
             deptSwitcherBox.style.display = 'none';
         }
+        const empCard = document.getElementById('emp-management-card');
+        if (empCard) empCard.style.display = 'block';
+        const filtersCard = document.querySelector('.filters-card');
+        if (filtersCard) filtersCard.style.display = 'flex';
+        const tableCard = document.querySelector('.table-container-card');
+        if (tableCard) tableCard.style.display = 'block';
     } else if (currentUser.role === 'superadmin') {
-        // SUPER ADMIN HAS FULL MULTI-DEPT ACCESS
+        // SUPER ADMIN DASHBOARD - ONLY GLOBAL REAL-TIME STATS & ADMIN MANAGEMENT
+        currentAdminDepartment = 'ALL';
         if (superPanel) superPanel.style.display = 'block';
-        if (btnTabAll) btnTabAll.style.display = 'inline-block';
-        if (deptSwitcherLabel) deptSwitcherLabel.textContent = 'Sélection du Département à Superviser :';
+
+        // Hide all non-superadmin elements
+        const deptSwitcherBox = document.getElementById('dept-switcher-container');
+        if (deptSwitcherBox) deptSwitcherBox.style.display = 'none';
+
+        const empCard = document.getElementById('emp-management-card');
+        if (empCard) empCard.style.display = 'none';
+
+        const filtersCard = document.querySelector('.filters-card');
+        if (filtersCard) filtersCard.style.display = 'none';
+
+        const tableCard = document.querySelector('.table-container-card');
+        if (tableCard) tableCard.style.display = 'none';
+
+        const topBadge = document.getElementById('admin-top-badge');
+        if (topBadge) {
+            topBadge.textContent = '★ Direction Générale — Super Administrateur';
+            topBadge.style.background = 'rgba(220, 38, 38, 0.2)';
+            topBadge.style.color = '#FCA5A5';
+            topBadge.style.borderColor = 'rgba(220, 38, 38, 0.4)';
+        }
+
+        const welcomeTitle = document.getElementById('admin-welcome-title');
+        if (welcomeTitle) {
+            welcomeTitle.innerHTML = `Tableau de Bord Général Super Administrateur`;
+        }
     }
 
     updateAdminUIHeader();
@@ -104,17 +135,54 @@ function updateAdminUIHeader() {
     const codeElem = document.getElementById('active-dept-code');
     const nameElem = document.getElementById('active-dept-name');
     const tagElem = document.getElementById('admin-stat-dept-tag');
+    const labelTotal = document.getElementById('admin-stat-label-total');
+    const topBadge = document.getElementById('admin-top-badge');
 
-    if (codeElem) codeElem.textContent = currentAdminDepartment === 'ALL' ? 'TOUTES DIRECTIONS' : currentAdminDepartment;
-    if (tagElem) tagElem.textContent = currentAdminDepartment;
+    if (currentUser && currentUser.role === 'superadmin') {
+        if (codeElem) codeElem.textContent = 'GLOBAL';
+        if (tagElem) tagElem.textContent = 'GLOBAL';
+        if (labelTotal) labelTotal.textContent = 'Demandes Globales';
+        if (nameElem) nameElem.textContent = 'Statistiques globales de l\'Agence Urbaine en temps réel et gestion centrale des administrateurs.';
+        if (topBadge) {
+            topBadge.textContent = '★ Direction Générale — Super Administrateur';
+            topBadge.style.background = 'rgba(220, 38, 38, 0.2)';
+            topBadge.style.color = '#FCA5A5';
+            topBadge.style.borderColor = 'rgba(220, 38, 38, 0.4)';
+        }
+    } else if (currentUser && currentUser.role === 'admin') {
+        if (codeElem) codeElem.textContent = currentUser.department;
+        if (tagElem) tagElem.textContent = currentUser.department;
+        if (labelTotal) labelTotal.textContent = 'Demandes à Traiter';
+        if (topBadge) {
+            topBadge.textContent = `Gestionnaire Départemental — ${currentUser.department}`;
+            topBadge.style.background = 'rgba(59, 130, 246, 0.2)';
+            topBadge.style.color = '#93C5FD';
+            topBadge.style.borderColor = 'rgba(59, 130, 246, 0.4)';
+        }
 
-    if (nameElem) {
-        switch(currentAdminDepartment) {
-            case 'DAF': nameElem.textContent = 'Direction Administrative et Financière'; break;
-            case 'DGUR': nameElem.textContent = 'Direction de la Gestion Urbaine & Réglementation'; break;
-            case 'DET': nameElem.textContent = 'Direction des Études Techniques'; break;
-            case 'SI': nameElem.textContent = 'Service Informatique et Systèmes d\'Information'; break;
-            case 'ALL': nameElem.textContent = 'Supervision Générale de Toutes les Directions'; break;
+        const deptNames = {
+            'DAF': 'Direction Administrative et Financière',
+            'DGUR': 'Direction de la Gestion Urbaine & Réglementation',
+            'DET': 'Direction des Études Techniques',
+            'SI': 'Service Informatique et Systèmes d\'Information'
+        };
+        if (nameElem) {
+            const fullName = deptNames[currentUser.department] || `Département ${currentUser.department}`;
+            nameElem.textContent = `${fullName} — Module de gestion, affectation et résolution des interventions.`;
+        }
+    } else {
+        if (codeElem) codeElem.textContent = currentAdminDepartment === 'ALL' ? 'TOUTES DIRECTIONS' : currentAdminDepartment;
+        if (tagElem) tagElem.textContent = currentAdminDepartment;
+        if (labelTotal) labelTotal.textContent = 'Demandes Affectées';
+
+        if (nameElem) {
+            switch(currentAdminDepartment) {
+                case 'DAF': nameElem.textContent = 'Direction Administrative et Financière'; break;
+                case 'DGUR': nameElem.textContent = 'Direction de la Gestion Urbaine & Réglementation'; break;
+                case 'DET': nameElem.textContent = 'Direction des Études Techniques'; break;
+                case 'SI': nameElem.textContent = 'Service Informatique et Systèmes d\'Information'; break;
+                case 'ALL': nameElem.textContent = 'Supervision Générale de Toutes les Directions'; break;
+            }
         }
     }
 
@@ -167,6 +235,14 @@ function filterAndRenderAdminTable() {
 
     // 2. Update Stats
     updateAdminStats(deptRequests);
+
+    if (currentUser && currentUser.role === 'superadmin') {
+        const filtersCard = document.querySelector('.filters-card');
+        if (filtersCard) filtersCard.style.display = 'none';
+        const tableCard = document.querySelector('.table-container-card');
+        if (tableCard) tableCard.style.display = 'none';
+        return;
+    }
 
     // 3. User Criteria
     currentFilteredRequests = deptRequests.filter(req => {
@@ -316,7 +392,10 @@ function renderEmployeeManagementPanel() {
     const card = document.getElementById('emp-management-card');
     if (!card) return;
 
-    const users = getUsers();
+    if (currentUser && currentUser.role === 'superadmin') {
+        card.style.display = 'none';
+        return;
+    }
     setElemText('emp-dept-title', currentAdminDepartment === 'ALL' ? 'Toutes Directions' : currentAdminDepartment);
 
     let deptEmployees = [];
@@ -589,6 +668,14 @@ window.openAdminEditModal = function(id) {
     if (resultEff) resultEff.value = req.result?.effective !== false ? 'true' : 'false';
     document.getElementById('result-notes').value = req.result?.notes || '';
 
+    // Signature Section
+    const signerInput = document.getElementById('signer-name');
+    if (signerInput) signerInput.value = req.signature?.signer || (currentUser ? currentUser.name : `Admin ${currentAdminDepartment}`);
+    const sigDateInput = document.getElementById('signature-date');
+    if (sigDateInput) sigDateInput.value = req.signature?.date || today;
+    const signCheck = document.getElementById('sign-approval-check');
+    if (signCheck) signCheck.checked = true;
+
     document.getElementById('admin-modal').style.display = 'flex';
 };
 
@@ -612,6 +699,9 @@ function saveAdminEdit() {
 
     const isEffective = document.getElementById('result-eff').value === 'true';
     const resultNotes = document.getElementById('result-notes').value.trim();
+
+    const signerName = document.getElementById('signer-name')?.value.trim() || (currentUser ? currentUser.name : 'Admin');
+    const signatureDate = document.getElementById('signature-date')?.value || new Date().toISOString().split('T')[0];
 
     const now = new Date();
     const formattedTime = `${now.toISOString().split('T')[0]} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
@@ -641,10 +731,17 @@ function saveAdminEdit() {
         notes: resultNotes
     };
 
+    req.signature = {
+        signer: signerName,
+        date: signatureDate,
+        department: req.department || currentAdminDepartment,
+        signed: true
+    };
+
     if (!req.history) req.history = [];
     req.history.push({
         date: formattedTime,
-        label: `Mise à jour par ${currentUser ? currentUser.name : 'Admin'} : Statut passé à "${newStatus}"`
+        label: `PV Officiel complété et signé par ${signerName} (${currentAdminDepartment}) : Statut "${newStatus}"`
     });
 
     // Save back to LocalStorage

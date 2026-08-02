@@ -109,9 +109,9 @@
             </div>
 
             <!-- Admin Top Bar -->
-            <div class="admin-top-bar">
+            <div class="admin-top-bar" id="admin-top-bar">
                 <div>
-                    <div class="badge-official">Panneau de Contrôle Départemental</div>
+                    <div class="badge-official" id="admin-top-badge">Panneau de Contrôle Général</div>
                     <h2 id="admin-welcome-title">Tableau de Bord Administrateur — <span id="active-dept-code">SI</span></h2>
                     <p id="active-dept-name">Service Informatique et Systèmes d'Information</p>
                 </div>
@@ -130,7 +130,7 @@
             </div>
 
             <!-- Department Statistics Cards -->
-            <div class="stats-grid" style="margin-bottom: 2rem;">
+            <div class="stats-grid" id="stats-grid-container" style="margin-bottom: 2rem;">
                 <div class="stat-card">
                     <div class="stat-icon-wrapper blue">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -138,7 +138,7 @@
                         </svg>
                     </div>
                     <div class="stat-details">
-                        <span class="stat-label">Demandes Affectées</span>
+                        <span class="stat-label" id="admin-stat-label-total">Demandes Affectées</span>
                         <div class="stat-value-container">
                             <span class="stat-value" id="admin-stat-total">0</span>
                             <span class="stat-badge total" id="admin-stat-dept-tag">SI</span>
@@ -406,8 +406,28 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="result-notes">Remarques Complémentaires</label>
-                            <textarea id="result-notes" class="form-control" rows="2" placeholder="Notes de clôture..."></textarea>
+                            <label for="result-notes">Remarques Complémentaires & Notes Technicien</label>
+                            <textarea id="result-notes" class="form-control" rows="2" placeholder="Notes de clôture et remarques du technicien..."></textarea>
+                        </div>
+
+                        <!-- Section: Official Digital Signature -->
+                        <div class="modal-section-title">4. Signature Officielle & Visa du Procès-Verbal</div>
+                        <div class="form-row gap-row">
+                            <div class="form-group flex-1">
+                                <label for="signer-name">Nom du Signataire Administrateur</label>
+                                <input type="text" id="signer-name" class="form-control" placeholder="ex: Responsable de Département" required>
+                            </div>
+                            <div class="form-group flex-1">
+                                <label for="signature-date">Date de Signature Officielle</label>
+                                <input type="date" id="signature-date" class="form-control" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="background: rgba(37, 99, 235, 0.05); padding: 1rem; border-radius: 8px; border: 1px solid rgba(37, 99, 235, 0.2);">
+                            <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer; font-weight: 600; color: var(--text-primary); margin: 0;">
+                                <input type="checkbox" id="sign-approval-check" style="width: 18px; height: 18px; accent-color: var(--primary);" checked required>
+                                <span>Visa Électronique : Apposer la signature officielle du département sur ce procès-verbal d'intervention.</span>
+                            </label>
                         </div>
 
                     </div>
@@ -415,7 +435,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" id="cancel-modal">Annuler</button>
                         <button type="submit" class="btn btn-primary">
-                            Enregistrer et Mettre à jour le PV
+                            ✍️ Enregistrer et Signer le PV Officiel
                         </button>
                     </div>
                 </form>

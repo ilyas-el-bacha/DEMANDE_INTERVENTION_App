@@ -238,16 +238,121 @@ function getRealtimeStats() {
 }
 
 /**
+ * Role-Based Route Guard for Super Administrator and Department Administrators
+ * Ensures Administrators are strictly restricted from Employee / Public Home pages and stay on their Dashboard page (admin.html).
+ */
+function checkRoleRedirects() {
+    const user = getCurrentUser();
+    if (!user) return;
+
+    const path = window.location.pathname;
+    const isDashboard = path.endsWith('admin.html');
+    const isPrivatePortal = path.endsWith('superadmin.html');
+
+    if (user.role === 'superadmin') {
+        if (!isDashboard && !isPrivatePortal) {
+            window.location.href = 'admin.html';
+        }
+    } else if (user.role === 'admin') {
+        if (!isDashboard) {
+            window.location.href = 'admin.html';
+        }
+    }
+}
+
+/**
  * Universal Navbar update for logged-in user state & navigation items
  */
 function updateNavbar() {
     const user = getCurrentUser();
     const navLinks = document.getElementById('nav-links');
+
+    // Update Brand Link (Admin & Superadmin point to admin.html dashboard, not index.html)
+    const brandLinks = document.querySelectorAll('.brand');
+    brandLinks.forEach(brand => {
+        if (user && (user.role === 'superadmin' || user.role === 'admin')) {
+            brand.setAttribute('href', 'admin.html');
+        } else {
+            brand.setAttribute('href', 'index.html');
+        }
+    });
+
     if (!navLinks) return;
+
+    if (user && user.role === 'superadmin') {
+        // Completely hide ALL employee & home navigation links for Super Administrator
+        const items = navLinks.querySelectorAll('.nav-item');
+        items.forEach(item => {
+            if (!item.classList.contains('nav-superadmin-link')) {
+                item.style.display = 'none';
+            }
+        });
+
+        // Ensure single Super Admin Dashboard button is visible
+        let superNavBtn = navLinks.querySelector('.nav-superadmin-link');
+        if (!superNavBtn) {
+            superNavBtn = document.createElement('a');
+            superNavBtn.href = 'admin.html';
+            superNavBtn.className = 'nav-item nav-btn nav-superadmin-link active';
+            superNavBtn.style.background = 'linear-gradient(135deg, #DC2626, #991B1B)';
+            superNavBtn.style.color = '#FFFFFF';
+            superNavBtn.style.borderColor = 'transparent';
+            superNavBtn.innerHTML = `
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+                Panneau Super Admin
+            `;
+            navLinks.insertBefore(superNavBtn, navLinks.firstChild);
+        }
+        superNavBtn.style.display = 'inline-flex';
+    } else if (user && user.role === 'admin') {
+        // Completely hide ALL employee & home navigation links for Department Administrator
+        const items = navLinks.querySelectorAll('.nav-item');
+        items.forEach(item => {
+            if (!item.classList.contains('nav-admin-link')) {
+                item.style.display = 'none';
+            }
+        });
+
+        // Ensure single Department Admin Dashboard button is visible
+        let adminNavBtn = navLinks.querySelector('.nav-admin-link');
+        if (!adminNavBtn) {
+            adminNavBtn = document.createElement('a');
+            adminNavBtn.href = 'admin.html';
+            adminNavBtn.className = 'nav-item nav-btn nav-admin-link active';
+            adminNavBtn.style.background = 'linear-gradient(135deg, #2563EB, #1D4ED8)';
+            adminNavBtn.style.color = '#FFFFFF';
+            adminNavBtn.style.borderColor = 'transparent';
+            adminNavBtn.innerHTML = `
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                Gestion Département ${escapeHtml(user.department || '')}
+            `;
+            navLinks.insertBefore(adminNavBtn, navLinks.firstChild);
+        }
+        adminNavBtn.style.display = 'inline-flex';
+    } else {
+        // Restore standard navbar for employees & guests
+        const items = navLinks.querySelectorAll('.nav-item');
+        items.forEach(item => {
+            if (!item.classList.contains('nav-superadmin-link') && !item.classList.contains('nav-admin-link')) {
+                item.style.display = '';
+            }
+        });
+        const superNavBtn = navLinks.querySelector('.nav-superadmin-link');
+        if (superNavBtn) superNavBtn.remove();
+        const adminNavBtn = navLinks.querySelector('.nav-admin-link');
+        if (adminNavBtn) adminNavBtn.remove();
+    }
 
     // Check if user badge exists or create/update it
     let userNavBtn = navLinks.querySelector('.nav-user-info');
-    let loginBtn = navLinks.querySelector('.nav-btn');
+    let loginBtn = navLinks.querySelector('.nav-btn:not(.nav-superadmin-link)');
 
     if (user) {
         if (loginBtn) loginBtn.style.display = 'none';
@@ -636,6 +741,7 @@ window.showCustomAlert = function(options = {}) {
 // Initialize on script load
 document.addEventListener('DOMContentLoaded', () => {
     initStorage();
+    checkRoleRedirects();
     updateNavbar();
     injectCustomModalStyles();
 });
