@@ -234,7 +234,7 @@ function filterAndRenderAdminTable() {
     }
 
     // 2. Update Stats
-    updateAdminStats(deptRequests);
+    updateAdminStats();
 
     if (currentUser && currentUser.role === 'superadmin') {
         const filtersCard = document.querySelector('.filters-card');
@@ -261,36 +261,13 @@ function filterAndRenderAdminTable() {
     renderAdminTable(currentFilteredRequests);
 }
 
-function updateAdminStats(deptRequests) {
-    const liveRequests = getRequests();
-    let requests = [];
+function updateAdminStats() {
+    const stats = typeof getRealtimeStats === 'function' ? getRealtimeStats() : { total: 0, pending: 0, progress: 0, resolved: 0 };
 
-    if (currentUser && currentUser.role === 'superadmin') {
-        requests = liveRequests;
-    } else if (currentUser && currentUser.role === 'admin') {
-        requests = liveRequests.filter(r => r.department === currentUser.department);
-    } else if (Array.isArray(deptRequests)) {
-        requests = deptRequests;
-    } else {
-        requests = liveRequests;
-    }
-
-    const total = requests.length;
-    let pending = 0;
-    let progress = 0;
-    let resolved = 0;
-
-    requests.forEach(r => {
-        const norm = typeof getNormalizedStatus === 'function' ? getNormalizedStatus(r.status) : (r.status === 'En attente' ? 'pending' : (r.status === 'En cours' ? 'progress' : 'resolved'));
-        if (norm === 'pending') pending++;
-        else if (norm === 'progress') progress++;
-        else if (norm === 'resolved') resolved++;
-    });
-
-    setElemText('admin-stat-total', total);
-    setElemText('admin-stat-pending', pending);
-    setElemText('admin-stat-progress', progress);
-    setElemText('admin-stat-resolved', resolved);
+    setElemText('admin-stat-total', stats.total);
+    setElemText('admin-stat-pending', stats.pending);
+    setElemText('admin-stat-progress', stats.progress);
+    setElemText('admin-stat-resolved', stats.resolved);
 }
 
 function renderAdminTable(requests) {

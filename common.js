@@ -361,8 +361,14 @@ function setCurrentUser(user) {
 }
 
 function logoutUser() {
+    const user = getCurrentUser();
+    const isSuperAdmin = user && user.role === 'superadmin';
     localStorage.removeItem(CURRENT_USER_KEY);
-    window.location.href = 'login.html';
+    if (isSuperAdmin) {
+        window.location.href = 'superadmin.html';
+    } else {
+        window.location.href = 'login.html';
+    }
 }
 
 function getNormalizedStatus(rawStatus) {
