@@ -142,6 +142,30 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Dedicated Read-Only Table for Registered Employees (Super Admin Supervision) -->
+                <div class="superadmin-box" style="margin-top: 1.5rem;">
+                    <h3>
+                        <span>Registre Global des Employés (Vue Supervision)</span>
+                        <span class="stat-badge progress" id="super-emp-table-badge">0 employés</span>
+                    </h3>
+                    <div style="overflow-x: auto; max-height: 280px; overflow-y: auto;">
+                        <table class="superadmin-table">
+                            <thead>
+                                <tr>
+                                    <th>Employé (Émetteur)</th>
+                                    <th>Email</th>
+                                    <th>Département</th>
+                                    <th>Statut du Compte</th>
+                                    <th>Date d'Inscription</th>
+                                </tr>
+                            </thead>
+                            <tbody id="all-super-employees-tbody">
+                                <!-- Dynamic read-only content -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
             <!-- Admin Top Bar -->

@@ -11,6 +11,26 @@ const CURRENT_USER_KEY = 'au_current_user';
  * Initialize Baseline Seed Data if empty
  */
 function initStorage() {
+    try {
+        const storedUsers = localStorage.getItem(USERS_KEY);
+        if (storedUsers) {
+            const parsed = JSON.parse(storedUsers);
+            if (Array.isArray(parsed) && parsed.some(u => u.id === 'usr-emp1' || u.id === 'usr-daf' || u.id === 'usr-pending-demo')) {
+                initSeedUsers();
+            }
+        }
+    } catch(e) {}
+
+    try {
+        const storedRequests = localStorage.getItem(STORAGE_KEY);
+        if (storedRequests) {
+            const parsed = JSON.parse(storedRequests);
+            if (Array.isArray(parsed) && parsed.some(r => r.id && r.id.startsWith('INT-2026-000'))) {
+                initSeedRequests();
+            }
+        }
+    } catch(e) {}
+
     getUsers();
     getRequests();
 }
@@ -48,131 +68,6 @@ function initSeedUsers() {
             department: 'ALL',
             status: 'approved',
             createdAt: '2026-01-01'
-        },
-        {
-            id: 'usr-daf',
-            firstName: 'Admin',
-            lastName: 'DAF',
-            name: 'Administrateur DAF',
-            email: 'daf.admin@agenceurbaine.ma',
-            password: 'admin',
-            role: 'admin',
-            department: 'DAF',
-            status: 'approved',
-            createdAt: '2026-01-01'
-        },
-        {
-            id: 'usr-dgur',
-            firstName: 'Admin',
-            lastName: 'DGUR',
-            name: 'Administrateur DGUR',
-            email: 'dgur.admin@agenceurbaine.ma',
-            password: 'admin',
-            role: 'admin',
-            department: 'DGUR',
-            status: 'approved',
-            createdAt: '2026-01-01'
-        },
-        {
-            id: 'usr-det',
-            firstName: 'Admin',
-            lastName: 'DET',
-            name: 'Administrateur DET',
-            email: 'det.admin@agenceurbaine.ma',
-            password: 'admin',
-            role: 'admin',
-            department: 'DET',
-            status: 'approved',
-            createdAt: '2026-01-01'
-        },
-        {
-            id: 'usr-si',
-            firstName: 'Admin',
-            lastName: 'SI',
-            name: 'Administrateur SI',
-            email: 'si.admin@agenceurbaine.ma',
-            password: 'admin',
-            role: 'admin',
-            department: 'SI',
-            status: 'approved',
-            createdAt: '2026-01-01'
-        },
-        {
-            id: 'usr-pending-demo',
-            firstName: 'Omar',
-            lastName: 'BENJELLOUN',
-            name: 'M. Omar BENJELLOUN',
-            email: 'omar.benjelloun@agenceurbaine.ma',
-            password: 'admin',
-            role: 'admin',
-            department: 'SI',
-            status: 'pending',
-            createdAt: '2026-07-30'
-        },
-        {
-            id: 'usr-emp1',
-            firstName: 'Karim',
-            lastName: 'ALAMI',
-            name: 'M. Karim ALAMI',
-            employeeId: 'EMP-0104',
-            email: 'karim.alami@agenceurbaine.ma',
-            password: 'user123',
-            role: 'employee',
-            department: 'SI',
-            status: 'approved',
-            createdAt: '2026-01-15'
-        },
-        {
-            id: 'usr-emp2',
-            firstName: 'Sophia',
-            lastName: 'BENNANI',
-            name: 'Mme. Sophia BENNANI',
-            employeeId: 'EMP-0205',
-            email: 'sophia.bennani@agenceurbaine.ma',
-            password: 'user123',
-            role: 'employee',
-            department: 'DAF',
-            status: 'approved',
-            createdAt: '2026-01-20'
-        },
-        {
-            id: 'usr-emp3',
-            firstName: 'Tarik',
-            lastName: 'CHRAIBI',
-            name: 'M. Tarik CHRAIBI',
-            employeeId: 'EMP-0308',
-            email: 'tarik.chraibi@agenceurbaine.ma',
-            password: 'user123',
-            role: 'employee',
-            department: 'DET',
-            status: 'approved',
-            createdAt: '2026-02-01'
-        },
-        {
-            id: 'usr-emp4',
-            firstName: 'Ahmed',
-            lastName: 'TAZI',
-            name: 'M. Ahmed TAZI',
-            employeeId: 'EMP-0412',
-            email: 'ahmed.tazi@agenceurbaine.ma',
-            password: 'user123',
-            role: 'employee',
-            department: 'DGUR',
-            status: 'approved',
-            createdAt: '2026-02-10'
-        },
-        {
-            id: 'usr-emp-pending-demo',
-            firstName: 'Youssef',
-            lastName: 'BENALI',
-            name: 'M. Youssef BENALI',
-            employeeId: 'EMP-0550',
-            email: 'youssef.benali@agenceurbaine.ma',
-            password: 'user123',
-            role: 'employee',
-            department: 'SI',
-            status: 'pending',
-            createdAt: '2026-07-31'
         }
     ];
 
@@ -201,144 +96,7 @@ function saveRequests(requests) {
 }
 
 function initSeedRequests() {
-    const seedRequests = [
-        {
-            id: 'INT-2026-0001',
-            date: '2026-07-28',
-            emitter: 'M. Karim ALAMI',
-            emitterEmail: 'karim.alami@agenceurbaine.ma',
-            department: 'SI',
-            category: 'Réseau & Connexion, Matériel Informatique',
-            natureList: ['Réseau & Connexion', 'Matériel Informatique'],
-            priority: 'Urgente',
-            anomaly: 'Panne de connexion réseau au niveau du 2ème étage et accès impossible au serveur de fichiers central.',
-            status: 'En cours',
-            code: 'FM-SI-04',
-            version: '02',
-            appDate: '01/02/2026',
-            signatures: {
-                emitter: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="40"><path d="M10 25 Q 30 10 50 25 T 90 25" stroke="%231E3A8A" fill="none" stroke-width="2"/></svg>',
-                emitterDate: '2026-07-28'
-            },
-            history: [
-                { date: '2026-07-28 09:15', label: 'Demande émise par M. Karim ALAMI (SI)' },
-                { date: '2026-07-28 10:00', label: 'Demande prise en charge par l\'Administrateur SI (En cours)' }
-            ]
-        },
-        {
-            id: 'INT-2026-0002',
-            date: '2026-07-29',
-            emitter: 'Mme. Sophia BENNANI',
-            emitterEmail: 'sophia.bennani@agenceurbaine.ma',
-            department: 'DAF',
-            category: 'Bureautique & Imprimante',
-            natureList: ['Bureautique & Imprimante'],
-            priority: 'Haute',
-            anomaly: 'Bourrage papier récurrent et blocage du scanner sur l\'imprimante réseau DAF.',
-            status: 'En attente',
-            code: 'FM-SI-04',
-            version: '02',
-            appDate: '01/02/2026',
-            signatures: {
-                emitter: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="40"><path d="M10 20 Q 40 5 70 20" stroke="%231E3A8A" fill="none" stroke-width="2"/></svg>',
-                emitterDate: '2026-07-29'
-            },
-            history: [
-                { date: '2026-07-29 11:30', label: 'Demande émise par Mme. Sophia BENNANI (DAF)' },
-                { date: '2026-07-29 11:30', label: 'Demande transmise à l\'Administrateur DAF' }
-            ]
-        },
-        {
-            id: 'INT-2026-0003',
-            date: '2026-07-30',
-            emitter: 'M. Tarik CHRAIBI',
-            emitterEmail: 'tarik.chraibi@agenceurbaine.ma',
-            department: 'DET',
-            category: 'Logiciel & Messagerie',
-            natureList: ['Logiciel & Messagerie'],
-            priority: 'Moyenne',
-            anomaly: 'Besoin d\'installation de la licence et mise à jour de la suite CAO / SIG sur le poste de travail.',
-            status: 'Résolue',
-            code: 'FM-SI-04',
-            version: '02',
-            appDate: '01/02/2026',
-            signatures: {
-                emitter: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="40"><path d="M15 30 Q 50 10 85 30" stroke="%231E3A8A" fill="none" stroke-width="2"/></svg>',
-                emitterDate: '2026-07-30'
-            },
-            result: {
-                workNature: 'Mise à jour et activation de la licence CAO/SIG effectuées avec succès.',
-                effective: true,
-                notes: 'Logiciel testé et fonctionnel.'
-            },
-            signature: {
-                signer: 'Administrateur DET',
-                date: '2026-07-30',
-                department: 'DET',
-                signed: true
-            },
-            history: [
-                { date: '2026-07-30 08:45', label: 'Demande émise par M. Tarik CHRAIBI (DET)' },
-                { date: '2026-07-30 14:20', label: 'PV Officiel complété et signé par Administrateur DET : Statut "Résolue"' }
-            ]
-        },
-        {
-            id: 'INT-2026-0004',
-            date: '2026-07-31',
-            emitter: 'M. Ahmed TAZI',
-            emitterEmail: 'ahmed.tazi@agenceurbaine.ma',
-            department: 'DGUR',
-            category: 'Logiciel & Messagerie, Sécurité',
-            natureList: ['Logiciel & Messagerie', 'Sécurité'],
-            priority: 'Moyenne',
-            anomaly: 'Problème de synchronisation des courriels et des agendas partagés sur Outlook.',
-            status: 'En attente',
-            code: 'FM-SI-04',
-            version: '02',
-            appDate: '01/02/2026',
-            signatures: {
-                emitter: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="40"><path d="M10 25 Q 35 15 80 25" stroke="%231E3A8A" fill="none" stroke-width="2"/></svg>',
-                emitterDate: '2026-07-31'
-            },
-            history: [
-                { date: '2026-07-31 16:10', label: 'Demande émise par M. Ahmed TAZI (DGUR)' }
-            ]
-        },
-        {
-            id: 'INT-2026-0005',
-            date: '2026-08-01',
-            emitter: 'M. Youssef BENALI',
-            emitterEmail: 'youssef.benali@agenceurbaine.ma',
-            department: 'SI',
-            category: 'Matériel Informatique',
-            natureList: ['Matériel Informatique'],
-            priority: 'Basse',
-            anomaly: 'Remplacement de l\'écran secondaire défectueux sur le poste de travail.',
-            status: 'Résolue',
-            code: 'FM-SI-04',
-            version: '02',
-            appDate: '01/02/2026',
-            signatures: {
-                emitter: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="40"><path d="M20 20 Q 50 30 80 15" stroke="%231E3A8A" fill="none" stroke-width="2"/></svg>',
-                emitterDate: '2026-08-01'
-            },
-            result: {
-                workNature: 'Remplacement de l\'écran effectué.',
-                effective: true,
-                notes: 'Matériel installé et testé.'
-            },
-            signature: {
-                signer: 'Administrateur SI',
-                date: '2026-08-01',
-                department: 'SI',
-                signed: true
-            },
-            history: [
-                { date: '2026-08-01 10:00', label: 'Demande émise par M. Youssef BENALI (SI)' },
-                { date: '2026-08-01 11:30', label: 'PV Officiel complété et signé par Administrateur SI : Statut "Résolue"' }
-            ]
-        }
-    ];
+    const seedRequests = [];
 
     saveRequests(seedRequests);
     return seedRequests;
