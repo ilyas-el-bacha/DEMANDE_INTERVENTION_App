@@ -7,11 +7,13 @@ let currentAdminDepartment = 'SI';
 let allRequests = [];
 let currentFilteredRequests = [];
 let currentUser = null;
+let superEmpFilterDept = 'ALL';
 
 document.addEventListener('DOMContentLoaded', () => {
     currentUser = getCurrentUser();
     initAdminSession();
     initDeptTabs();
+    initSuperEmpDeptFilter();
     initFilterHandlers();
     initModalEvents();
     loadAdminRequests();
@@ -211,6 +213,20 @@ function initDeptTabs() {
     });
 }
 
+function initSuperEmpDeptFilter() {
+    const tabs = document.querySelectorAll('#super-emp-dept-filter-tabs [data-super-emp-dept]');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            superEmpFilterDept = tab.getAttribute('data-super-emp-dept') || 'ALL';
+            if (currentUser && currentUser.role === 'superadmin') {
+                renderSuperAdminPanel();
+            }
+        });
+    });
+}
+
 function loadAdminRequests() {
     allRequests = getRequests();
     filterAndRenderAdminTable();
@@ -402,13 +418,24 @@ function renderSuperAdminPanel() {
     const empTbody = document.getElementById('all-super-employees-tbody');
     if (empTbody) {
         empTbody.innerHTML = '';
-        const allEmployees = users.filter(u => u.role === 'employee');
-        setElemText('super-emp-table-badge', `${allEmployees.length} employés`);
+        const rawEmployees = users.filter(u => u.role === 'employee');
+        const totalEmpCount = rawEmployees.length;
 
-        if (allEmployees.length === 0) {
-            empTbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--text-muted); padding: 1rem;">Aucun employé enregistré.</td></tr>`;
+        let filteredEmployees = rawEmployees;
+        if (superEmpFilterDept !== 'ALL') {
+            filteredEmployees = rawEmployees.filter(u => u.department === superEmpFilterDept);
+        }
+
+        const badgeText = superEmpFilterDept === 'ALL'
+            ? `${totalEmpCount} employés`
+            : `${filteredEmployees.length} / ${totalEmpCount} employés (${superEmpFilterDept})`;
+
+        setElemText('super-emp-table-badge', badgeText);
+
+        if (filteredEmployees.length === 0) {
+            empTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color: var(--text-muted); padding: 1.25rem;">Aucun employé trouvé pour le département sélectionné.</td></tr>`;
         } else {
-            allEmployees.forEach(emp => {
+            filteredEmployees.forEach(emp => {
                 const tr = document.createElement('tr');
 
                 let badge = `<span class="stat-badge resolved">Approuvé</span>`;
@@ -416,12 +443,16 @@ function renderSuperAdminPanel() {
                 if (emp.status === 'rejected') badge = `<span class="stat-badge rejected">Rejeté</span>`;
                 if (emp.status === 'disabled') badge = `<span class="stat-badge disabled" style="background: #6B7280; color: #FFF;">Désactivé</span>`;
 
+                const fullName = emp.name || `${emp.firstName || ''} ${emp.lastName || ''}`.trim() || 'Employé';
+
                 tr.innerHTML = `
-                    <td><strong>${escapeHtml(emp.name || emp.firstName + ' ' + emp.lastName)}</strong><br><small style="color:var(--text-muted);">${escapeHtml(emp.employeeId || '-')}</small></td>
-                    <td>${escapeHtml(emp.email)}</td>
+                    <td>
+                        <strong style="color: var(--text-primary); font-size: 0.95rem;">${escapeHtml(fullName)}</strong>
+                        <small style="color: var(--text-muted); font-size: 0.8rem; display: block; margin-top: 2px;">${escapeHtml(emp.email)}</small>
+                    </td>
                     <td><span class="dept-badge">${escapeHtml(emp.department)}</span></td>
                     <td>${badge}</td>
-                    <td>${escapeHtml(emp.createdAt || '-')}</td>
+                    <td><span style="font-size: 0.85rem; color: var(--text-secondary);">${escapeHtml(emp.createdAt || '-')}</span></td>
                 `;
                 empTbody.appendChild(tr);
             });

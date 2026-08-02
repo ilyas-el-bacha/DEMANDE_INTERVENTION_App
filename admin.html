@@ -145,16 +145,25 @@
 
                 <!-- Dedicated Read-Only Table for Registered Employees (Super Admin Supervision) -->
                 <div class="superadmin-box" style="margin-top: 1.5rem;">
-                    <h3>
-                        <span>Registre Global des Employés (Vue Supervision)</span>
-                        <span class="stat-badge progress" id="super-emp-table-badge">0 employés</span>
-                    </h3>
-                    <div style="overflow-x: auto; max-height: 280px; overflow-y: auto;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+                        <h3>
+                            <span>Registre Global des Employés (Vue Supervision)</span>
+                            <span class="stat-badge progress" id="super-emp-table-badge">0 employés</span>
+                        </h3>
+                        <!-- Department Filtering Options for Employees Table -->
+                        <div class="dept-tabs" id="super-emp-dept-filter-tabs">
+                            <button type="button" class="dept-tab active" data-super-emp-dept="ALL">Tous les départements</button>
+                            <button type="button" class="dept-tab" data-super-emp-dept="DAF">DAF</button>
+                            <button type="button" class="dept-tab" data-super-emp-dept="DGUR">DGUR</button>
+                            <button type="button" class="dept-tab" data-super-emp-dept="DET">DET</button>
+                            <button type="button" class="dept-tab" data-super-emp-dept="SI">SI</button>
+                        </div>
+                    </div>
+                    <div style="overflow-x: auto; max-height: 320px; overflow-y: auto;">
                         <table class="superadmin-table">
                             <thead>
                                 <tr>
-                                    <th>Employé (Émetteur)</th>
-                                    <th>Email</th>
+                                    <th>Employé (Nom & Email)</th>
                                     <th>Département</th>
                                     <th>Statut du Compte</th>
                                     <th>Date d'Inscription</th>
