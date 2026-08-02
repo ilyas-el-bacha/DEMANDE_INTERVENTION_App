@@ -74,28 +74,9 @@ const DEFAULT_SYSTEM_ACCOUNTS = [
  * Initialize Baseline Seed Data if empty
  */
 function initStorage() {
-    try {
-        const storedUsers = localStorage.getItem(USERS_KEY);
-        if (storedUsers) {
-            const parsed = JSON.parse(storedUsers);
-            if (Array.isArray(parsed) && parsed.some(u => u.id === 'usr-emp1' || u.id === 'usr-pending-demo')) {
-                const cleaned = parsed.filter(u => !['usr-emp1', 'usr-emp2', 'usr-emp3', 'usr-emp4', 'usr-pending-demo', 'usr-emp-pending-demo'].includes(u.id));
-                saveUsers(cleaned);
-            }
-        }
-    } catch(e) {}
-
-    try {
-        const storedRequests = localStorage.getItem(STORAGE_KEY);
-        if (storedRequests) {
-            const parsed = JSON.parse(storedRequests);
-            if (Array.isArray(parsed) && parsed.some(r => r.id && r.id.startsWith('INT-2026-000'))) {
-                initSeedRequests();
-            }
-        }
-    } catch(e) {}
-
+    // Ensure default system accounts exist
     getUsers();
+    // Ensure requests array exists
     getRequests();
 }
 

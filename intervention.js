@@ -28,7 +28,17 @@ function initFormDefaults() {
     // 2. Generate Next Request ID
     const autoIdSpan = document.getElementById('auto-request-id');
     const requests = getRequests();
-    const nextNumber = requests.length + 1;
+    let maxId = 0;
+    requests.forEach(r => {
+        if (r.id) {
+            const match = r.id.match(/INT-\d+-(\d+)/);
+            if (match) {
+                const num = parseInt(match[1], 10);
+                if (!isNaN(num) && num > maxId) maxId = num;
+            }
+        }
+    });
+    const nextNumber = Math.max(requests.length + 1, maxId + 1);
     const padNumber = String(nextNumber).padStart(4, '0');
     const newId = `INT-2026-${padNumber}`;
     if (autoIdSpan) autoIdSpan.textContent = newId;
@@ -223,7 +233,23 @@ function initFormSubmission() {
             return;
         }
 
-        const requestId = document.getElementById('auto-request-id').textContent;
+        let requestId = document.getElementById('auto-request-id').textContent;
+        const existingRequests = getRequests();
+        if (existingRequests.some(r => r.id === requestId)) {
+            let maxId = 0;
+            existingRequests.forEach(r => {
+                if (r.id) {
+                    const match = r.id.match(/INT-\d+-(\d+)/);
+                    if (match) {
+                        const num = parseInt(match[1], 10);
+                        if (!isNaN(num) && num > maxId) maxId = num;
+                    }
+                }
+            });
+            const nextNumber = Math.max(existingRequests.length + 1, maxId + 1);
+            requestId = `INT-2026-${String(nextNumber).padStart(4, '0')}`;
+        }
+
         const dateEmission = document.getElementById('doc-date').value;
         const emitter = document.getElementById('doc-emitter').value.trim();
         const department = document.getElementById('doc-department').value;
@@ -281,9 +307,9 @@ function initFormSubmission() {
             ]
         };
 
-        const existingRequests = getRequests();
-        existingRequests.unshift(newRequest);
-        saveRequests(existingRequests);
+        const currentRequests = getRequests();
+        currentRequests.unshift(newRequest);
+        saveRequests(currentRequests);
 
         showAlert(`Demande ${requestId} enregistrée avec succès ! Redirection vers vos demandes en cours...`, 'success');
 
