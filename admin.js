@@ -325,10 +325,11 @@ function renderAdminTable(requests) {
 function renderSuperAdminPanel() {
     const users = getUsers();
     const pendingAdmins = users.filter(u => u.role === 'admin' && u.status === 'pending');
-    const allAdmins = users.filter(u => u.role === 'admin' || u.role === 'superadmin');
+    const approvedDeptAdmins = users.filter(u => u.role === 'admin' && u.status === 'approved');
+    const deptAdminsTable = users.filter(u => u.role === 'admin');
 
     setElemText('super-pending-badge', `${pendingAdmins.length} en attente`);
-    setElemText('super-total-badge', `${allAdmins.length} administrateurs`);
+    setElemText('super-total-badge', `${approvedDeptAdmins.length} administrateurs`);
 
     // 1. Pending Admins Table
     const pendingTbody = document.getElementById('pending-admins-tbody');
@@ -353,11 +354,11 @@ function renderSuperAdminPanel() {
         }
     }
 
-    // 2. All Admins Table
+    // 2. Department Admins Table
     const allTbody = document.getElementById('all-admins-tbody');
     if (allTbody) {
         allTbody.innerHTML = '';
-        allAdmins.forEach(adm => {
+        deptAdminsTable.forEach(adm => {
             const tr = document.createElement('tr');
 
             let badge = `<span class="stat-badge resolved">Approuvé</span>`;
@@ -365,17 +366,12 @@ function renderSuperAdminPanel() {
             if (adm.status === 'rejected') badge = `<span class="stat-badge rejected">Rejeté</span>`;
             if (adm.status === 'disabled') badge = `<span class="stat-badge disabled" style="background: #6B7280; color: #FFF;">Désactivé</span>`;
 
-            let actionsHtml = '';
-            if (adm.role !== 'superadmin') {
-                const toggleText = adm.status === 'disabled' ? 'Activer' : 'Désactiver';
-                const toggleClass = adm.status === 'disabled' ? 'btn-approve' : 'btn-reject';
-                actionsHtml = `
-                    <button type="button" class="${toggleClass}" onclick="toggleAdminStatus('${adm.id}')" style="font-size: 0.75rem; padding: 0.25rem 0.5rem; margin-right: 0.25rem;">${toggleText}</button>
-                    <button type="button" class="btn-reject" onclick="deleteAdminUser('${adm.id}')" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;" title="Supprimer le compte">Supprimer</button>
-                `;
-            } else {
-                actionsHtml = `<span style="font-size: 0.8rem; color: var(--primary-color); font-weight: 600;">Super Admin</span>`;
-            }
+            const toggleText = adm.status === 'disabled' ? 'Activer' : 'Désactiver';
+            const toggleClass = adm.status === 'disabled' ? 'btn-approve' : 'btn-reject';
+            const actionsHtml = `
+                <button type="button" class="${toggleClass}" onclick="toggleAdminStatus('${adm.id}')" style="font-size: 0.75rem; padding: 0.25rem 0.5rem; margin-right: 0.25rem;">${toggleText}</button>
+                <button type="button" class="btn-reject" onclick="deleteAdminUser('${adm.id}')" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;" title="Supprimer le compte">Supprimer</button>
+            `;
 
             tr.innerHTML = `
                 <td><strong>${escapeHtml(adm.name || adm.firstName + ' ' + adm.lastName)}</strong><br><small style="color:var(--text-secondary);">${escapeHtml(adm.email)}</small></td>

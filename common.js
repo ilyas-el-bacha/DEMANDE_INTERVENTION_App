@@ -18,9 +18,9 @@ function initStorage() {
 function getUsers() {
     try {
         const data = localStorage.getItem(USERS_KEY);
-        if (data) {
+        if (data !== null) {
             const parsed = JSON.parse(data);
-            if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+            if (Array.isArray(parsed)) return parsed;
         }
     } catch(e) {}
     return initSeedUsers();
@@ -185,7 +185,7 @@ function getRequests() {
         const stored = localStorage.getItem(STORAGE_KEY);
         if (stored !== null) {
             const parsed = JSON.parse(stored);
-            if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+            if (Array.isArray(parsed)) return parsed;
         }
     } catch(e) {}
     return initSeedRequests();
@@ -418,32 +418,14 @@ function updateNavbar() {
     if (!navLinks) return;
 
     if (user && user.role === 'superadmin') {
-        // Completely hide ALL employee & home navigation links for Super Administrator
+        // Completely hide ALL navigation links for Super Administrator (no redundant panel button)
         const items = navLinks.querySelectorAll('.nav-item');
         items.forEach(item => {
-            if (!item.classList.contains('nav-superadmin-link')) {
-                item.style.display = 'none';
-            }
+            item.style.display = 'none';
         });
 
-        // Ensure single Super Admin Dashboard button is visible
-        let superNavBtn = navLinks.querySelector('.nav-superadmin-link');
-        if (!superNavBtn) {
-            superNavBtn = document.createElement('a');
-            superNavBtn.href = 'admin.html';
-            superNavBtn.className = 'nav-item nav-btn nav-superadmin-link active';
-            superNavBtn.style.background = 'linear-gradient(135deg, #DC2626, #991B1B)';
-            superNavBtn.style.color = '#FFFFFF';
-            superNavBtn.style.borderColor = 'transparent';
-            superNavBtn.innerHTML = `
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                </svg>
-                Panneau Super Admin
-            `;
-            navLinks.insertBefore(superNavBtn, navLinks.firstChild);
-        }
-        superNavBtn.style.display = 'inline-flex';
+        const superNavBtn = navLinks.querySelector('.nav-superadmin-link');
+        if (superNavBtn) superNavBtn.remove();
     } else if (user && user.role === 'admin') {
         // Completely hide ALL employee & home navigation links for Department Administrator
         const items = navLinks.querySelectorAll('.nav-item');
