@@ -163,14 +163,16 @@ function renderTable(requests) {
     if (emptyState) emptyState.style.display = 'none';
 
     requests.forEach(req => {
-        const tr = document.createElement('tr');
+        const trMain = document.createElement('tr');
 
+        const norm = getNormalizedStatus(req.status);
         let statusClass = 'pending';
-        if (req.status === 'En cours' || req.status === 'In Progress') statusClass = 'progress';
-        if (req.status === 'Résolue' || req.status === 'Resolved') statusClass = 'resolved';
-        if (req.status === 'Rejetée' || req.status === 'Rejected') statusClass = 'rejected';
+        if (norm === 'accepted') statusClass = 'total';
+        if (norm === 'progress') statusClass = 'progress';
+        if (norm === 'resolved') statusClass = 'resolved';
+        if (norm === 'rejected') statusClass = 'rejected';
 
-        const isPending = req.status === 'En attente' || req.status === 'Pending';
+        const isPending = norm === 'pending';
         const deleteButtonHtml = isPending ? `
             <button type="button" class="btn btn-danger btn-sm" onclick="deleteMyRequest('${escapeHtml(req.id)}')" title="Supprimer la demande en attente">
                 🗑️ Supprimer
@@ -181,25 +183,128 @@ function renderTable(requests) {
             </button>
         `;
 
-        tr.innerHTML = `
-            <td><span class="req-id">${escapeHtml(req.id)}</span></td>
-            <td>${escapeHtml(req.date || '2026-07-30')}</td>
-            <td><strong>${escapeHtml(req.emitter || 'Émetteur')}</strong></td>
-            <td><span class="dept-badge">${escapeHtml(req.department || 'SI')}</span></td>
-            <td>${escapeHtml(req.category || 'Intervention technique')}</td>
-            <td><span class="status-badge ${statusClass}">● ${escapeHtml(req.status)}</span></td>
-            <td style="text-align: right;">
-                <div style="display: flex; gap: 0.5rem; justify-content: flex-end; align-items: center;">
-                    <a href="request_details.html?id=${encodeURIComponent(req.id)}" class="btn btn-secondary btn-sm" title="Consulter la fiche complète">
-                        Détails
-                    </a>
-                    ${deleteButtonHtml}
+        const timelineHtml = generateTimelineHtml(req);
+
+        trMain.innerHTML = `
+            <td colspan="7" style="padding: 1rem 1.25rem; border-bottom: 1px solid var(--border-color);">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.5rem;">
+                    <div>
+                        <span class="req-id" style="font-size: 1.05rem;">${escapeHtml(req.id)}</span>
+                        <span style="color: var(--text-muted); margin: 0 0.5rem;">•</span>
+                        <span style="font-size: 0.88rem; color: var(--text-secondary);">Émise le ${escapeHtml(req.date || '2026-07-30')} par <strong>${escapeHtml(req.emitter || 'Émetteur')}</strong></span>
+                        <span style="color: var(--text-muted); margin: 0 0.5rem;">•</span>
+                        <span class="dept-badge">${escapeHtml(req.department || 'SI')}</span>
+                        <span style="font-size: 0.88rem; color: var(--text-secondary); margin-left: 0.5rem;">(${escapeHtml(req.category || 'Intervention technique')})</span>
+                    </div>
+
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <a href="request_details.html?id=${encodeURIComponent(req.id)}" class="btn btn-secondary btn-sm" title="Consulter la fiche complète">
+                            📄 Fiche PV
+                        </a>
+                        ${deleteButtonHtml}
+                    </div>
                 </div>
+
+                <!-- Live Progress Timeline -->
+                ${timelineHtml}
             </td>
         `;
 
-        tbody.appendChild(tr);
+        tbody.appendChild(trMain);
     });
+}
+
+function generateTimelineHtml(req) {
+    const tData = typeof getTimelineData === 'function' ? getTimelineData(req) : { currentStep: 2, percent: 25, statusKey: 'pending', badgeClass: 'pending' };
+
+    if (tData.statusKey === 'rejected') {
+        return `
+            <div class="timeline-rejected-box">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
+                <div>
+                    <strong>Demande Rejetée par le Chef de Département</strong>
+                    <p style="margin: 0.15rem 0 0 0; font-size: 0.82rem; color: #CBD5E1;">Cette demande n'a pas été validée par la direction. Consultez les détails de la fiche pour plus d'informations.</p>
+                </div>
+            </div>
+        `;
+    }
+
+    if (tData.statusKey === 'info_requested') {
+        return `
+            <div class="timeline-rejected-box" style="background: rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.3); color: #FDE68A;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <div>
+                    <strong>Informations Complémentaires Demandées par l'Administrateur</strong>
+                    <p style="margin: 0.15rem 0 0 0; font-size: 0.82rem; color: #CBD5E1;">L'administrateur a besoin de précisions sur cette demande avant de lancer l'intervention.</p>
+                </div>
+            </div>
+        `;
+    }
+
+    const cur = tData.currentStep; // 2 (pending), 3 (accepted), 4 (progress), 5 (resolved)
+
+    const step1Class = cur >= 1 ? (cur === 1 ? 'active step-submitted' : 'completed') : '';
+    const step2Class = cur > 2 ? 'completed' : (cur === 2 ? 'active step-pending' : '');
+    const step3Class = cur > 3 ? 'completed' : (cur === 3 ? 'active step-accepted' : '');
+    const step4Class = cur > 4 ? 'completed' : (cur === 4 ? 'active step-progress' : '');
+    const step5Class = cur >= 5 ? 'active step-resolved completed' : '';
+
+    const percent = tData.percent || 25;
+
+    return `
+        <div class="timeline-card-wrapper">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
+                <span style="font-size: 0.8rem; font-weight: 700; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 0.5px;">
+                    Suivi de l'Intervention en Temps Réel
+                </span>
+                <span class="status-badge ${tData.badgeClass}">
+                    ● Statut Actuel : ${escapeHtml(req.status)}
+                </span>
+            </div>
+            <div class="timeline-track-container">
+                <div class="timeline-progress-bg"></div>
+                <div class="timeline-progress-fill" style="width: ${percent}%;"></div>
+
+                <div class="timeline-node ${step1Class}">
+                    <div class="timeline-node-circle">${cur > 1 ? '✓' : '1'}</div>
+                    <div class="timeline-node-title">🟢 Demande Soumise</div>
+                    <div class="timeline-node-sub">${escapeHtml(req.date || '')}</div>
+                </div>
+
+                <div class="timeline-node ${step2Class}">
+                    <div class="timeline-node-circle">${cur > 2 ? '✓' : '2'}</div>
+                    <div class="timeline-node-title">🟡 En Attente</div>
+                    <div class="timeline-node-sub">Validation Admin</div>
+                </div>
+
+                <div class="timeline-node ${step3Class}">
+                    <div class="timeline-node-circle">${cur > 3 ? '✓' : '3'}</div>
+                    <div class="timeline-node-title">🔵 Acceptée</div>
+                    <div class="timeline-node-sub">Approuvée</div>
+                </div>
+
+                <div class="timeline-node ${step4Class}">
+                    <div class="timeline-node-circle">${cur > 4 ? '✓' : '4'}</div>
+                    <div class="timeline-node-title">🟠 En Cours</div>
+                    <div class="timeline-node-sub">Intervention</div>
+                </div>
+
+                <div class="timeline-node ${step5Class}">
+                    <div class="timeline-node-circle">${cur >= 5 ? '✓' : '5'}</div>
+                    <div class="timeline-node-title">✅ Résolue</div>
+                    <div class="timeline-node-sub">Clôturée</div>
+                </div>
+            </div>
+        </div>
+    `;
 }
 
 window.deleteMyRequest = async function(reqId) {

@@ -315,10 +315,59 @@ function renderAdminTable(requests) {
     requests.forEach(req => {
         const tr = document.createElement('tr');
 
+        const norm = getNormalizedStatus(req.status);
         let statusClass = 'pending';
-        if (req.status === 'En cours' || req.status === 'In Progress') statusClass = 'progress';
-        if (req.status === 'Résolue' || req.status === 'Resolved') statusClass = 'resolved';
-        if (req.status === 'Rejetée' || req.status === 'Rejected') statusClass = 'rejected';
+        if (norm === 'accepted') statusClass = 'total';
+        if (norm === 'progress') statusClass = 'progress';
+        if (norm === 'resolved') statusClass = 'resolved';
+        if (norm === 'rejected') statusClass = 'rejected';
+
+        // Workflow Action Buttons depending on status:
+        let workflowBtns = '';
+
+        if (norm === 'pending' || norm === 'info_requested') {
+            workflowBtns = `
+                <button type="button" class="btn btn-sm btn-action-approve" onclick="acceptRequest('${escapeHtml(req.id)}')" title="Accepter la demande" style="background: rgba(16, 185, 129, 0.2); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 0.35rem 0.65rem; font-size: 0.78rem; border-radius: 6px; font-weight: 600; cursor: pointer;">
+                    ✓ Accepter
+                </button>
+                <button type="button" class="btn btn-sm" onclick="startIntervention('${escapeHtml(req.id)}')" title="Démarrer l'intervention immédiatement" style="background: rgba(249, 115, 22, 0.2); color: #FB923C; border: 1px solid rgba(249, 115, 22, 0.4); padding: 0.35rem 0.65rem; font-size: 0.78rem; border-radius: 6px; font-weight: 600; cursor: pointer;">
+                    ▶ Démarrer
+                </button>
+                <button type="button" class="btn btn-sm" onclick="requestInfo('${escapeHtml(req.id)}')" title="Demander des informations complémentaires" style="background: rgba(245, 158, 11, 0.2); color: #FBBF24; border: 1px solid rgba(245, 158, 11, 0.4); padding: 0.35rem 0.65rem; font-size: 0.78rem; border-radius: 6px; font-weight: 600; cursor: pointer;">
+                    💬 Info
+                </button>
+                <button type="button" class="btn btn-sm btn-action-reject" onclick="rejectRequest('${escapeHtml(req.id)}')" title="Rejeter la demande" style="background: rgba(239, 68, 68, 0.2); color: #FCA5A5; border: 1px solid rgba(239, 68, 68, 0.4); padding: 0.35rem 0.65rem; font-size: 0.78rem; border-radius: 6px; font-weight: 600; cursor: pointer;">
+                    ✕ Rejeter
+                </button>
+            `;
+        } else if (norm === 'accepted') {
+            workflowBtns = `
+                <button type="button" class="btn btn-sm" onclick="startIntervention('${escapeHtml(req.id)}')" title="Démarrer l'intervention" style="background: linear-gradient(135deg, #F97316, #EA580C); color: #FFFFFF; border: none; padding: 0.35rem 0.75rem; font-size: 0.78rem; border-radius: 6px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 6px rgba(249, 115, 22, 0.3);">
+                    ▶ Démarrer Intervention
+                </button>
+                <button type="button" class="btn btn-sm btn-action-reject" onclick="rejectRequest('${escapeHtml(req.id)}')" title="Rejeter la demande" style="background: rgba(239, 68, 68, 0.15); color: #FCA5A5; border: 1px solid rgba(239, 68, 68, 0.3); padding: 0.35rem 0.65rem; font-size: 0.78rem; border-radius: 6px; font-weight: 600; cursor: pointer;">
+                    ✕ Rejeter
+                </button>
+            `;
+        } else if (norm === 'progress') {
+            workflowBtns = `
+                <button type="button" class="btn btn-sm" onclick="openAdminEditModal('${escapeHtml(req.id)}')" title="Clôturer l'intervention et signer le PV" style="background: linear-gradient(135deg, #10B981, #059669); color: #FFFFFF; border: none; padding: 0.35rem 0.75rem; font-size: 0.78rem; border-radius: 6px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);">
+                    ✅ Clôturer Intervention
+                </button>
+            `;
+        } else if (norm === 'resolved') {
+            workflowBtns = `
+                <span style="font-size: 0.78rem; color: #34D399; font-weight: 600; background: rgba(16, 185, 129, 0.15); padding: 0.25rem 0.6rem; border-radius: 4px; border: 1px solid rgba(16, 185, 129, 0.3);">
+                    ✓ PV Signé & Clôturé
+                </span>
+            `;
+        } else if (norm === 'rejected') {
+            workflowBtns = `
+                <span style="font-size: 0.78rem; color: #FCA5A5; font-weight: 600; background: rgba(239, 68, 68, 0.15); padding: 0.25rem 0.6rem; border-radius: 4px; border: 1px solid rgba(239, 68, 68, 0.3);">
+                    ✕ Demande Rejetée
+                </span>
+            `;
+        }
 
         tr.innerHTML = `
             <td><span class="req-id">${escapeHtml(req.id)}</span></td>
@@ -329,14 +378,15 @@ function renderAdminTable(requests) {
             <td>${escapeHtml(req.category)}</td>
             <td><span class="status-badge ${statusClass}">● ${escapeHtml(req.status)}</span></td>
             <td style="text-align: right;">
-                <div class="action-btns">
-                    <a href="request_details.html?id=${encodeURIComponent(req.id)}" class="btn btn-secondary btn-icon" title="Voir PV">
-                        👁 PV
+                <div class="action-btns" style="display: flex; gap: 0.4rem; justify-content: flex-end; align-items: center; flex-wrap: wrap;">
+                    ${workflowBtns}
+                    <a href="request_details.html?id=${encodeURIComponent(req.id)}" class="btn btn-secondary btn-icon" title="Voir Fiche / PV" style="padding: 0.35rem 0.6rem; font-size: 0.78rem;">
+                        📄 PV
                     </a>
-                    <button type="button" class="btn btn-primary btn-icon" onclick="openAdminEditModal('${escapeHtml(req.id)}')" title="Traiter la demande">
-                        ✏️ Traiter
+                    <button type="button" class="btn btn-primary btn-icon" onclick="openAdminEditModal('${escapeHtml(req.id)}')" title="Traiter / Éditer PV complet" style="padding: 0.35rem 0.6rem; font-size: 0.78rem;">
+                        ✏️ Éditer
                     </button>
-                    <button type="button" class="btn btn-danger btn-icon" onclick="deleteRequest('${escapeHtml(req.id)}')" title="Supprimer">
+                    <button type="button" class="btn btn-danger btn-icon" onclick="deleteRequest('${escapeHtml(req.id)}')" title="Supprimer" style="padding: 0.35rem 0.6rem; font-size: 0.78rem;">
                         🗑️
                     </button>
                 </div>
@@ -923,6 +973,117 @@ window.deleteRequest = async function(id) {
     allRequests = allRequests.filter(r => r.id !== id);
     saveRequests(allRequests);
     filterAndRenderAdminTable();
+};
+
+window.acceptRequest = async function(reqId) {
+    const req = allRequests.find(r => r.id === reqId);
+    if (!req) return;
+
+    req.status = 'Acceptée';
+    const now = new Date();
+    const formattedTime = `${now.toISOString().split('T')[0]} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+    
+    if (!req.history) req.history = [];
+    req.history.push({
+        date: formattedTime,
+        label: `Demande N° ${reqId} ACCEPTÉE par l'Administrateur du département ${req.department || currentAdminDepartment}`
+    });
+
+    saveRequests(allRequests);
+    filterAndRenderAdminTable();
+
+    await window.showCustomAlert({
+        title: "Demande Acceptée",
+        message: `La demande N° ${reqId} a été acceptée avec succès.\n\nLe statut a été mis à jour à "Acceptée" en temps réel.`,
+        buttonText: "Continuer",
+        type: "success"
+    });
+};
+
+window.startIntervention = async function(reqId) {
+    const req = allRequests.find(r => r.id === reqId);
+    if (!req) return;
+
+    const today = new Date().toISOString().split('T')[0];
+    req.status = 'En cours';
+    if (!req.intervention) req.intervention = {};
+    req.intervention.date = req.intervention.date || today;
+    req.intervention.intervenant = req.intervention.intervenant || (currentUser ? currentUser.name : `Technicien ${req.department}`);
+
+    const now = new Date();
+    const formattedTime = `${today} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+    if (!req.history) req.history = [];
+    req.history.push({
+        date: formattedTime,
+        label: `Intervention technique DÉMARRÉE par ${req.intervention.intervenant} (${req.department || currentAdminDepartment})`
+    });
+
+    saveRequests(allRequests);
+    filterAndRenderAdminTable();
+
+    await window.showCustomAlert({
+        title: "Intervention Démarrée",
+        message: `L'intervention sur la demande N° ${reqId} est désormais "En cours".\n\nL'émetteur verra immédiatement le démarrage de l'intervention dans son suivi en temps réel.`,
+        buttonText: "D'accord",
+        type: "success"
+    });
+};
+
+window.rejectRequest = async function(reqId) {
+    const req = allRequests.find(r => r.id === reqId);
+    if (!req) return;
+
+    const reason = prompt(`Motif du rejet pour la demande N° ${reqId} (optionnel) :`, "Demande non conforme ou non éligible");
+    if (reason === null) return; // User cancelled prompt
+
+    req.status = 'Rejetée';
+    const now = new Date();
+    const formattedTime = `${now.toISOString().split('T')[0]} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+    if (!req.history) req.history = [];
+    req.history.push({
+        date: formattedTime,
+        label: `Demande REJETÉE par l'Administrateur ${req.department}. Motif : ${reason}`
+    });
+
+    saveRequests(allRequests);
+    filterAndRenderAdminTable();
+
+    await window.showCustomAlert({
+        title: "Demande Rejetée",
+        message: `La demande N° ${reqId} a été marquée comme "Rejetée".`,
+        buttonText: "Compris",
+        type: "warning"
+    });
+};
+
+window.requestInfo = async function(reqId) {
+    const req = allRequests.find(r => r.id === reqId);
+    if (!req) return;
+
+    const infoText = prompt(`Précisez les informations complémentaires requises pour la demande N° ${reqId} :`, "Veuillez apporter des précisions sur la localisation exacte du problème.");
+    if (!infoText) return;
+
+    req.status = 'Infos requises';
+    const now = new Date();
+    const formattedTime = `${now.toISOString().split('T')[0]} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+    if (!req.history) req.history = [];
+    req.history.push({
+        date: formattedTime,
+        label: `Informations complémentaires demandées : ${infoText}`
+    });
+
+    saveRequests(allRequests);
+    filterAndRenderAdminTable();
+
+    await window.showCustomAlert({
+        title: "Demande d'informations transmise",
+        message: `Statut mis à jour à "Infos requises" pour la demande N° ${reqId}.`,
+        buttonText: "D'accord",
+        type: "info"
+    });
 };
 
 function setElemText(id, text) {

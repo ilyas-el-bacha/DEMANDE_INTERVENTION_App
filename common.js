@@ -201,13 +201,16 @@ function getNormalizedStatus(rawStatus) {
         return 'pending';
     }
 
+    if (s === 'acceptée' || s === 'acceptee' || s === 'accepted' || s === 'approuvée' || s === 'approuvee' || s === 'validée' || s === 'validee') {
+        return 'accepted';
+    }
+
     if (s === 'en cours' || s === 'in progress' || s === 'encours' || s === 'en-cours' || s === 'traitement') {
         return 'progress';
     }
 
     if (
         s === 'résolue' || s === 'resolue' || s === 'resolved' ||
-        s === 'approuvée' || s === 'approuvee' || s === 'approved' ||
         s === 'terminée' || s === 'terminee' || s === 'completed' ||
         s === 'traitée' || s === 'traitee' || s === 'signée' || s === 'signee' ||
         s === 'résolu' || s === 'resolu' || s === 'clôturée' || s === 'cloturee'
@@ -219,7 +222,84 @@ function getNormalizedStatus(rawStatus) {
         return 'rejected';
     }
 
+    if (s === 'infos requises' || s === 'info_requested' || s === 'information demandée' || s === 'infos demandées') {
+        return 'info_requested';
+    }
+
     return 'pending';
+}
+
+function getTimelineData(req) {
+    if (!req) return { currentStep: 1, percent: 0, statusKey: 'pending' };
+    const norm = getNormalizedStatus(req.status);
+
+    if (norm === 'rejected') {
+        return {
+            currentStep: -1,
+            percent: 25,
+            statusKey: 'rejected',
+            statusLabel: 'Rejetée',
+            badgeClass: 'rejected'
+        };
+    }
+
+    if (norm === 'info_requested') {
+        return {
+            currentStep: 2,
+            percent: 35,
+            statusKey: 'info_requested',
+            statusLabel: 'Infos Requises',
+            badgeClass: 'pending'
+        };
+    }
+
+    if (norm === 'pending') {
+        return {
+            currentStep: 2,
+            percent: 25,
+            statusKey: 'pending',
+            statusLabel: 'En attente',
+            badgeClass: 'pending'
+        };
+    }
+
+    if (norm === 'accepted') {
+        return {
+            currentStep: 3,
+            percent: 50,
+            statusKey: 'accepted',
+            statusLabel: 'Acceptée',
+            badgeClass: 'total'
+        };
+    }
+
+    if (norm === 'progress') {
+        return {
+            currentStep: 4,
+            percent: 75,
+            statusKey: 'progress',
+            statusLabel: 'En cours',
+            badgeClass: 'progress'
+        };
+    }
+
+    if (norm === 'resolved') {
+        return {
+            currentStep: 5,
+            percent: 100,
+            statusKey: 'resolved',
+            statusLabel: 'Résolue',
+            badgeClass: 'resolved'
+        };
+    }
+
+    return {
+        currentStep: 2,
+        percent: 25,
+        statusKey: 'pending',
+        statusLabel: 'En attente',
+        badgeClass: 'pending'
+    };
 }
 
 function getRealtimeStats(department = 'ALL') {
@@ -234,7 +314,7 @@ function getRealtimeStats(department = 'ALL') {
 
     requests.forEach(r => {
         const norm = getNormalizedStatus(r.status);
-        if (norm === 'pending') pending++;
+        if (norm === 'pending' || norm === 'accepted' || norm === 'info_requested') pending++;
         else if (norm === 'progress') progress++;
         else if (norm === 'resolved') resolved++;
     });
