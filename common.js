@@ -36,14 +36,32 @@ function initStorage() {
 }
 
 function getUsers() {
+    let users = [];
     try {
         const data = localStorage.getItem(USERS_KEY);
         if (data !== null) {
             const parsed = JSON.parse(data);
-            if (Array.isArray(parsed)) return parsed;
+            if (Array.isArray(parsed)) users = parsed;
         }
     } catch(e) {}
-    return initSeedUsers();
+
+    const hasSuper = users.some(u => u.role === 'superadmin' || u.email.toLowerCase() === 'superadmin@agenceurbaine.ma');
+    if (!hasSuper) {
+        users.unshift({
+            id: 'usr-super',
+            firstName: 'Super',
+            lastName: 'Administrateur',
+            name: 'Super Administrateur',
+            email: 'superadmin@agenceurbaine.ma',
+            password: 'admin',
+            role: 'superadmin',
+            department: 'ALL',
+            status: 'approved',
+            createdAt: '2026-01-01'
+        });
+        saveUsers(users);
+    }
+    return users;
 }
 
 function saveUsers(users) {

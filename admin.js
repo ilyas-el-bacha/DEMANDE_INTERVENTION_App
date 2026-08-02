@@ -468,6 +468,9 @@ function renderEmployeeManagementPanel() {
         card.style.display = 'none';
         return;
     }
+
+    const users = getUsers();
+
     setElemText('emp-dept-title', currentAdminDepartment === 'ALL' ? 'Toutes Directions' : currentAdminDepartment);
 
     let deptEmployees = [];
