@@ -7,6 +7,69 @@ const STORAGE_KEY = 'au_intervention_requests';
 const USERS_KEY = 'au_users';
 const CURRENT_USER_KEY = 'au_current_user';
 
+const DEFAULT_SYSTEM_ACCOUNTS = [
+    {
+        id: 'usr-super',
+        firstName: 'Super',
+        lastName: 'Administrateur',
+        name: 'Super Administrateur',
+        email: 'superadmin@agenceurbaine.ma',
+        password: 'admin',
+        role: 'superadmin',
+        department: 'ALL',
+        status: 'approved',
+        createdAt: '2026-01-01'
+    },
+    {
+        id: 'usr-daf',
+        firstName: 'Admin',
+        lastName: 'DAF',
+        name: 'Administrateur DAF',
+        email: 'daf.admin@agenceurbaine.ma',
+        password: 'admin',
+        role: 'admin',
+        department: 'DAF',
+        status: 'approved',
+        createdAt: '2026-01-01'
+    },
+    {
+        id: 'usr-dgur',
+        firstName: 'Admin',
+        lastName: 'DGUR',
+        name: 'Administrateur DGUR',
+        email: 'dgur.admin@agenceurbaine.ma',
+        password: 'admin',
+        role: 'admin',
+        department: 'DGUR',
+        status: 'approved',
+        createdAt: '2026-01-01'
+    },
+    {
+        id: 'usr-det',
+        firstName: 'Admin',
+        lastName: 'DET',
+        name: 'Administrateur DET',
+        email: 'det.admin@agenceurbaine.ma',
+        password: 'admin',
+        role: 'admin',
+        department: 'DET',
+        status: 'approved',
+        createdAt: '2026-01-01'
+    },
+    {
+        id: 'usr-si',
+        firstName: 'Admin',
+        lastName: 'SI',
+        name: 'Administrateur SI',
+        email: 'si.admin@agenceurbaine.ma',
+        password: 'admin',
+        role: 'admin',
+        department: 'SI',
+        status: 'approved',
+        createdAt: '2026-01-01'
+    }
+];
+
 /**
  * Initialize Baseline Seed Data if empty
  */
@@ -15,8 +78,9 @@ function initStorage() {
         const storedUsers = localStorage.getItem(USERS_KEY);
         if (storedUsers) {
             const parsed = JSON.parse(storedUsers);
-            if (Array.isArray(parsed) && parsed.some(u => u.id === 'usr-emp1' || u.id === 'usr-daf' || u.id === 'usr-pending-demo')) {
-                initSeedUsers();
+            if (Array.isArray(parsed) && parsed.some(u => u.id === 'usr-emp1' || u.id === 'usr-pending-demo')) {
+                const cleaned = parsed.filter(u => !['usr-emp1', 'usr-emp2', 'usr-emp3', 'usr-emp4', 'usr-pending-demo', 'usr-emp-pending-demo'].includes(u.id));
+                saveUsers(cleaned);
             }
         }
     } catch(e) {}
@@ -45,20 +109,16 @@ function getUsers() {
         }
     } catch(e) {}
 
-    const hasSuper = users.some(u => u.role === 'superadmin' || u.email.toLowerCase() === 'superadmin@agenceurbaine.ma');
-    if (!hasSuper) {
-        users.unshift({
-            id: 'usr-super',
-            firstName: 'Super',
-            lastName: 'Administrateur',
-            name: 'Super Administrateur',
-            email: 'superadmin@agenceurbaine.ma',
-            password: 'admin',
-            role: 'superadmin',
-            department: 'ALL',
-            status: 'approved',
-            createdAt: '2026-01-01'
-        });
+    let updated = false;
+    DEFAULT_SYSTEM_ACCOUNTS.forEach(defaultAcc => {
+        const exists = users.some(u => u.email.toLowerCase() === defaultAcc.email.toLowerCase());
+        if (!exists) {
+            users.push(defaultAcc);
+            updated = true;
+        }
+    });
+
+    if (updated || localStorage.getItem(USERS_KEY) === null) {
         saveUsers(users);
     }
     return users;
@@ -74,23 +134,8 @@ function saveUsers(users) {
 }
 
 function initSeedUsers() {
-    const seedUsers = [
-        {
-            id: 'usr-super',
-            firstName: 'Super',
-            lastName: 'Administrateur',
-            name: 'Super Administrateur',
-            email: 'superadmin@agenceurbaine.ma',
-            password: 'admin',
-            role: 'superadmin',
-            department: 'ALL',
-            status: 'approved',
-            createdAt: '2026-01-01'
-        }
-    ];
-
-    saveUsers(seedUsers);
-    return seedUsers;
+    saveUsers([...DEFAULT_SYSTEM_ACCOUNTS]);
+    return [...DEFAULT_SYSTEM_ACCOUNTS];
 }
 
 function getRequests() {
