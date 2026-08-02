@@ -125,8 +125,17 @@ function initAdminLoginForm() {
             return;
         }
 
+        if (user.role === 'superadmin') {
+            setCurrentUser(user);
+            showLoginAlert("Connexion Super Administrateur réussie. Accès au Tableau de Bord Général...", 'success');
+            setTimeout(() => {
+                window.location.href = 'admin.html';
+            }, 800);
+            return;
+        }
+
         if (user.role !== 'admin') {
-            showLoginAlert("Ce compte n'est pas un compte administrateur de département.", 'warning');
+            showLoginAlert("Ce compte n'est pas un compte administrateur.", 'warning');
             return;
         }
 
