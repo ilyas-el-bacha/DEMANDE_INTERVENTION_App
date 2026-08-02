@@ -14,6 +14,10 @@ window.addEventListener('storage', () => {
     loadAndAnimateStatistics();
 });
 
+window.addEventListener('au_data_changed', () => {
+    loadAndAnimateStatistics();
+});
+
 /**
  * Mobile Navigation Toggle
  */

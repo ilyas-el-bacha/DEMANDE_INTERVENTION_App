@@ -255,6 +255,7 @@ function initFormSubmission() {
             date: dateEmission,
             emitter: emitter,
             emitterEmail: emitterEmail,
+            emitterId: currentUser.id,
             department: department,
             category: natureList.join(', '),
             natureList: natureList,

@@ -111,7 +111,7 @@ function getUsers() {
 
     let updated = false;
     DEFAULT_SYSTEM_ACCOUNTS.forEach(defaultAcc => {
-        const exists = users.some(u => u.email.toLowerCase() === defaultAcc.email.toLowerCase());
+        const exists = users.some(u => (u.email || '').toLowerCase().trim() === defaultAcc.email.toLowerCase().trim());
         if (!exists) {
             users.push(defaultAcc);
             updated = true;
@@ -128,6 +128,7 @@ function saveUsers(users) {
     try {
         localStorage.setItem(USERS_KEY, JSON.stringify(users));
         window.dispatchEvent(new Event('storage'));
+        window.dispatchEvent(new CustomEvent('au_data_changed', { detail: { type: 'users' } }));
     } catch(e) {
         console.error('Erreur de sauvegarde des utilisateurs:', e);
     }
@@ -153,6 +154,7 @@ function saveRequests(requests) {
     try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(requests));
         window.dispatchEvent(new Event('storage'));
+        window.dispatchEvent(new CustomEvent('au_data_changed', { detail: { type: 'requests' } }));
     } catch(e) {
         console.error('Erreur de sauvegarde des demandes:', e);
     }
@@ -168,7 +170,24 @@ function initSeedRequests() {
 function getCurrentUser() {
     try {
         const stored = localStorage.getItem(CURRENT_USER_KEY);
-        if (stored) return JSON.parse(stored);
+        if (stored) {
+            const user = JSON.parse(stored);
+            if (user && user.id) {
+                const users = getUsers();
+                const freshUser = users.find(u => u.id === user.id || (u.email && user.email && u.email.toLowerCase().trim() === user.email.toLowerCase().trim()));
+                if (freshUser) {
+                    if (freshUser.status === 'disabled' || freshUser.status === 'rejected') {
+                        localStorage.removeItem(CURRENT_USER_KEY);
+                        return null;
+                    }
+                    if (JSON.stringify(freshUser) !== JSON.stringify(user)) {
+                        localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(freshUser));
+                    }
+                    return freshUser;
+                }
+            }
+            return user;
+        }
     } catch(e) {}
     return null;
 }
@@ -179,6 +198,7 @@ function setCurrentUser(user) {
     } else {
         localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
     }
+    window.dispatchEvent(new CustomEvent('au_data_changed', { detail: { type: 'session' } }));
 }
 
 function logoutUser() {
@@ -221,8 +241,11 @@ function getNormalizedStatus(rawStatus) {
     return 'pending';
 }
 
-function getRealtimeStats() {
-    const requests = getRequests();
+function getRealtimeStats(department = 'ALL') {
+    let requests = getRequests();
+    if (department && department !== 'ALL') {
+        requests = requests.filter(r => r.department === department);
+    }
     const total = requests.length;
     let pending = 0;
     let progress = 0;

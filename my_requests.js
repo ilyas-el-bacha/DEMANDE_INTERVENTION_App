@@ -14,6 +14,14 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 window.addEventListener('storage', () => {
+    currentUser = getCurrentUser();
+    renderUserContextBanner();
+    loadRequests();
+});
+
+window.addEventListener('au_data_changed', () => {
+    currentUser = getCurrentUser();
+    renderUserContextBanner();
     loadRequests();
 });
 
@@ -108,6 +116,8 @@ function loadRequests() {
         const userLastName = (currentUser.lastName || '').toLowerCase().trim();
 
         userRequests = allRequests.filter(req => {
+            if (currentUser.id && req.emitterId && req.emitterId === currentUser.id) return true;
+
             const reqEmail = (req.emitterEmail || '').toLowerCase().trim();
             const reqEmitter = (req.emitter || '').toLowerCase().trim();
 

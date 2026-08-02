@@ -53,7 +53,7 @@ function initEmployeeSignup() {
         }
 
         const users = getUsers();
-        const existing = users.find(u => u.email.toLowerCase() === email);
+        const existing = users.find(u => (u.email || '').toLowerCase().trim() === email);
         if (existing) {
             showAlert("Cette adresse email est déjà utilisée par un autre compte.", 'danger');
             return;
@@ -110,7 +110,7 @@ function initAdminSignup() {
         }
 
         const users = getUsers();
-        const existing = users.find(u => u.email.toLowerCase() === email);
+        const existing = users.find(u => (u.email || '').toLowerCase().trim() === email);
         if (existing) {
             showAlert("Cette adresse email est déjà enregistrée dans le système.", 'danger');
             return;

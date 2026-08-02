@@ -24,6 +24,17 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 window.addEventListener('storage', () => {
+    currentUser = getCurrentUser();
+    allRequests = getRequests();
+    filterAndRenderAdminTable();
+    renderEmployeeManagementPanel();
+    if (currentUser && currentUser.role === 'superadmin') {
+        renderSuperAdminPanel();
+    }
+});
+
+window.addEventListener('au_data_changed', () => {
+    currentUser = getCurrentUser();
     allRequests = getRequests();
     filterAndRenderAdminTable();
     renderEmployeeManagementPanel();
@@ -278,7 +289,8 @@ function filterAndRenderAdminTable() {
 }
 
 function updateAdminStats() {
-    const stats = typeof getRealtimeStats === 'function' ? getRealtimeStats() : { total: 0, pending: 0, progress: 0, resolved: 0 };
+    const deptForStats = (currentUser && currentUser.role === 'superadmin') ? 'ALL' : (currentAdminDepartment || 'ALL');
+    const stats = typeof getRealtimeStats === 'function' ? getRealtimeStats(deptForStats) : { total: 0, pending: 0, progress: 0, resolved: 0 };
 
     setElemText('admin-stat-total', stats.total);
     setElemText('admin-stat-pending', stats.pending);

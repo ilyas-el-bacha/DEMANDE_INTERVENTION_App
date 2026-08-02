@@ -65,7 +65,7 @@ function initEmployeeLoginForm() {
         const password = document.getElementById('emp-password').value;
 
         const users = getUsers();
-        const user = users.find(u => u.email.toLowerCase() === email);
+        const user = users.find(u => (u.email || '').toLowerCase().trim() === email);
 
         if (!user || user.password !== password) {
             showLoginAlert("Email ou mot de passe incorrect pour le compte employé.", 'danger');
@@ -118,7 +118,7 @@ function initAdminLoginForm() {
         const password = document.getElementById('admin-pass').value;
 
         const users = getUsers();
-        const user = users.find(u => u.email.toLowerCase() === email);
+        const user = users.find(u => (u.email || '').toLowerCase().trim() === email);
 
         if (!user || user.password !== password) {
             showLoginAlert("Identifiants administrateur incorrects.", 'danger');
