@@ -312,7 +312,7 @@ function getTimelineData(req) {
 function getRealtimeStats(department = 'ALL') {
     let requests = getRequests();
     if (department && department !== 'ALL') {
-        requests = requests.filter(r => r.department === department);
+        requests = requests.filter(r => r && r.department && r.department.trim().toUpperCase() === department.trim().toUpperCase());
     }
     const total = requests.length;
     let pending = 0;

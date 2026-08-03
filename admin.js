@@ -266,7 +266,7 @@ function filterAndRenderAdminTable() {
     if (currentAdminDepartment === 'ALL') {
         deptRequests = [...allRequests];
     } else {
-        deptRequests = allRequests.filter(r => r.department === currentAdminDepartment);
+        deptRequests = allRequests.filter(r => r && r.department && r.department.trim().toUpperCase() === currentAdminDepartment.trim().toUpperCase());
     }
 
     // 2. Update Stats
