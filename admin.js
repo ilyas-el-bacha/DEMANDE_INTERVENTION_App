@@ -208,7 +208,7 @@ function updateAdminUIHeader() {
         }
     }
 
-    document.querySelectorAll('.dept-tab').forEach(tab => {
+    document.querySelectorAll('#dept-tabs-wrapper [data-dept]').forEach(tab => {
         if (tab.getAttribute('data-dept') === currentAdminDepartment) {
             tab.classList.add('active');
         } else {
@@ -218,17 +218,20 @@ function updateAdminUIHeader() {
 }
 
 function initDeptTabs() {
-    document.querySelectorAll('.dept-tab').forEach(tab => {
+    document.querySelectorAll('#dept-tabs-wrapper [data-dept]').forEach(tab => {
         tab.addEventListener('click', () => {
             // If department admin, prevent changing to unassigned dept
             if (currentUser && currentUser.role === 'admin') {
                 if (tab.getAttribute('data-dept') !== currentUser.department) return;
             }
 
-            currentAdminDepartment = tab.getAttribute('data-dept');
-            updateAdminUIHeader();
-            filterAndRenderAdminTable();
-            renderEmployeeManagementPanel();
+            const dept = tab.getAttribute('data-dept');
+            if (dept) {
+                currentAdminDepartment = dept;
+                updateAdminUIHeader();
+                filterAndRenderAdminTable();
+                renderEmployeeManagementPanel();
+            }
         });
     });
 }
