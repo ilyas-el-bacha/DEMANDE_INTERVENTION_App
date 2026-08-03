@@ -540,7 +540,7 @@ function renderSuperAdminPanel() {
         setElemText('super-emp-table-badge', badgeText);
 
         if (filteredEmployees.length === 0) {
-            empTbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--text-muted); padding: 1.25rem;">Aucun employé trouvé pour le département sélectionné.</td></tr>`;
+            empTbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-muted); padding: 1.25rem;">Aucun employé trouvé pour le département sélectionné.</td></tr>`;
         } else {
             filteredEmployees.forEach(emp => {
                 const tr = document.createElement('tr');
@@ -596,7 +596,9 @@ function renderSuperAdminPanel() {
                 tr.innerHTML = `
                     <td>
                         <strong style="color: var(--text-primary); font-size: 0.95rem;">${escapeHtml(fullName)}</strong>
-                        <small style="color: var(--text-muted); font-size: 0.8rem; display: block; margin-top: 2px;">${escapeHtml(emp.email)}</small>
+                    </td>
+                    <td>
+                        <span style="color: var(--text-secondary); font-size: 0.88rem;">${escapeHtml(emp.email)}</span>
                     </td>
                     <td><span class="dept-badge">${escapeHtml(emp.department)}</span></td>
                     <td>${badge}</td>
