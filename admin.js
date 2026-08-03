@@ -418,9 +418,6 @@ function renderSuperAdminPanel() {
     const rawEmployees = users.filter(u => u && u.role !== 'admin' && u.role !== 'superadmin');
     const totalEmpCount = rawEmployees.length;
 
-    console.log('[SuperAdmin Debug] All users from getUsers():', users);
-    console.log('[SuperAdmin Debug] Raw employees list:', rawEmployees);
-
     // Independent Stat Counters & Badges
     setElemText('super-stat-admins-count', approvedDeptAdmins.length);
     setElemText('super-admins-total-badge', `${approvedDeptAdmins.length} administrateurs actifs`);
@@ -563,6 +560,17 @@ function renderSuperAdminPanel() {
                         <button type="button" class="btn-action btn-action-reject" onclick="rejectEmployeeUser('${emp.id}')" title="Rejeter l'inscription">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                             <span>Rejeter</span>
+                        </button>
+                        <button type="button" class="btn-action btn-action-delete" onclick="deleteEmployeeUser('${emp.id}')" title="Supprimer le compte">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                            <span>Supprimer</span>
+                        </button>
+                    `;
+                } else if (emp.status === 'rejected') {
+                    actionBtns = `
+                        <button type="button" class="btn-action btn-action-approve" onclick="approveEmployeeUser('${emp.id}')" title="Approuver le compte employé">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg>
+                            <span>Approuver</span>
                         </button>
                         <button type="button" class="btn-action btn-action-delete" onclick="deleteEmployeeUser('${emp.id}')" title="Supprimer le compte">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
@@ -807,7 +815,7 @@ window.approveEmployeeUser = async function(userId) {
     target.status = 'approved';
     saveUsers(users);
     renderEmployeeManagementPanel();
-    if (currentUser && currentUser.role === 'superadmin') renderSuperAdminPanel();
+    renderSuperAdminPanel();
 
     await window.showCustomAlert({
         title: "Compte Employé Approuvé",
@@ -835,7 +843,7 @@ window.rejectEmployeeUser = async function(userId) {
     target.status = 'rejected';
     saveUsers(users);
     renderEmployeeManagementPanel();
-    if (currentUser && currentUser.role === 'superadmin') renderSuperAdminPanel();
+    renderSuperAdminPanel();
 };
 
 window.toggleEmployeeStatus = function(userId) {
@@ -846,7 +854,7 @@ window.toggleEmployeeStatus = function(userId) {
     target.status = target.status === 'disabled' ? 'approved' : 'disabled';
     saveUsers(users);
     renderEmployeeManagementPanel();
-    if (currentUser && currentUser.role === 'superadmin') renderSuperAdminPanel();
+    renderSuperAdminPanel();
 };
 
 window.deleteEmployeeUser = async function(userId) {
@@ -867,7 +875,7 @@ window.deleteEmployeeUser = async function(userId) {
     const updated = users.filter(u => u.id !== userId);
     saveUsers(updated);
     renderEmployeeManagementPanel();
-    if (currentUser && currentUser.role === 'superadmin') renderSuperAdminPanel();
+    renderSuperAdminPanel();
 };
 
 function initFilterHandlers() {
