@@ -119,27 +119,24 @@ function initAdminSession() {
         const tableCard = document.querySelector('.table-container-card');
         if (tableCard) tableCard.style.display = 'block';
     } else if (currentUser.role === 'superadmin') {
-        // SUPER ADMIN DASHBOARD - PARENT CONTROLLER OVER ALL DEPARTMENTS, EMPLOYEES & REQUESTS
-        if (!currentAdminDepartment) currentAdminDepartment = 'ALL';
+        // SUPER ADMIN DASHBOARD - PARENT CONTROLLER (No intervention requests handling table)
+        currentAdminDepartment = 'ALL';
         if (superPanel) superPanel.style.display = 'block';
 
-        // Show department switcher so Super Admin can switch between ALL, DAF, DGUR, DET, SI
+        // Hide department switcher for requests
         const deptSwitcherBox = document.getElementById('dept-switcher-container');
-        if (deptSwitcherBox) deptSwitcherBox.style.display = 'block';
-
-        const btnTabAll = document.getElementById('btn-tab-all');
-        if (btnTabAll) btnTabAll.style.display = 'inline-block';
+        if (deptSwitcherBox) deptSwitcherBox.style.display = 'none';
 
         // Keep employee management inside superadmin panel to avoid duplicate cards
         const empCard = document.getElementById('emp-management-card');
         if (empCard) empCard.style.display = 'none';
 
-        // Show filters and requests table for complete parent control
+        // REMOVE / HIDE INTERVENTION REQUESTS TABLE & FILTERS FOR SUPER ADMIN (Super Admin does not process intervention requests)
         const filtersCard = document.querySelector('.filters-card');
-        if (filtersCard) filtersCard.style.display = 'flex';
+        if (filtersCard) filtersCard.style.display = 'none';
 
         const tableCard = document.querySelector('.table-container-card');
-        if (tableCard) tableCard.style.display = 'block';
+        if (tableCard) tableCard.style.display = 'none';
 
         const topBadge = document.getElementById('admin-top-badge');
         if (topBadge) {
@@ -280,6 +277,14 @@ function filterAndRenderAdminTable() {
 
     // 2. Update Stats
     updateAdminStats();
+
+    if (currentUser && currentUser.role === 'superadmin') {
+        const filtersCard = document.querySelector('.filters-card');
+        if (filtersCard) filtersCard.style.display = 'none';
+        const tableCard = document.querySelector('.table-container-card');
+        if (tableCard) tableCard.style.display = 'none';
+        return;
+    }
 
     // 3. User Criteria
     currentFilteredRequests = deptRequests.filter(req => {

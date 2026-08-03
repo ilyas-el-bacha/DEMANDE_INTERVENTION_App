@@ -67,6 +67,18 @@ const DEFAULT_SYSTEM_ACCOUNTS = [
         department: 'SI',
         status: 'approved',
         createdAt: '2026-01-01'
+    },
+    {
+        id: 'usr-emp-si-ilyas',
+        firstName: 'Ilyas',
+        lastName: 'El Bacha',
+        name: 'Ilyas El Bacha',
+        email: 'ilyas.elbacha@agenceurbaine.ma',
+        password: 'user123',
+        role: 'employee',
+        department: 'SI',
+        status: 'approved',
+        createdAt: '2026-01-15'
     }
 ];
 
