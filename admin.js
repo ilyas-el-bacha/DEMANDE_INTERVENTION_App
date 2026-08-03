@@ -18,9 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initModalEvents();
     loadAdminRequests();
     renderEmployeeManagementPanel();
-    if (currentUser && currentUser.role === 'superadmin') {
-        renderSuperAdminPanel();
-    }
+    renderSuperAdminPanel();
 });
 
 let lastUsersJsonState = '';
@@ -31,9 +29,7 @@ function refreshAdminDataAndUI() {
     allRequests = getRequests();
     filterAndRenderAdminTable();
     renderEmployeeManagementPanel();
-    if (currentUser && currentUser.role === 'superadmin') {
-        renderSuperAdminPanel();
-    }
+    renderSuperAdminPanel();
 }
 
 window.addEventListener('storage', () => {
@@ -414,12 +410,12 @@ function renderSuperAdminPanel() {
     const users = getUsers();
 
     // 1. Department Administrators: ONLY role === 'admin'
-    const deptAdminsTable = users.filter(u => u.role === 'admin');
+    const deptAdminsTable = users.filter(u => u && u.role === 'admin');
     const pendingAdmins = deptAdminsTable.filter(u => u.status === 'pending');
     const approvedDeptAdmins = deptAdminsTable.filter(u => u.status === 'approved' || !u.status);
 
-    // 2. Employees: ONLY role === 'employee'
-    const rawEmployees = users.filter(u => u.role === 'employee');
+    // 2. Employees: All user accounts with employee role (or non-admin/superadmin)
+    const rawEmployees = users.filter(u => u && u.role !== 'admin' && u.role !== 'superadmin');
     const totalEmpCount = rawEmployees.length;
 
     // Independent Stat Counters & Badges
@@ -629,10 +625,11 @@ function renderEmployeeManagementPanel() {
     setElemText('emp-dept-title', currentAdminDepartment === 'ALL' ? 'Toutes Directions' : currentAdminDepartment);
 
     let deptEmployees = [];
+    const allEmps = users.filter(u => u && u.role !== 'admin' && u.role !== 'superadmin');
     if (currentAdminDepartment === 'ALL') {
-        deptEmployees = users.filter(u => u.role === 'employee');
+        deptEmployees = allEmps;
     } else {
-        deptEmployees = users.filter(u => u.role === 'employee' && u.department === currentAdminDepartment);
+        deptEmployees = allEmps.filter(u => u.department && u.department.toUpperCase() === currentAdminDepartment.toUpperCase());
     }
 
     const pendingEmp = deptEmployees.filter(u => u.status === 'pending');

@@ -67,6 +67,58 @@ const DEFAULT_SYSTEM_ACCOUNTS = [
         department: 'SI',
         status: 'approved',
         createdAt: '2026-01-01'
+    },
+    {
+        id: 'usr-emp-daf',
+        firstName: 'Youssef',
+        lastName: 'Benali',
+        name: 'Youssef Benali',
+        employeeId: 'EMP-1001',
+        email: 'youssef.benali@agenceurbaine.ma',
+        password: 'user',
+        role: 'employee',
+        department: 'DAF',
+        status: 'approved',
+        createdAt: '2026-01-15'
+    },
+    {
+        id: 'usr-emp-dgur',
+        firstName: 'Karim',
+        lastName: 'Mansouri',
+        name: 'Karim Mansouri',
+        employeeId: 'EMP-1002',
+        email: 'karim.mansouri@agenceurbaine.ma',
+        password: 'user',
+        role: 'employee',
+        department: 'DGUR',
+        status: 'approved',
+        createdAt: '2026-01-20'
+    },
+    {
+        id: 'usr-emp-det',
+        firstName: 'Amina',
+        lastName: 'Chraibi',
+        name: 'Amina Chraibi',
+        employeeId: 'EMP-1003',
+        email: 'amina.chraibi@agenceurbaine.ma',
+        password: 'user',
+        role: 'employee',
+        department: 'DET',
+        status: 'approved',
+        createdAt: '2026-02-01'
+    },
+    {
+        id: 'usr-emp-si',
+        firstName: 'Omar',
+        lastName: 'Tazi',
+        name: 'Omar Tazi',
+        employeeId: 'EMP-1004',
+        email: 'omar.tazi@agenceurbaine.ma',
+        password: 'user',
+        role: 'employee',
+        department: 'SI',
+        status: 'approved',
+        createdAt: '2026-02-10'
     }
 ];
 
