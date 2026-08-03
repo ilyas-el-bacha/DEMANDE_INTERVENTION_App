@@ -108,6 +108,11 @@ function initAdminSession() {
     } else if (currentUser.role === 'admin') {
         // LOCK DEPARTMENT FOR DEPARTMENT ADMINS!
         currentAdminDepartment = currentUser.department;
+        if (superPanel) superPanel.style.display = 'none';
+        const adminTopBar = document.getElementById('admin-top-bar');
+        if (adminTopBar) adminTopBar.style.display = 'flex';
+        const statsGridContainer = document.getElementById('stats-grid-container');
+        if (statsGridContainer) statsGridContainer.style.display = 'grid';
         const deptSwitcherBox = document.getElementById('dept-switcher-container');
         if (deptSwitcherBox) {
             deptSwitcherBox.style.display = 'none';
@@ -123,6 +128,12 @@ function initAdminSession() {
         currentAdminDepartment = 'ALL';
         if (superPanel) superPanel.style.display = 'block';
 
+        const adminTopBar = document.getElementById('admin-top-bar');
+        if (adminTopBar) adminTopBar.style.display = 'none';
+
+        const statsGridContainer = document.getElementById('stats-grid-container');
+        if (statsGridContainer) statsGridContainer.style.display = 'none';
+
         // Hide department switcher for requests
         const deptSwitcherBox = document.getElementById('dept-switcher-container');
         if (deptSwitcherBox) deptSwitcherBox.style.display = 'none';
@@ -137,19 +148,6 @@ function initAdminSession() {
 
         const tableCard = document.querySelector('.table-container-card');
         if (tableCard) tableCard.style.display = 'none';
-
-        const topBadge = document.getElementById('admin-top-badge');
-        if (topBadge) {
-            topBadge.textContent = '★ Contrôle Central — Super Administrateur (Parent Controller)';
-            topBadge.style.background = 'rgba(220, 38, 38, 0.2)';
-            topBadge.style.color = '#FCA5A5';
-            topBadge.style.borderColor = 'rgba(220, 38, 38, 0.4)';
-        }
-
-        const welcomeTitle = document.getElementById('admin-welcome-title');
-        if (welcomeTitle) {
-            welcomeTitle.innerHTML = `Tableau de Bord Général & Supervision Centralisée`;
-        }
     }
 
     updateAdminUIHeader();
@@ -311,6 +309,13 @@ function updateAdminStats() {
     setElemText('admin-stat-pending', stats.pending);
     setElemText('admin-stat-progress', stats.progress);
     setElemText('admin-stat-resolved', stats.resolved);
+
+    // Always update Super Admin Global Requests Statistics indicators
+    const globalStats = typeof getRealtimeStats === 'function' ? getRealtimeStats('ALL') : { total: 0, pending: 0, progress: 0, resolved: 0 };
+    setElemText('super-stat-req-total', globalStats.total);
+    setElemText('super-stat-req-pending', globalStats.pending);
+    setElemText('super-stat-req-progress', globalStats.progress);
+    setElemText('super-stat-req-resolved', globalStats.resolved);
 }
 
 function renderAdminTable(requests) {
@@ -436,8 +441,8 @@ function renderSuperAdminPanel() {
     // Update Hierarchy Architecture Tree Node live counts
     const allReqs = getRequests();
     ['DAF', 'DGUR', 'DET', 'SI'].forEach(deptKey => {
-        const dEmps = users.filter(u => u && u.role !== 'admin' && u.role !== 'superadmin' && u.department && u.department.toUpperCase() === deptKey);
-        const dReqs = allReqs.filter(r => r && r.department && r.department.toUpperCase() === deptKey);
+        const dEmps = users.filter(u => u && u.role !== 'admin' && u.role !== 'superadmin' && u.department && u.department.toUpperCase().includes(deptKey));
+        const dReqs = allReqs.filter(r => r && r.department && r.department.toUpperCase().includes(deptKey));
         setElemText(`tree-${deptKey.toLowerCase()}-count`, `${dEmps.length} employé(s) | ${dReqs.length} demande(s)`);
     });
 
