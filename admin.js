@@ -418,6 +418,9 @@ function renderSuperAdminPanel() {
     const rawEmployees = users.filter(u => u && u.role !== 'admin' && u.role !== 'superadmin');
     const totalEmpCount = rawEmployees.length;
 
+    console.log('[SuperAdmin Debug] All users from getUsers():', users);
+    console.log('[SuperAdmin Debug] Raw employees list:', rawEmployees);
+
     // Independent Stat Counters & Badges
     setElemText('super-stat-admins-count', approvedDeptAdmins.length);
     setElemText('super-admins-total-badge', `${approvedDeptAdmins.length} administrateurs actifs`);
@@ -526,8 +529,10 @@ function renderSuperAdminPanel() {
 
         let filteredEmployees = rawEmployees;
         if (superEmpFilterDept !== 'ALL') {
-            filteredEmployees = rawEmployees.filter(u => u.department === superEmpFilterDept);
+            filteredEmployees = rawEmployees.filter(u => u && u.department && u.department.trim().toUpperCase() === superEmpFilterDept.trim().toUpperCase());
         }
+
+        console.log('[SuperAdmin Debug] Filtered employees for superadmin table:', filteredEmployees);
 
         const badgeText = superEmpFilterDept === 'ALL'
             ? `${totalEmpCount} employés enregistrés`
