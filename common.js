@@ -164,7 +164,7 @@ function getCurrentUser() {
                 const users = getUsers();
                 const freshUser = users.find(u => u.id === user.id || (u.email && user.email && u.email.toLowerCase().trim() === user.email.toLowerCase().trim()));
                 if (freshUser) {
-                    if (freshUser.status === 'disabled' || freshUser.status === 'rejected') {
+                    if (freshUser.status === 'disabled' || freshUser.status === 'rejected' || freshUser.status === 'pending') {
                         localStorage.removeItem(CURRENT_USER_KEY);
                         return null;
                     }
@@ -172,9 +172,11 @@ function getCurrentUser() {
                         localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(freshUser));
                     }
                     return freshUser;
+                } else {
+                    localStorage.removeItem(CURRENT_USER_KEY);
+                    return null;
                 }
             }
-            return user;
         }
     } catch(e) {}
     return null;
