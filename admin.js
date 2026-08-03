@@ -119,26 +119,31 @@ function initAdminSession() {
         const tableCard = document.querySelector('.table-container-card');
         if (tableCard) tableCard.style.display = 'block';
     } else if (currentUser.role === 'superadmin') {
-        // SUPER ADMIN DASHBOARD - ONLY GLOBAL REAL-TIME STATS & ADMIN MANAGEMENT
-        currentAdminDepartment = 'ALL';
+        // SUPER ADMIN DASHBOARD - PARENT CONTROLLER OVER ALL DEPARTMENTS, EMPLOYEES & REQUESTS
+        if (!currentAdminDepartment) currentAdminDepartment = 'ALL';
         if (superPanel) superPanel.style.display = 'block';
 
-        // Hide all non-superadmin elements
+        // Show department switcher so Super Admin can switch between ALL, DAF, DGUR, DET, SI
         const deptSwitcherBox = document.getElementById('dept-switcher-container');
-        if (deptSwitcherBox) deptSwitcherBox.style.display = 'none';
+        if (deptSwitcherBox) deptSwitcherBox.style.display = 'block';
 
+        const btnTabAll = document.getElementById('btn-tab-all');
+        if (btnTabAll) btnTabAll.style.display = 'inline-block';
+
+        // Keep employee management inside superadmin panel to avoid duplicate cards
         const empCard = document.getElementById('emp-management-card');
         if (empCard) empCard.style.display = 'none';
 
+        // Show filters and requests table for complete parent control
         const filtersCard = document.querySelector('.filters-card');
-        if (filtersCard) filtersCard.style.display = 'none';
+        if (filtersCard) filtersCard.style.display = 'flex';
 
         const tableCard = document.querySelector('.table-container-card');
-        if (tableCard) tableCard.style.display = 'none';
+        if (tableCard) tableCard.style.display = 'block';
 
         const topBadge = document.getElementById('admin-top-badge');
         if (topBadge) {
-            topBadge.textContent = '★ Direction Générale — Super Administrateur';
+            topBadge.textContent = '★ Contrôle Central — Super Administrateur (Parent Controller)';
             topBadge.style.background = 'rgba(220, 38, 38, 0.2)';
             topBadge.style.color = '#FCA5A5';
             topBadge.style.borderColor = 'rgba(220, 38, 38, 0.4)';
@@ -146,7 +151,7 @@ function initAdminSession() {
 
         const welcomeTitle = document.getElementById('admin-welcome-title');
         if (welcomeTitle) {
-            welcomeTitle.innerHTML = `Tableau de Bord Général Super Administrateur`;
+            welcomeTitle.innerHTML = `Tableau de Bord Général & Supervision Centralisée`;
         }
     }
 
@@ -161,12 +166,13 @@ function updateAdminUIHeader() {
     const topBadge = document.getElementById('admin-top-badge');
 
     if (currentUser && currentUser.role === 'superadmin') {
-        if (codeElem) codeElem.textContent = 'GLOBAL';
-        if (tagElem) tagElem.textContent = 'GLOBAL';
-        if (labelTotal) labelTotal.textContent = 'Demandes Globales';
-        if (nameElem) nameElem.textContent = 'Statistiques globales de l\'Agence Urbaine en temps réel et gestion centrale des administrateurs.';
+        const deptLabel = currentAdminDepartment === 'ALL' ? 'TOUTES DIRECTIONS (Supervision Globale)' : `DIRECTION ${currentAdminDepartment}`;
+        if (codeElem) codeElem.textContent = currentAdminDepartment === 'ALL' ? 'GLOBAL' : currentAdminDepartment;
+        if (tagElem) tagElem.textContent = currentAdminDepartment === 'ALL' ? 'GLOBAL' : currentAdminDepartment;
+        if (labelTotal) labelTotal.textContent = currentAdminDepartment === 'ALL' ? 'Demandes Globales' : `Demandes ${currentAdminDepartment}`;
+        if (nameElem) nameElem.textContent = `Supervision hiérarchique en temps réel : ${deptLabel}`;
         if (topBadge) {
-            topBadge.textContent = '★ Direction Générale — Super Administrateur';
+            topBadge.textContent = '★ Contrôle Central — Super Administrateur (Parent Controller)';
             topBadge.style.background = 'rgba(220, 38, 38, 0.2)';
             topBadge.style.color = '#FCA5A5';
             topBadge.style.borderColor = 'rgba(220, 38, 38, 0.4)';
@@ -274,14 +280,6 @@ function filterAndRenderAdminTable() {
 
     // 2. Update Stats
     updateAdminStats();
-
-    if (currentUser && currentUser.role === 'superadmin') {
-        const filtersCard = document.querySelector('.filters-card');
-        if (filtersCard) filtersCard.style.display = 'none';
-        const tableCard = document.querySelector('.table-container-card');
-        if (tableCard) tableCard.style.display = 'none';
-        return;
-    }
 
     // 3. User Criteria
     currentFilteredRequests = deptRequests.filter(req => {
@@ -429,6 +427,14 @@ function renderSuperAdminPanel() {
 
     setElemText('super-stat-employees-count', totalEmpCount);
     setElemText('super-employees-total-badge', `${totalEmpCount} employés enregistrés`);
+
+    // Update Hierarchy Architecture Tree Node live counts
+    const allReqs = getRequests();
+    ['DAF', 'DGUR', 'DET', 'SI'].forEach(deptKey => {
+        const dEmps = users.filter(u => u && u.role !== 'admin' && u.role !== 'superadmin' && u.department && u.department.toUpperCase() === deptKey);
+        const dReqs = allReqs.filter(r => r && r.department && r.department.toUpperCase() === deptKey);
+        setElemText(`tree-${deptKey.toLowerCase()}-count`, `${dEmps.length} employé(s) | ${dReqs.length} demande(s)`);
+    });
 
     // Ensure Global Requests Statistics reflect live stored intervention requests
     updateAdminStats();
@@ -1156,6 +1162,66 @@ window.requestInfo = async function(reqId) {
         message: `Statut mis à jour à "Infos requises" pour la demande N° ${reqId}.`,
         buttonText: "D'accord",
         type: "info"
+    });
+};
+
+window.openCreateAdminModal = function() {
+    const modal = document.getElementById('create-admin-modal');
+    if (modal) modal.style.display = 'flex';
+};
+
+window.closeCreateAdminModal = function() {
+    const modal = document.getElementById('create-admin-modal');
+    if (modal) modal.style.display = 'none';
+};
+
+window.handleCreateAdmin = async function(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const name = document.getElementById('new-admin-name').value.trim();
+    const email = document.getElementById('new-admin-email').value.trim().toLowerCase();
+    const department = document.getElementById('new-admin-dept').value;
+    const password = document.getElementById('new-admin-password').value;
+
+    if (!name || !email || !password) return;
+
+    const users = getUsers();
+    const existing = users.find(u => u.email && u.email.toLowerCase().trim() === email);
+    if (existing) {
+        await window.showCustomAlert({
+            title: "Email déjà utilisé",
+            message: `Un compte existe déjà avec l'adresse email ${email}.`,
+            buttonText: "Compris",
+            type: "danger"
+        });
+        return;
+    }
+
+    const newAdmin = {
+        id: 'usr-adm-' + Date.now(),
+        name: name,
+        firstName: name.split(' ')[0] || name,
+        lastName: name.split(' ').slice(1).join(' ') || '',
+        email: email,
+        password: password,
+        role: 'admin',
+        department: department,
+        status: 'approved',
+        createdAt: new Date().toISOString().split('T')[0]
+    };
+
+    users.push(newAdmin);
+    saveUsers(users);
+    closeCreateAdminModal();
+    const form = document.getElementById('create-admin-form');
+    if (form) form.reset();
+
+    refreshAdminDataAndUI();
+
+    await window.showCustomAlert({
+        title: "Administrateur Créé",
+        message: `Le compte administrateur pour ${name} (${department}) a été créé et approuvé avec succès.`,
+        buttonText: "D'accord",
+        type: "success"
     });
 };
 

@@ -55,10 +55,56 @@
 
             <!-- Super Admin Management Panel (rendered dynamically for Super Admin) -->
             <div id="superadmin-panel" class="superadmin-card" style="display: none; margin-bottom: 2rem;">
-                <div class="superadmin-header">
-                    <div class="badge-superadmin">★ Contrôle Central Super Administrateur</div>
-                    <h2>Gestion des Comptes & Statistiques Utilisateurs</h2>
-                    <p>Supervision globale des administrateurs de département et des employés enregistrés.</p>
+                <div class="superadmin-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+                    <div>
+                        <div class="badge-superadmin">★ Contrôle Central Super Administrateur (Parent Controller)</div>
+                        <h2>Supervision Hiérarchique & Gestion Globale</h2>
+                        <p>Contrôleur central de l'ensemble de la structure : Administrateurs, Employés et Demandes d'Intervention.</p>
+                    </div>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="openCreateAdminModal()" style="background: linear-gradient(135deg, #2563EB, #1D4ED8); border: none; font-weight: 700; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1rem;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        + Créer Administrateur
+                    </button>
+                </div>
+
+                <!-- Hierarchy Architecture Diagram Card -->
+                <div class="hierarchy-tree-card" style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 16px; padding: 1.25rem; margin-top: 1.25rem; margin-bottom: 1.5rem;">
+                    <div style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: #38BDF8; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                        Structure Hiérarchique Unifiée (Source Unique de Données)
+                    </div>
+                    <div class="tree-nodes-container" style="display: flex; flex-direction: column; gap: 0.75rem; align-items: center;">
+                        <!-- Level 1: Super Admin Parent -->
+                        <div class="tree-node parent" style="background: linear-gradient(135deg, #DC2626, #991B1B); color: #FFF; padding: 0.65rem 1.5rem; border-radius: 10px; font-weight: 800; font-size: 0.92rem; box-shadow: 0 4px 20px rgba(220, 38, 38, 0.35); display: flex; align-items: center; gap: 0.6rem;">
+                            <span>★ Super Administrateur (Contrôleur Parent)</span>
+                            <span class="tree-badge" style="background: rgba(255,255,255,0.25); padding: 0.15rem 0.55rem; border-radius: 6px; font-size: 0.75rem; font-weight: 600;">Autorité Centrale</span>
+                        </div>
+                        <div style="width: 2px; height: 16px; background: rgba(255,255,255,0.25);"></div>
+                        <!-- Level 2: Department Administrators -->
+                        <div class="tree-children-row" style="display: flex; gap: 0.85rem; width: 100%; justify-content: center; flex-wrap: wrap;">
+                            <div class="tree-node child" style="flex: 1; min-width: 150px; background: rgba(30, 58, 138, 0.35); border: 1px solid rgba(59, 130, 246, 0.35); padding: 0.6rem 0.85rem; border-radius: 10px; text-align: center;">
+                                <div style="font-weight: 700; color: #93C5FD; font-size: 0.88rem;">Direction DAF</div>
+                                <div style="font-size: 0.76rem; color: #CBD5E1; margin-top: 3px;" id="tree-daf-count">0 employé(s) | 0 demande(s)</div>
+                            </div>
+                            <div class="tree-node child" style="flex: 1; min-width: 150px; background: rgba(88, 28, 135, 0.35); border: 1px solid rgba(168, 85, 247, 0.35); padding: 0.6rem 0.85rem; border-radius: 10px; text-align: center;">
+                                <div style="font-weight: 700; color: #C084FC; font-size: 0.88rem;">Direction DGUR</div>
+                                <div style="font-size: 0.76rem; color: #CBD5E1; margin-top: 3px;" id="tree-dgur-count">0 employé(s) | 0 demande(s)</div>
+                            </div>
+                            <div class="tree-node child" style="flex: 1; min-width: 150px; background: rgba(20, 83, 45, 0.35); border: 1px solid rgba(34, 197, 94, 0.35); padding: 0.6rem 0.85rem; border-radius: 10px; text-align: center;">
+                                <div style="font-weight: 700; color: #4ADE80; font-size: 0.88rem;">Direction DET</div>
+                                <div style="font-size: 0.76rem; color: #CBD5E1; margin-top: 3px;" id="tree-det-count">0 employé(s) | 0 demande(s)</div>
+                            </div>
+                            <div class="tree-node child" style="flex: 1; min-width: 150px; background: rgba(120, 53, 15, 0.35); border: 1px solid rgba(245, 158, 11, 0.35); padding: 0.6rem 0.85rem; border-radius: 10px; text-align: center;">
+                                <div style="font-weight: 700; color: #FCD34D; font-size: 0.88rem;">Service SI</div>
+                                <div style="font-size: 0.76rem; color: #CBD5E1; margin-top: 3px;" id="tree-si-count">0 employé(s) | 0 demande(s)</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Independent Account Statistics Cards -->
@@ -509,6 +555,52 @@
                         <button type="button" class="btn btn-secondary" id="cancel-modal">Annuler</button>
                         <button type="submit" class="btn btn-primary">
                             ✍️ Enregistrer et Signer le PV Officiel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Creating Department Administrator -->
+    <div id="create-admin-modal" class="modal-backdrop" style="display: none;">
+        <div class="modal-dialog" style="max-width: 480px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div>
+                        <h3>Créer un Administrateur de Département</h3>
+                        <p class="modal-sub">Création directe par le Super Administrateur (Parent Controller)</p>
+                    </div>
+                    <button type="button" class="btn-close" onclick="closeCreateAdminModal()">&times;</button>
+                </div>
+                <form id="create-admin-form" onsubmit="handleCreateAdmin(event)">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="new-admin-name">Nom & Prénom / Titre</label>
+                            <input type="text" id="new-admin-name" class="form-control" placeholder="ex: Administrateur DAF Chraibi" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="new-admin-email">Adresse Email Officielle</label>
+                            <input type="email" id="new-admin-email" class="form-control" placeholder="ex: daf.admin2@agenceurbaine.ma" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="new-admin-dept">Département d'Affectation</label>
+                            <select id="new-admin-dept" class="form-control" required>
+                                <option value="DAF">DAF — Direction Administrative et Financière</option>
+                                <option value="DGUR">DGUR — Direction Gestion Urbaine & Réglementation</option>
+                                <option value="DET">DET — Direction des Études Techniques</option>
+                                <option value="SI">SI — Service Informatique & Systèmes d'Information</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="new-admin-password">Mot de Passe Accès Admin</label>
+                            <input type="password" id="new-admin-password" class="form-control" placeholder="Entrez le mot de passe" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="closeCreateAdminModal()">Annuler</button>
+                        <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #2563EB, #1D4ED8); border: none; font-weight: 700;">
+                            ✓ Créer & Approuver le Compte
                         </button>
                     </div>
                 </form>
