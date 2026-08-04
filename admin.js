@@ -916,13 +916,13 @@ window.openAdminEditModal = function(id) {
     const req = allRequests.find(r => r.id === id);
     if (!req) return;
 
-    setElemText('modal-req-id', `Compléter le PV - N° ${req.id}`);
+    setElemText('modal-req-id', `Clôturer l'intervention & Valider le PV - N° ${req.id}`);
     document.getElementById('modal-target-id').value = req.id;
 
     // Prefill Existing Data
     const statusSelect = document.getElementById('edit-status');
     const prioritySelect = document.getElementById('edit-priority');
-    if (statusSelect) statusSelect.value = req.status;
+    if (statusSelect) statusSelect.value = req.status === 'En cours' ? 'Résolue' : req.status;
     if (prioritySelect) prioritySelect.value = req.priority || 'Moyenne';
 
     // Verification Section
@@ -957,13 +957,15 @@ window.openAdminEditModal = function(id) {
     document.getElementById('admin-modal').style.display = 'flex';
 };
 
-function saveAdminEdit() {
+async function saveAdminEdit() {
     const reqId = document.getElementById('modal-target-id').value;
     const reqIndex = allRequests.findIndex(r => r.id === reqId);
 
     if (reqIndex === -1) return;
 
-    const newStatus = document.getElementById('edit-status').value;
+    // Upon PV completion & signature validation, status automatically becomes 'Résolue'
+    const selectedStatus = document.getElementById('edit-status')?.value;
+    const newStatus = (selectedStatus && selectedStatus !== 'En cours') ? selectedStatus : 'Résolue';
     const newPriority = document.getElementById('edit-priority').value;
 
     const verifDate = document.getElementById('verif-date').value;
@@ -1019,7 +1021,7 @@ function saveAdminEdit() {
     if (!req.history) req.history = [];
     req.history.push({
         date: formattedTime,
-        label: `PV Officiel complété et signé par ${signerName} (${currentAdminDepartment}) : Statut "${newStatus}"`
+        label: `Procès-Verbal complété, validé et signé par ${signerName} (${currentAdminDepartment}) — Statut automatique : "${newStatus}"`
     });
 
     // Save back to LocalStorage
@@ -1027,6 +1029,13 @@ function saveAdminEdit() {
 
     document.getElementById('admin-modal').style.display = 'none';
     filterAndRenderAdminTable();
+
+    await window.showCustomAlert({
+        title: "Intervention Clôturée & PV Validé",
+        message: `Le Procès-Verbal pour la demande N° ${reqId} a été entièrement validé et signé.\n\nLe statut est désormais "Résolue" et le bouton de consultation "Voir le PV" est disponible.`,
+        buttonText: "D'accord",
+        type: "success"
+    });
 }
 
 window.deleteRequest = async function(id) {
