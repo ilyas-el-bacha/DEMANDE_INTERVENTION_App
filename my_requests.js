@@ -167,7 +167,7 @@ function renderTable(requests) {
 
         const norm = getNormalizedStatus(req.status);
         let statusClass = 'pending';
-        if (norm === 'accepted') statusClass = 'total';
+        if (norm === 'accepted') statusClass = 'accepted';
         if (norm === 'progress') statusClass = 'progress';
         if (norm === 'resolved') statusClass = 'resolved';
         if (norm === 'rejected') statusClass = 'rejected';

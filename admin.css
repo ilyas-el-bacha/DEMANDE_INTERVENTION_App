@@ -426,6 +426,15 @@
     box-shadow: 0 4px 14px rgba(244, 63, 94, 0.3);
 }
 
+/* 6. PV Link Button (Royal Blue / Cyan Accent) */
+.btn-pv-link:hover {
+    background: rgba(59, 130, 246, 0.28) !important;
+    border-color: rgba(96, 165, 250, 0.65) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3) !important;
+    transform: translateY(-1px);
+}
+
 /* Backward Compatibility */
 .btn-approve {
     background: rgba(16, 185, 129, 0.15);
