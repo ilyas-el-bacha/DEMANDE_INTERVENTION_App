@@ -584,6 +584,16 @@ function renderSuperAdminPanel() {
     }
 }
 
+function normalizeDeptCode(dept) {
+    if (!dept) return '';
+    const d = dept.trim().toUpperCase();
+    if (d === 'SI' || d.startsWith('SI ') || d.startsWith('SI-') || d.includes('INFORMATIQUE')) return 'SI';
+    if (d === 'DAF' || d.startsWith('DAF ') || d.startsWith('DAF-') || d.includes('FINANCIERE') || d.includes('FINANCIÈRE')) return 'DAF';
+    if (d === 'DGUR' || d.startsWith('DGUR ') || d.startsWith('DGUR-') || d.includes('GESTION URBAINE')) return 'DGUR';
+    if (d === 'DET' || d.startsWith('DET ') || d.startsWith('DET-') || d.includes('ETUDES') || d.includes('ÉTUDES')) return 'DET';
+    return d;
+}
+
 function renderEmployeeManagementPanel() {
     const card = document.getElementById('emp-management-card');
     if (!card) return;
@@ -594,24 +604,27 @@ function renderEmployeeManagementPanel() {
     }
 
     const users = getUsers();
+    const targetDeptCode = normalizeDeptCode(currentAdminDepartment || (currentUser ? currentUser.department : 'SI'));
 
-    setElemText('emp-dept-title', currentAdminDepartment === 'ALL' ? 'Toutes Directions' : currentAdminDepartment);
+    setElemText('emp-dept-title', targetDeptCode === 'ALL' ? 'Toutes Directions' : targetDeptCode);
 
     // Fetch all employee accounts matching the target department directly from au_users
     const allDeptEmps = users.filter(u => {
         if (!u) return false;
-        const isEmp = u.role === 'employee' || (u.role !== 'admin' && u.role !== 'superadmin');
+        const role = (u.role || '').toLowerCase();
+        const isEmp = role === 'employee' || (role !== 'admin' && role !== 'superadmin');
         if (!isEmp) return false;
 
-        if (!currentAdminDepartment || currentAdminDepartment === 'ALL') return true;
-        return (u.department || '').trim().toUpperCase() === currentAdminDepartment.trim().toUpperCase();
+        if (!targetDeptCode || targetDeptCode === 'ALL') return true;
+        const userDeptCode = normalizeDeptCode(u.department);
+        return userDeptCode === targetDeptCode;
     });
 
     // 1. Pending registration requests
     const pendingEmp = allDeptEmps.filter(u => u.status === 'pending');
 
     // 2. Approved and registered department employees
-    const registeredEmp = allDeptEmps.filter(u => u.status === 'approved' || u.status === 'disabled' || !u.status);
+    const registeredEmp = allDeptEmps.filter(u => u.status === 'approved' || u.status === 'disabled' || !u.status || u.status === 'active');
 
     setElemText('emp-pending-badge', `${pendingEmp.length} en attente`);
     setElemText('emp-total-badge', `${registeredEmp.length} employé${registeredEmp.length > 1 ? 's' : ''}`);

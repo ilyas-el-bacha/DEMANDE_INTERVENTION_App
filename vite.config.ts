@@ -20,6 +20,8 @@ export default defineConfig(() => {
           my_requests: path.resolve(__dirname, 'my_requests.html'),
           request_details: path.resolve(__dirname, 'request_details.html'),
           admin: path.resolve(__dirname, 'admin.html'),
+          signup: path.resolve(__dirname, 'signup.html'),
+          superadmin: path.resolve(__dirname, 'superadmin.html'),
         },
       },
     },

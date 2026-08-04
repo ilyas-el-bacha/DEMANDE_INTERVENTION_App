@@ -137,10 +137,36 @@ function getUsers() {
 
     let updated = false;
     defaultAccounts.forEach(acc => {
-        const exists = users.some(u => (u.email || '').toLowerCase().trim() === acc.email.toLowerCase().trim());
-        if (!exists) {
+        const idx = users.findIndex(u => (u.email || '').toLowerCase().trim() === acc.email.toLowerCase().trim());
+        if (idx === -1) {
             users.push(acc);
             updated = true;
+        } else {
+            const u = users[idx];
+            let changed = false;
+            if (acc.id === 'usr-emp-si-ilyas') {
+                if (u.status !== 'approved') {
+                    u.status = 'approved';
+                    changed = true;
+                }
+                if (u.role !== 'employee') {
+                    u.role = 'employee';
+                    changed = true;
+                }
+                if (!u.department || u.department !== 'SI') {
+                    u.department = 'SI';
+                    changed = true;
+                }
+            }
+            if (!u.department) {
+                u.department = acc.department;
+                changed = true;
+            }
+            if (!u.role) {
+                u.role = acc.role;
+                changed = true;
+            }
+            if (changed) updated = true;
         }
     });
 
