@@ -249,7 +249,7 @@ function generateTimelineHtml(req) {
         `;
     }
 
-    const cur = tData.currentStep; // 2 (pending), 3 (accepted), 4 (progress), 5 (resolved)
+    const cur = tData.currentStep; // 1 (submitted), 2 (pending), 3 (accepted), 4 (progress), 5 (resolved)
 
     const step1Class = cur >= 1 ? (cur === 1 ? 'active step-submitted' : 'completed') : '';
     const step2Class = cur > 2 ? 'completed' : (cur === 2 ? 'active step-pending' : '');
@@ -257,50 +257,59 @@ function generateTimelineHtml(req) {
     const step4Class = cur > 4 ? 'completed' : (cur === 4 ? 'active step-progress' : '');
     const step5Class = cur >= 5 ? 'active step-resolved completed' : '';
 
-    const percent = tData.percent || 25;
+    const percent = typeof tData.percent === 'number' ? tData.percent : 25;
+    // Calculate track fill distance (track runs from 10% to 90%, total span 80%)
+    const fillWidth = Math.min(80, Math.max(0, (percent / 100) * 80));
+
+    const checkSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+    const icon1 = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>`;
+    const icon2 = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`;
+    const icon3 = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`;
+    const icon4 = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>`;
 
     return `
         <div class="timeline-card-wrapper">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
-                <span style="font-size: 0.8rem; font-weight: 700; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 0.5px;">
-                    Suivi de l'Intervention en Temps Réel
-                </span>
+            <div class="timeline-header-bar">
+                <div class="timeline-header-title">
+                    <span class="live-pulse-indicator"></span>
+                    <span>Suivi de l'Intervention en Temps Réel</span>
+                </div>
                 <span class="status-badge ${tData.badgeClass}">
                     ● Statut Actuel : ${escapeHtml(req.status)}
                 </span>
             </div>
             <div class="timeline-track-container">
                 <div class="timeline-progress-bg"></div>
-                <div class="timeline-progress-fill" style="width: ${percent}%;"></div>
+                <div class="timeline-progress-fill" style="width: ${fillWidth}%;"></div>
 
                 <div class="timeline-node ${step1Class}">
-                    <div class="timeline-node-circle">${cur > 1 ? '✓' : '1'}</div>
-                    <div class="timeline-node-title">🟢 Demande Soumise</div>
-                    <div class="timeline-node-sub">${escapeHtml(req.date || '')}</div>
+                    <div class="timeline-node-circle">${cur > 1 ? checkSvg : icon1}</div>
+                    <div class="timeline-node-title">Demande Soumise</div>
+                    <div class="timeline-node-sub">${escapeHtml(req.date || 'Émise')}</div>
                 </div>
 
                 <div class="timeline-node ${step2Class}">
-                    <div class="timeline-node-circle">${cur > 2 ? '✓' : '2'}</div>
-                    <div class="timeline-node-title">🟡 En Attente</div>
+                    <div class="timeline-node-circle">${cur > 2 ? checkSvg : (cur === 2 ? icon2 : '2')}</div>
+                    <div class="timeline-node-title">En Attente</div>
                     <div class="timeline-node-sub">Validation Admin</div>
                 </div>
 
                 <div class="timeline-node ${step3Class}">
-                    <div class="timeline-node-circle">${cur > 3 ? '✓' : '3'}</div>
-                    <div class="timeline-node-title">🔵 Acceptée</div>
-                    <div class="timeline-node-sub">Approuvée</div>
+                    <div class="timeline-node-circle">${cur > 3 ? checkSvg : (cur === 3 ? icon3 : '3')}</div>
+                    <div class="timeline-node-title">Acceptée</div>
+                    <div class="timeline-node-sub">Prise en Charge</div>
                 </div>
 
                 <div class="timeline-node ${step4Class}">
-                    <div class="timeline-node-circle">${cur > 4 ? '✓' : '4'}</div>
-                    <div class="timeline-node-title">🟠 En Cours</div>
+                    <div class="timeline-node-circle">${cur > 4 ? checkSvg : (cur === 4 ? icon4 : '4')}</div>
+                    <div class="timeline-node-title">En Cours</div>
                     <div class="timeline-node-sub">Intervention</div>
                 </div>
 
                 <div class="timeline-node ${step5Class}">
-                    <div class="timeline-node-circle">${cur >= 5 ? '✓' : '5'}</div>
-                    <div class="timeline-node-title">✅ Résolue</div>
-                    <div class="timeline-node-sub">Clôturée</div>
+                    <div class="timeline-node-circle">${cur >= 5 ? checkSvg : '5'}</div>
+                    <div class="timeline-node-title">Résolue</div>
+                    <div class="timeline-node-sub">Clôture & PV</div>
                 </div>
             </div>
         </div>
