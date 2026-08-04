@@ -597,18 +597,24 @@ function renderEmployeeManagementPanel() {
 
     setElemText('emp-dept-title', currentAdminDepartment === 'ALL' ? 'Toutes Directions' : currentAdminDepartment);
 
-    let deptEmployees = [];
-    const allEmps = users.filter(u => u && u.role !== 'admin' && u.role !== 'superadmin');
-    if (currentAdminDepartment === 'ALL') {
-        deptEmployees = allEmps;
-    } else {
-        deptEmployees = allEmps.filter(u => u.department && u.department.toUpperCase() === currentAdminDepartment.toUpperCase());
-    }
+    // Fetch all employee accounts matching the target department directly from au_users
+    const allDeptEmps = users.filter(u => {
+        if (!u) return false;
+        const isEmp = u.role === 'employee' || (u.role !== 'admin' && u.role !== 'superadmin');
+        if (!isEmp) return false;
 
-    const pendingEmp = deptEmployees.filter(u => u.status === 'pending');
+        if (!currentAdminDepartment || currentAdminDepartment === 'ALL') return true;
+        return (u.department || '').trim().toUpperCase() === currentAdminDepartment.trim().toUpperCase();
+    });
+
+    // 1. Pending registration requests
+    const pendingEmp = allDeptEmps.filter(u => u.status === 'pending');
+
+    // 2. Approved and registered department employees
+    const registeredEmp = allDeptEmps.filter(u => u.status === 'approved' || u.status === 'disabled' || !u.status);
 
     setElemText('emp-pending-badge', `${pendingEmp.length} en attente`);
-    setElemText('emp-total-badge', `${deptEmployees.length} employés`);
+    setElemText('emp-total-badge', `${registeredEmp.length} employé${registeredEmp.length > 1 ? 's' : ''}`);
 
     // 1. Pending Employees Table
     const pendingTbody = document.getElementById('pending-employees-tbody');
@@ -650,19 +656,17 @@ function renderEmployeeManagementPanel() {
         }
     }
 
-    // 2. All Employees Table
+    // 2. All Registered Employees Table
     const allTbody = document.getElementById('all-employees-tbody');
     if (allTbody) {
         allTbody.innerHTML = '';
-        if (deptEmployees.length === 0) {
+        if (registeredEmp.length === 0) {
             allTbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-muted); padding: 1.5rem;">Aucun employé enregistré pour ce département.</td></tr>`;
         } else {
-            deptEmployees.forEach(emp => {
+            registeredEmp.forEach(emp => {
                 const tr = document.createElement('tr');
 
                 let badge = `<span class="stat-badge resolved">Approuvé</span>`;
-                if (emp.status === 'pending') badge = `<span class="stat-badge pending">En attente</span>`;
-                if (emp.status === 'rejected') badge = `<span class="stat-badge rejected">Rejeté</span>`;
                 if (emp.status === 'disabled') badge = `<span class="stat-badge disabled" style="background: #6B7280; color: #FFF;">Désactivé</span>`;
 
                 const isDisabled = emp.status === 'disabled';

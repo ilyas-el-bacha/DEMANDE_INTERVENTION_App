@@ -118,12 +118,28 @@ function getUsers() {
         saveUsers(users);
     }
 
-    // Ensure system administrator accounts exist
+    // Ensure system administrator accounts and initial default approved employee exist in au_users
+    const defaultAccounts = [
+        ...DEFAULT_SYSTEM_ACCOUNTS,
+        {
+            id: 'usr-emp-si-ilyas',
+            firstName: 'Ilyas',
+            lastName: 'El Bacha',
+            name: 'Ilyas El Bacha',
+            email: 'ilyas.elbacha@agenceurbaine.ma',
+            password: 'user123',
+            role: 'employee',
+            department: 'SI',
+            status: 'approved',
+            createdAt: '2026-01-15'
+        }
+    ];
+
     let updated = false;
-    DEFAULT_SYSTEM_ACCOUNTS.forEach(adminAcc => {
-        const exists = users.some(u => (u.email || '').toLowerCase().trim() === adminAcc.email.toLowerCase().trim());
+    defaultAccounts.forEach(acc => {
+        const exists = users.some(u => (u.email || '').toLowerCase().trim() === acc.email.toLowerCase().trim());
         if (!exists) {
-            users.push(adminAcc);
+            users.push(acc);
             updated = true;
         }
     });
