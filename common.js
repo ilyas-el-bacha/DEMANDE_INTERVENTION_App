@@ -67,18 +67,6 @@ const DEFAULT_SYSTEM_ACCOUNTS = [
         department: 'SI',
         status: 'approved',
         createdAt: '2026-01-01'
-    },
-    {
-        id: 'usr-emp-si-ilyas',
-        firstName: 'Ilyas',
-        lastName: 'El Bacha',
-        name: 'Ilyas El Bacha',
-        email: 'ilyas.elbacha@agenceurbaine.ma',
-        password: 'user123',
-        role: 'employee',
-        department: 'SI',
-        status: 'approved',
-        createdAt: '2026-01-15'
     }
 ];
 
@@ -94,33 +82,56 @@ function initStorage() {
 
 function getUsers() {
     let users = [];
+    const rawData = localStorage.getItem(USERS_KEY);
+
+    if (rawData === null) {
+        // First-time initialization of central au_users database:
+        // Includes system admins and initial employee account (Ilyas El Bacha)
+        const initialSeed = [
+            ...DEFAULT_SYSTEM_ACCOUNTS,
+            {
+                id: 'usr-emp-si-ilyas',
+                firstName: 'Ilyas',
+                lastName: 'El Bacha',
+                name: 'Ilyas El Bacha',
+                email: 'ilyas.elbacha@agenceurbaine.ma',
+                password: 'user123',
+                role: 'employee',
+                department: 'SI',
+                status: 'approved',
+                createdAt: '2026-01-15'
+            }
+        ];
+        saveUsers(initialSeed);
+        return initialSeed;
+    }
+
     try {
-        const data = localStorage.getItem(USERS_KEY);
-        if (data !== null) {
-            const parsed = JSON.parse(data);
-            if (Array.isArray(parsed)) users = parsed;
-        }
+        const parsed = JSON.parse(rawData);
+        if (Array.isArray(parsed)) users = parsed;
     } catch(e) {}
 
-    // Clean up old mock employee default accounts if they exist in local storage
+    // Clean up old legacy mock employee default accounts if present
     const mockIds = ['usr-emp-daf', 'usr-emp-dgur', 'usr-emp-det', 'usr-emp-si'];
     if (users.some(u => mockIds.includes(u.id))) {
         users = users.filter(u => !mockIds.includes(u.id));
         saveUsers(users);
     }
 
+    // Ensure system administrator accounts exist
     let updated = false;
-    DEFAULT_SYSTEM_ACCOUNTS.forEach(defaultAcc => {
-        const exists = users.some(u => (u.email || '').toLowerCase().trim() === defaultAcc.email.toLowerCase().trim());
+    DEFAULT_SYSTEM_ACCOUNTS.forEach(adminAcc => {
+        const exists = users.some(u => (u.email || '').toLowerCase().trim() === adminAcc.email.toLowerCase().trim());
         if (!exists) {
-            users.push(defaultAcc);
+            users.push(adminAcc);
             updated = true;
         }
     });
 
-    if (updated || localStorage.getItem(USERS_KEY) === null) {
+    if (updated) {
         saveUsers(users);
     }
+
     return users;
 }
 
