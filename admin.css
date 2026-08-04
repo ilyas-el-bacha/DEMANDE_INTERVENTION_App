@@ -476,6 +476,19 @@
     align-items: center;
 }
 
+.table-container-card {
+    overflow-x: auto;
+    width: 100%;
+}
+
+.data-table th {
+    white-space: nowrap;
+}
+
+.workflow-btn-stack button:hover {
+    transform: translateY(-1px);
+}
+
 @media (max-width: 900px) {
     .superadmin-grid {
         grid-template-columns: 1fr;

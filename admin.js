@@ -347,39 +347,41 @@ function renderAdminTable(requests) {
 
         if (norm === 'pending' || norm === 'info_requested') {
             workflowBtns = `
-                <button type="button" class="btn btn-sm btn-action-approve" onclick="acceptRequest('${escapeHtml(req.id)}')" title="Accepter la demande" style="background: rgba(16, 185, 129, 0.15); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 0.45rem 0.9rem; font-size: 0.82rem; border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem; transition: all 0.2s; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    Accepter
-                </button>
-                <button type="button" class="btn btn-sm btn-action-reject" onclick="rejectRequest('${escapeHtml(req.id)}')" title="Rejeter la demande" style="background: rgba(239, 68, 68, 0.12); color: #FCA5A5; border: 1px solid rgba(239, 68, 68, 0.35); padding: 0.45rem 0.9rem; font-size: 0.82rem; border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem; transition: all 0.2s; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                    Rejeter
-                </button>
+                <div class="workflow-btn-stack" style="display: inline-flex; flex-direction: column; gap: 0.35rem; width: 115px;">
+                    <button type="button" class="btn btn-sm btn-action-approve" onclick="acceptRequest('${escapeHtml(req.id)}')" title="Accepter la demande" style="background: rgba(16, 185, 129, 0.15); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 0.38rem 0.65rem; font-size: 0.78rem; border-radius: 6px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem; transition: all 0.2s; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); width: 100%;">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        Accepter
+                    </button>
+                    <button type="button" class="btn btn-sm btn-action-reject" onclick="rejectRequest('${escapeHtml(req.id)}')" title="Rejeter la demande" style="background: rgba(239, 68, 68, 0.12); color: #FCA5A5; border: 1px solid rgba(239, 68, 68, 0.35); padding: 0.38rem 0.65rem; font-size: 0.78rem; border-radius: 6px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 0.35rem; transition: all 0.2s; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); width: 100%;">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        Rejeter
+                    </button>
+                </div>
             `;
         } else if (norm === 'accepted') {
             workflowBtns = `
-                <button type="button" class="btn btn-sm" onclick="startIntervention('${escapeHtml(req.id)}')" title="Démarrer l'intervention" style="background: linear-gradient(135deg, #F97316, #EA580C); color: #FFFFFF; border: none; padding: 0.48rem 1.05rem; font-size: 0.82rem; border-radius: 8px; font-weight: 700; cursor: pointer; box-shadow: 0 3px 10px rgba(249, 115, 22, 0.35); display: inline-flex; align-items: center; gap: 0.45rem; transition: all 0.2s;">
+                <button type="button" class="btn btn-sm" onclick="startIntervention('${escapeHtml(req.id)}')" title="Démarrer l'intervention" style="background: linear-gradient(135deg, #F97316, #EA580C); color: #FFFFFF; border: none; padding: 0.45rem 0.9rem; font-size: 0.8rem; border-radius: 8px; font-weight: 700; cursor: pointer; box-shadow: 0 3px 10px rgba(249, 115, 22, 0.35); display: inline-flex; align-items: center; gap: 0.4rem; transition: all 0.2s; white-space: nowrap;">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
                     Démarrer l'intervention
                 </button>
             `;
         } else if (norm === 'progress') {
             workflowBtns = `
-                <button type="button" class="btn btn-sm" onclick="openAdminEditModal('${escapeHtml(req.id)}')" title="Clôturer l'intervention et compléter le PV" style="background: linear-gradient(135deg, #10B981, #059669); color: #FFFFFF; border: none; padding: 0.48rem 1.05rem; font-size: 0.82rem; border-radius: 8px; font-weight: 700; cursor: pointer; box-shadow: 0 3px 10px rgba(16, 185, 129, 0.35); display: inline-flex; align-items: center; gap: 0.45rem; transition: all 0.2s;">
+                <button type="button" class="btn btn-sm" onclick="openAdminEditModal('${escapeHtml(req.id)}')" title="Clôturer l'intervention et compléter le PV" style="background: linear-gradient(135deg, #10B981, #059669); color: #FFFFFF; border: none; padding: 0.45rem 0.9rem; font-size: 0.8rem; border-radius: 8px; font-weight: 700; cursor: pointer; box-shadow: 0 3px 10px rgba(16, 185, 129, 0.35); display: inline-flex; align-items: center; gap: 0.4rem; transition: all 0.2s; white-space: nowrap;">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="m9 15 2 2 4-4"></path></svg>
                     Clôturer (PV)
                 </button>
             `;
         } else if (norm === 'resolved') {
             workflowBtns = `
-                <a href="request_details.html?id=${encodeURIComponent(req.id)}" class="btn btn-sm btn-pv-link" title="Consulter le Procès-Verbal" style="background: rgba(59, 130, 246, 0.12); color: #60A5FA; border: 1px solid rgba(59, 130, 246, 0.35); padding: 0.45rem 0.95rem; font-size: 0.82rem; border-radius: 8px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 0.45rem; transition: all 0.2s; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);">
+                <a href="request_details.html?id=${encodeURIComponent(req.id)}" class="btn btn-sm btn-pv-link" title="Consulter le Procès-Verbal" style="background: rgba(59, 130, 246, 0.12); color: #60A5FA; border: 1px solid rgba(59, 130, 246, 0.35); padding: 0.45rem 0.9rem; font-size: 0.8rem; border-radius: 8px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem; transition: all 0.2s; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15); white-space: nowrap;">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
                     Voir le PV
                 </a>
             `;
         } else if (norm === 'rejected') {
             workflowBtns = `
-                <span style="font-size: 0.8rem; color: #FCA5A5; font-weight: 600; background: rgba(239, 68, 68, 0.12); padding: 0.38rem 0.8rem; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.3); display: inline-flex; align-items: center; gap: 0.35rem;">
+                <span style="font-size: 0.8rem; color: #FCA5A5; font-weight: 600; background: rgba(239, 68, 68, 0.12); padding: 0.38rem 0.8rem; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.3); display: inline-flex; align-items: center; gap: 0.35rem; white-space: nowrap;">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                     Demande Rejetée
                 </span>
@@ -390,21 +392,21 @@ function renderAdminTable(requests) {
         const rawEmail = req.emitterEmail || req.userEmail || (req.emitter ? `${req.emitter.toLowerCase().trim().replace(/[^a-z0-9.]/g, '').replace(/\s+/g, '.')}@agenceurbaine.ma` : 'employe@agenceurbaine.ma');
 
         tr.innerHTML = `
-            <td>
+            <td style="white-space: nowrap;">
                 <a href="request_details.html?id=${encodeURIComponent(req.id)}" class="req-id" title="Voir la fiche détaillée" style="color: #60A5FA; text-decoration: none; font-weight: 700; font-family: monospace; font-size: 0.88rem;">${escapeHtml(req.id)}</a>
             </td>
-            <td style="font-size: 0.85rem; color: #CBD5E1; font-weight: 500;">${escapeHtml(req.date)}</td>
-            <td>
+            <td style="white-space: nowrap; font-size: 0.85rem; color: #CBD5E1; font-weight: 500;">${escapeHtml(req.date)}</td>
+            <td style="white-space: nowrap;">
                 <div style="display: flex; flex-direction: column;">
                     <span style="font-weight: 600; color: #F8FAFC; font-size: 0.88rem; text-transform: capitalize; letter-spacing: 0.01em;">${escapeHtml(emitterName)}</span>
                     <span style="font-size: 0.75rem; color: #94A3B8; margin-top: 2px;">${escapeHtml(rawEmail)}</span>
                 </div>
             </td>
-            <td><span class="dept-badge">${escapeHtml(req.department || 'SI')}</span></td>
-            <td><span class="stat-badge ${req.priority === 'Urgente' ? 'rejected' : 'total'}">${escapeHtml(req.priority || 'Moyenne')}</span></td>
-            <td style="font-size: 0.85rem; color: #E2E8F0; font-weight: 500;">${escapeHtml(req.category)}</td>
-            <td><span class="status-badge ${statusClass}">● ${escapeHtml(req.status)}</span></td>
-            <td style="text-align: right;">
+            <td style="white-space: nowrap;"><span class="dept-badge">${escapeHtml(req.department || 'SI')}</span></td>
+            <td style="white-space: nowrap;"><span class="stat-badge ${req.priority === 'Urgente' ? 'rejected' : 'total'}">${escapeHtml(req.priority || 'Moyenne')}</span></td>
+            <td style="white-space: nowrap; font-size: 0.85rem; color: #E2E8F0; font-weight: 500;">${escapeHtml(req.category)}</td>
+            <td style="white-space: nowrap;"><span class="status-badge ${statusClass}">● ${escapeHtml(req.status)}</span></td>
+            <td style="text-align: right; white-space: nowrap;">
                 <div class="action-btns" style="display: flex; gap: 0.5rem; justify-content: flex-end; align-items: center;">
                     ${workflowBtns}
                     <button type="button" onclick="deleteRequest('${escapeHtml(req.id)}')" title="Supprimer la demande" style="background: transparent; color: #9CA3AF; border: none; padding: 0.4rem; cursor: pointer; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; opacity: 0.5; transition: all 0.2s;" onmouseover="this.style.opacity='1'; this.style.color='#EF4444'; this.style.background='rgba(239, 68, 68, 0.12)';" onmouseout="this.style.opacity='0.5'; this.style.color='#9CA3AF'; this.style.background='transparent';">
