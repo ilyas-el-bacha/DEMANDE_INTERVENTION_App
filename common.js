@@ -118,7 +118,7 @@ function getUsers() {
         saveUsers(users);
     }
 
-    // Ensure system administrator accounts and initial default approved employee exist in au_users
+    // Ensure system administrator accounts and initial default approved & pending employees exist in au_users
     const defaultAccounts = [
         ...DEFAULT_SYSTEM_ACCOUNTS,
         {
@@ -132,6 +132,18 @@ function getUsers() {
             department: 'SI',
             status: 'approved',
             createdAt: '2026-01-15'
+        },
+        {
+            id: 'usr-emp-si-youssef',
+            firstName: 'Youssef',
+            lastName: 'Mansouri',
+            name: 'Youssef Mansouri',
+            email: 'youssef.mansouri@agenceurbaine.ma',
+            password: 'user123',
+            role: 'employee',
+            department: 'SI',
+            status: 'pending',
+            createdAt: '2026-08-03'
         }
     ];
 
