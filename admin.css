@@ -495,3 +495,88 @@
     }
 }
 
+/* Modern Styled Controls for Admin PV Modal */
+.form-label-styled {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #CBD5E1;
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.01em;
+}
+
+.form-control-styled {
+    width: 100%;
+    background: #1E293B;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    padding: 0.6rem 0.85rem;
+    color: #F8FAFC;
+    font-size: 0.88rem;
+    font-family: inherit;
+    transition: all 0.2s ease;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.form-control-styled:focus {
+    border-color: #3B82F6;
+    background: #0F172A;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+}
+
+.form-control-styled::placeholder {
+    color: #64748B;
+}
+
+select.form-control-styled {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%3A94A3B8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.85rem center;
+    background-size: 1rem;
+    padding-right: 2.5rem;
+}
+
+input[type="date"].form-control-styled::-webkit-calendar-picker-indicator {
+    filter: invert(0.8);
+    cursor: pointer;
+}
+
+/* Radio Pill Selector */
+.radio-pill-item {
+    cursor: pointer;
+    user-select: none;
+}
+
+.radio-pill-item input[type="radio"] {
+    display: none;
+}
+
+.radio-pill-item .pill-box {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    background: #1E293B;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    color: #94A3B8;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.radio-pill-item input[type="radio"]:checked + .pill-box {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: #3B82F6;
+    color: #60A5FA;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+}
+
+.radio-pill-item:hover .pill-box {
+    border-color: rgba(255, 255, 255, 0.25);
+    color: #F8FAFC;
+}
+
