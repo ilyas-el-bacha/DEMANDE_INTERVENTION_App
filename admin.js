@@ -342,73 +342,66 @@ function renderAdminTable(requests) {
         if (norm === 'resolved') statusClass = 'resolved';
         if (norm === 'rejected') statusClass = 'rejected';
 
-        // Workflow Action Buttons depending on status:
+        // Contextual Workflow Action Buttons depending strictly on status:
         let workflowBtns = '';
 
         if (norm === 'pending' || norm === 'info_requested') {
             workflowBtns = `
-                <button type="button" class="btn btn-sm btn-action-approve" onclick="acceptRequest('${escapeHtml(req.id)}')" title="Accepter la demande" style="background: rgba(16, 185, 129, 0.2); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 0.35rem 0.65rem; font-size: 0.78rem; border-radius: 6px; font-weight: 600; cursor: pointer;">
+                <button type="button" class="btn btn-sm btn-action-approve" onclick="acceptRequest('${escapeHtml(req.id)}')" title="Accepter la demande" style="background: rgba(16, 185, 129, 0.2); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 0.4rem 0.85rem; font-size: 0.82rem; border-radius: 6px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; transition: all 0.2s;">
                     ✓ Accepter
                 </button>
-                <button type="button" class="btn btn-sm" onclick="startIntervention('${escapeHtml(req.id)}')" title="Démarrer l'intervention immédiatement" style="background: rgba(249, 115, 22, 0.2); color: #FB923C; border: 1px solid rgba(249, 115, 22, 0.4); padding: 0.35rem 0.65rem; font-size: 0.78rem; border-radius: 6px; font-weight: 600; cursor: pointer;">
-                    ▶ Démarrer
-                </button>
-                <button type="button" class="btn btn-sm" onclick="requestInfo('${escapeHtml(req.id)}')" title="Demander des informations complémentaires" style="background: rgba(245, 158, 11, 0.2); color: #FBBF24; border: 1px solid rgba(245, 158, 11, 0.4); padding: 0.35rem 0.65rem; font-size: 0.78rem; border-radius: 6px; font-weight: 600; cursor: pointer;">
-                    💬 Info
-                </button>
-                <button type="button" class="btn btn-sm btn-action-reject" onclick="rejectRequest('${escapeHtml(req.id)}')" title="Rejeter la demande" style="background: rgba(239, 68, 68, 0.2); color: #FCA5A5; border: 1px solid rgba(239, 68, 68, 0.4); padding: 0.35rem 0.65rem; font-size: 0.78rem; border-radius: 6px; font-weight: 600; cursor: pointer;">
+                <button type="button" class="btn btn-sm btn-action-reject" onclick="rejectRequest('${escapeHtml(req.id)}')" title="Rejeter la demande" style="background: rgba(239, 68, 68, 0.2); color: #FCA5A5; border: 1px solid rgba(239, 68, 68, 0.4); padding: 0.4rem 0.85rem; font-size: 0.82rem; border-radius: 6px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; transition: all 0.2s;">
                     ✕ Rejeter
                 </button>
             `;
         } else if (norm === 'accepted') {
             workflowBtns = `
-                <button type="button" class="btn btn-sm" onclick="startIntervention('${escapeHtml(req.id)}')" title="Démarrer l'intervention" style="background: linear-gradient(135deg, #F97316, #EA580C); color: #FFFFFF; border: none; padding: 0.35rem 0.75rem; font-size: 0.78rem; border-radius: 6px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 6px rgba(249, 115, 22, 0.3);">
-                    ▶ Démarrer Intervention
-                </button>
-                <button type="button" class="btn btn-sm btn-action-reject" onclick="rejectRequest('${escapeHtml(req.id)}')" title="Rejeter la demande" style="background: rgba(239, 68, 68, 0.15); color: #FCA5A5; border: 1px solid rgba(239, 68, 68, 0.3); padding: 0.35rem 0.65rem; font-size: 0.78rem; border-radius: 6px; font-weight: 600; cursor: pointer;">
-                    ✕ Rejeter
+                <button type="button" class="btn btn-sm" onclick="startIntervention('${escapeHtml(req.id)}')" title="Démarrer l'intervention" style="background: linear-gradient(135deg, #F97316, #EA580C); color: #FFFFFF; border: none; padding: 0.4rem 0.9rem; font-size: 0.82rem; border-radius: 6px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 6px rgba(249, 115, 22, 0.3); display: inline-flex; align-items: center; gap: 0.35rem; transition: all 0.2s;">
+                    ▶ Démarrer l'intervention
                 </button>
             `;
         } else if (norm === 'progress') {
             workflowBtns = `
-                <button type="button" class="btn btn-sm" onclick="openAdminEditModal('${escapeHtml(req.id)}')" title="Clôturer l'intervention et signer le PV" style="background: linear-gradient(135deg, #10B981, #059669); color: #FFFFFF; border: none; padding: 0.35rem 0.75rem; font-size: 0.78rem; border-radius: 6px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);">
-                    ✅ Clôturer Intervention
+                <button type="button" class="btn btn-sm" onclick="openAdminEditModal('${escapeHtml(req.id)}')" title="Clôturer l'intervention et compléter le PV" style="background: linear-gradient(135deg, #10B981, #059669); color: #FFFFFF; border: none; padding: 0.4rem 0.9rem; font-size: 0.82rem; border-radius: 6px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3); display: inline-flex; align-items: center; gap: 0.35rem; transition: all 0.2s;">
+                    ✅ Clôturer (PV)
                 </button>
             `;
         } else if (norm === 'resolved') {
             workflowBtns = `
-                <span style="font-size: 0.78rem; color: #34D399; font-weight: 600; background: rgba(16, 185, 129, 0.15); padding: 0.25rem 0.6rem; border-radius: 4px; border: 1px solid rgba(16, 185, 129, 0.3);">
-                    ✓ PV Signé & Clôturé
-                </span>
+                <a href="request_details.html?id=${encodeURIComponent(req.id)}" class="btn btn-sm" title="Consulter le Procès-Verbal" style="background: rgba(59, 130, 246, 0.2); color: #60A5FA; border: 1px solid rgba(59, 130, 246, 0.4); padding: 0.4rem 0.85rem; font-size: 0.82rem; border-radius: 6px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem; transition: all 0.2s;">
+                    📄 Voir le PV
+                </a>
             `;
         } else if (norm === 'rejected') {
             workflowBtns = `
-                <span style="font-size: 0.78rem; color: #FCA5A5; font-weight: 600; background: rgba(239, 68, 68, 0.15); padding: 0.25rem 0.6rem; border-radius: 4px; border: 1px solid rgba(239, 68, 68, 0.3);">
+                <span style="font-size: 0.82rem; color: #FCA5A5; font-weight: 600; background: rgba(239, 68, 68, 0.15); padding: 0.35rem 0.75rem; border-radius: 6px; border: 1px solid rgba(239, 68, 68, 0.3); display: inline-flex; align-items: center; gap: 0.35rem;">
                     ✕ Demande Rejetée
                 </span>
             `;
         }
 
+        const emitterName = req.emitter || 'Émetteur';
+        const rawEmail = req.emitterEmail || req.userEmail || (req.emitter ? `${req.emitter.toLowerCase().trim().replace(/[^a-z0-9.]/g, '').replace(/\s+/g, '.')}@agenceurbaine.ma` : 'employe@agenceurbaine.ma');
+
         tr.innerHTML = `
-            <td><span class="req-id">${escapeHtml(req.id)}</span></td>
-            <td>${escapeHtml(req.date)}</td>
-            <td><strong>${escapeHtml(req.emitter)}</strong></td>
+            <td>
+                <a href="request_details.html?id=${encodeURIComponent(req.id)}" class="req-id" title="Voir la fiche détaillée" style="color: #60A5FA; text-decoration: none; font-weight: 600; font-family: monospace;">${escapeHtml(req.id)}</a>
+            </td>
+            <td style="font-size: 0.85rem; color: #D1D5DB;">${escapeHtml(req.date)}</td>
+            <td>
+                <div style="display: flex; flex-direction: column;">
+                    <span style="font-weight: 600; color: #F3F4F6; font-size: 0.88rem; text-transform: capitalize;">${escapeHtml(emitterName)}</span>
+                    <span style="font-size: 0.75rem; color: #9CA3AF; margin-top: 1px;">${escapeHtml(rawEmail)}</span>
+                </div>
+            </td>
             <td><span class="dept-badge">${escapeHtml(req.department || 'SI')}</span></td>
             <td><span class="stat-badge ${req.priority === 'Urgente' ? 'rejected' : 'total'}">${escapeHtml(req.priority || 'Moyenne')}</span></td>
-            <td>${escapeHtml(req.category)}</td>
+            <td style="font-size: 0.85rem; color: #E5E7EB;">${escapeHtml(req.category)}</td>
             <td><span class="status-badge ${statusClass}">● ${escapeHtml(req.status)}</span></td>
             <td style="text-align: right;">
-                <div class="action-btns" style="display: flex; gap: 0.4rem; justify-content: flex-end; align-items: center; flex-wrap: wrap;">
+                <div class="action-btns" style="display: flex; gap: 0.5rem; justify-content: flex-end; align-items: center;">
                     ${workflowBtns}
-                    <a href="request_details.html?id=${encodeURIComponent(req.id)}" class="btn btn-secondary btn-icon" title="Voir Fiche / PV" style="padding: 0.35rem 0.6rem; font-size: 0.78rem;">
-                        📄 PV
-                    </a>
-                    <button type="button" class="btn btn-primary btn-icon" onclick="openAdminEditModal('${escapeHtml(req.id)}')" title="Traiter / Éditer PV complet" style="padding: 0.35rem 0.6rem; font-size: 0.78rem;">
-                        ✏️ Éditer
-                    </button>
-                    <button type="button" class="btn btn-danger btn-icon" onclick="deleteRequest('${escapeHtml(req.id)}')" title="Supprimer" style="padding: 0.35rem 0.6rem; font-size: 0.78rem;">
-                        🗑️
-                    </button>
+                    <button type="button" onclick="deleteRequest('${escapeHtml(req.id)}')" title="Supprimer la demande" style="background: transparent; color: #6B7280; border: none; padding: 0.35rem 0.5rem; cursor: pointer; border-radius: 6px; font-size: 0.85rem; opacity: 0.5; transition: all 0.2s;" onmouseover="this.style.opacity='1'; this.style.color='#EF4444'; this.style.background='rgba(239, 68, 68, 0.1)';" onmouseout="this.style.opacity='0.5'; this.style.color='#6B7280'; this.style.background='transparent';">🗑️</button>
                 </div>
             </td>
         `;
