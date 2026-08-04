@@ -124,25 +124,25 @@ function initAdminSession() {
         const tableCard = document.querySelector('.table-container-card');
         if (tableCard) tableCard.style.display = 'block';
     } else if (currentUser.role === 'superadmin') {
-        // SUPER ADMIN DASHBOARD - PARENT CONTROLLER (No intervention requests handling table)
+        // SUPER ADMIN DASHBOARD - PARENT CONTROLLER
         currentAdminDepartment = 'ALL';
         if (superPanel) superPanel.style.display = 'block';
 
         const adminTopBar = document.getElementById('admin-top-bar');
-        if (adminTopBar) adminTopBar.style.display = 'none';
+        if (adminTopBar) adminTopBar.style.display = 'flex';
 
         const statsGridContainer = document.getElementById('stats-grid-container');
-        if (statsGridContainer) statsGridContainer.style.display = 'none';
+        if (statsGridContainer) statsGridContainer.style.display = 'grid';
 
         // Hide department switcher for requests
         const deptSwitcherBox = document.getElementById('dept-switcher-container');
         if (deptSwitcherBox) deptSwitcherBox.style.display = 'none';
 
-        // Keep employee management inside superadmin panel to avoid duplicate cards
+        // Keep department employee management card hidden for superadmin (superadmin uses dedicated supervision view)
         const empCard = document.getElementById('emp-management-card');
         if (empCard) empCard.style.display = 'none';
 
-        // REMOVE / HIDE INTERVENTION REQUESTS TABLE & FILTERS FOR SUPER ADMIN (Super Admin does not process intervention requests)
+        // HIDE INTERVENTION REQUESTS TABLE & FILTERS FOR SUPER ADMIN
         const filtersCard = document.querySelector('.filters-card');
         if (filtersCard) filtersCard.style.display = 'none';
 
