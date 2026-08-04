@@ -806,7 +806,7 @@ window.deleteAdminUser = async function(userId) {
 
 window.approveEmployeeUser = async function(userId) {
     const users = getUsers();
-    const target = users.find(u => u.id === userId);
+    const target = users.find(u => u && (u.id === userId || (u.email && u.email.toLowerCase().trim() === String(userId).toLowerCase().trim())));
     if (!target) return;
 
     target.status = 'approved';
@@ -824,7 +824,7 @@ window.approveEmployeeUser = async function(userId) {
 
 window.rejectEmployeeUser = async function(userId) {
     const users = getUsers();
-    const target = users.find(u => u.id === userId);
+    const target = users.find(u => u && (u.id === userId || (u.email && u.email.toLowerCase().trim() === String(userId).toLowerCase().trim())));
     if (!target) return;
 
     const confirmed = await window.showCustomConfirm({
@@ -845,7 +845,7 @@ window.rejectEmployeeUser = async function(userId) {
 
 window.toggleEmployeeStatus = function(userId) {
     const users = getUsers();
-    const target = users.find(u => u.id === userId);
+    const target = users.find(u => u && (u.id === userId || (u.email && u.email.toLowerCase().trim() === String(userId).toLowerCase().trim())));
     if (!target) return;
 
     target.status = target.status === 'disabled' ? 'approved' : 'disabled';
@@ -856,7 +856,7 @@ window.toggleEmployeeStatus = function(userId) {
 
 window.deleteEmployeeUser = async function(userId) {
     const users = getUsers();
-    const target = users.find(u => u.id === userId);
+    const target = users.find(u => u && (u.id === userId || (u.email && u.email.toLowerCase().trim() === String(userId).toLowerCase().trim())));
     if (!target) return;
 
     const confirmed = await window.showCustomConfirm({
@@ -869,7 +869,7 @@ window.deleteEmployeeUser = async function(userId) {
 
     if (!confirmed) return;
 
-    const updated = users.filter(u => u.id !== userId);
+    const updated = users.filter(u => u && u.id !== target.id && (u.email || '').toLowerCase().trim() !== (target.email || '').toLowerCase().trim());
     saveUsers(updated);
     renderEmployeeManagementPanel();
     renderSuperAdminPanel();

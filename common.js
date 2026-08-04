@@ -112,70 +112,28 @@ function getUsers() {
     } catch(e) {}
 
     // Clean up old legacy mock employee default accounts if present
-    const mockIds = ['usr-emp-daf', 'usr-emp-dgur', 'usr-emp-det', 'usr-emp-si'];
+    const mockIds = ['usr-emp-daf', 'usr-emp-dgur', 'usr-emp-det', 'usr-emp-si', 'usr-emp-si-youssef'];
     if (users.some(u => mockIds.includes(u.id))) {
         users = users.filter(u => !mockIds.includes(u.id));
         saveUsers(users);
     }
 
-    // Ensure system administrator accounts and initial default approved & pending employees exist in au_users
-    const defaultAccounts = [
-        ...DEFAULT_SYSTEM_ACCOUNTS,
-        {
-            id: 'usr-emp-si-ilyas',
-            firstName: 'Ilyas',
-            lastName: 'El Bacha',
-            name: 'Ilyas El Bacha',
-            email: 'ilyas.elbacha@agenceurbaine.ma',
-            password: 'user123',
-            role: 'employee',
-            department: 'SI',
-            status: 'approved',
-            createdAt: '2026-01-15'
-        },
-        {
-            id: 'usr-emp-si-youssef',
-            firstName: 'Youssef',
-            lastName: 'Mansouri',
-            name: 'Youssef Mansouri',
-            email: 'youssef.mansouri@agenceurbaine.ma',
-            password: 'user123',
-            role: 'employee',
-            department: 'SI',
-            status: 'pending',
-            createdAt: '2026-08-03'
-        }
-    ];
-
+    // Ensure core system administrator accounts exist in au_users (Superadmin and 4 Dept Admins)
     let updated = false;
-    defaultAccounts.forEach(acc => {
-        const idx = users.findIndex(u => (u.email || '').toLowerCase().trim() === acc.email.toLowerCase().trim());
+    DEFAULT_SYSTEM_ACCOUNTS.forEach(acc => {
+        const idx = users.findIndex(u => u.id === acc.id || (u.email || '').toLowerCase().trim() === acc.email.toLowerCase().trim());
         if (idx === -1) {
             users.push(acc);
             updated = true;
         } else {
             const u = users[idx];
             let changed = false;
-            if (acc.id === 'usr-emp-si-ilyas') {
-                if (u.status !== 'approved') {
-                    u.status = 'approved';
-                    changed = true;
-                }
-                if (u.role !== 'employee') {
-                    u.role = 'employee';
-                    changed = true;
-                }
-                if (!u.department || u.department !== 'SI') {
-                    u.department = 'SI';
-                    changed = true;
-                }
+            if (!u.role) {
+                u.role = acc.role;
+                changed = true;
             }
             if (!u.department) {
                 u.department = acc.department;
-                changed = true;
-            }
-            if (!u.role) {
-                u.role = acc.role;
                 changed = true;
             }
             if (changed) updated = true;
