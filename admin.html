@@ -311,27 +311,32 @@
             </div>
 
             <!-- Department Employee Approval & Management Panel -->
-            <div id="emp-management-card" class="superadmin-card" style="margin-bottom: 2rem;">
+            <div id="emp-management-card" class="emp-management-card" style="margin-bottom: 2rem;">
                 <div class="superadmin-header">
-                    <div class="badge-official">Gestion du Personnel Départemental</div>
-                    <h2 id="emp-management-title">Validation des Comptes Employés (<span id="emp-dept-title">SI</span>)</h2>
+                    <div class="badge-official" style="background: rgba(99, 102, 241, 0.15); border-color: rgba(99, 102, 241, 0.3); color: #818CF8;">Gestion du Personnel Départemental</div>
+                    <h2 id="emp-management-title">Validation & Management des Comptes Employés (<span id="emp-dept-title">SI</span>)</h2>
                     <p id="emp-management-desc">Approuvez ou rejetez les demandes d'inscription des employés de votre département pour leur autoriser l'accès au portail.</p>
                 </div>
 
-                <div class="superadmin-grid">
-                    <div class="superadmin-box">
-                        <h3>
-                            <span>Inscriptions Employés en Attente</span>
+                <div class="emp-management-layout">
+                    <!-- Box 1: Pending Employee Registrations -->
+                    <div class="emp-box-pending">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+                            <h3 style="margin: 0; font-size: 1.05rem; font-weight: 700; color: #FBBF24; display: flex; align-items: center; gap: 0.5rem;">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                <span>Demandes d'Inscription Employés en Attente</span>
+                            </h3>
                             <span class="stat-badge pending" id="emp-pending-badge">0 en attente</span>
-                        </h3>
+                        </div>
                         <div style="overflow-x: auto;">
                             <table class="superadmin-table">
                                 <thead>
                                     <tr>
-                                        <th>Employé / Email</th>
+                                        <th>Employé</th>
+                                        <th>Adresse E-mail</th>
                                         <th>Département</th>
-                                        <th>Date</th>
-                                        <th style="text-align: right;">Action</th>
+                                        <th>Date d'Inscription</th>
+                                        <th style="text-align: right;">Actions de Validation</th>
                                     </tr>
                                 </thead>
                                 <tbody id="pending-employees-tbody">
@@ -341,19 +346,25 @@
                         </div>
                     </div>
 
-                    <div class="superadmin-box">
-                        <h3>
-                            <span>Employés Enregistrés du Département</span>
+                    <!-- Box 2: All Registered Employees in Department -->
+                    <div class="emp-box-all">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+                            <h3 style="margin: 0; font-size: 1.05rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem;">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                                <span>Employés Enregistrés du Département</span>
+                            </h3>
                             <span class="stat-badge total" id="emp-total-badge">0 employés</span>
-                        </h3>
-                        <div style="overflow-x: auto; max-height: 240px; overflow-y: auto;">
+                        </div>
+                        <div style="overflow-x: auto; max-height: 360px; overflow-y: auto;">
                             <table class="superadmin-table">
                                 <thead>
                                     <tr>
-                                        <th>Nom & Email</th>
+                                        <th>Employé</th>
+                                        <th>Adresse E-mail</th>
                                         <th>Département</th>
-                                        <th>Statut</th>
-                                        <th style="text-align: right;">Actions</th>
+                                        <th>Statut du Compte</th>
+                                        <th>Date d'Inscription</th>
+                                        <th style="text-align: right;">Gestion du Compte</th>
                                     </tr>
                                 </thead>
                                 <tbody id="all-employees-tbody">

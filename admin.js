@@ -615,18 +615,23 @@ function renderEmployeeManagementPanel() {
     if (pendingTbody) {
         pendingTbody.innerHTML = '';
         if (pendingEmp.length === 0) {
-            pendingTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color: var(--text-muted); padding: 1rem;">Aucune demande d'inscription d'employé en attente pour ce département.</td></tr>`;
+            pendingTbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--text-muted); padding: 1.5rem;">Aucune demande d'inscription d'employé en attente pour ce département.</td></tr>`;
         } else {
             pendingEmp.forEach(emp => {
                 const tr = document.createElement('tr');
                 const fullName = emp.name || `${emp.firstName || ''} ${emp.lastName || ''}`.trim() || 'Employé';
+                const initials = getInitials(fullName);
+                
                 tr.innerHTML = `
                     <td>
-                        <strong style="color: var(--text-primary); font-size: 0.95rem;">${escapeHtml(fullName)}</strong>
-                        <small style="color: var(--text-muted); font-size: 0.8rem; display: block; margin-top: 2px;">${escapeHtml(emp.email)}</small>
+                        <div class="user-info-cell">
+                            <div class="user-avatar-inline">${escapeHtml(initials)}</div>
+                            <strong style="color: var(--text-primary); font-size: 0.95rem;">${escapeHtml(fullName)}</strong>
+                        </div>
                     </td>
+                    <td><span style="color: var(--text-muted); font-size: 0.88rem;">${escapeHtml(emp.email)}</span></td>
                     <td><span class="dept-badge">${escapeHtml(emp.department)}</span></td>
-                    <td><span style="font-size: 0.85rem; color: var(--text-secondary);">${escapeHtml(emp.createdAt || '2026-07-31')}</span></td>
+                    <td><span style="font-size: 0.85rem; color: var(--text-secondary); white-space: nowrap;">${escapeHtml(emp.createdAt || '2026-08-02')}</span></td>
                     <td style="text-align: right;">
                         <div class="action-btns-wrap">
                             <button type="button" class="btn-action btn-action-approve" onclick="approveEmployeeUser('${emp.id}')" title="Approuver l'employé">
@@ -650,7 +655,7 @@ function renderEmployeeManagementPanel() {
     if (allTbody) {
         allTbody.innerHTML = '';
         if (deptEmployees.length === 0) {
-            allTbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color: var(--text-muted); padding: 1rem;">Aucun employé enregistré pour ce département.</td></tr>`;
+            allTbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-muted); padding: 1.5rem;">Aucun employé enregistré pour ce département.</td></tr>`;
         } else {
             deptEmployees.forEach(emp => {
                 const tr = document.createElement('tr');
@@ -679,14 +684,19 @@ function renderEmployeeManagementPanel() {
                 `;
 
                 const fullName = emp.name || `${emp.firstName || ''} ${emp.lastName || ''}`.trim() || 'Employé';
+                const initials = getInitials(fullName);
 
                 tr.innerHTML = `
                     <td>
-                        <strong style="color: var(--text-primary); font-size: 0.95rem;">${escapeHtml(fullName)}</strong>
-                        <small style="color: var(--text-muted); font-size: 0.8rem; display: block; margin-top: 2px;">${escapeHtml(emp.email)}</small>
+                        <div class="user-info-cell">
+                            <div class="user-avatar-inline">${escapeHtml(initials)}</div>
+                            <strong style="color: var(--text-primary); font-size: 0.95rem;">${escapeHtml(fullName)}</strong>
+                        </div>
                     </td>
+                    <td><span style="color: var(--text-muted); font-size: 0.88rem;">${escapeHtml(emp.email)}</span></td>
                     <td><span class="dept-badge">${escapeHtml(emp.department)}</span></td>
                     <td>${badge}</td>
+                    <td><span style="font-size: 0.85rem; color: var(--text-secondary); white-space: nowrap;">${escapeHtml(emp.createdAt || '2026-08-02')}</span></td>
                     <td style="text-align: right;">
                         <div class="action-btns-wrap">
                             ${toggleBtnHtml}
