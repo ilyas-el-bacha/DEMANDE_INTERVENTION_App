@@ -374,10 +374,10 @@ function renderAdminTable(requests) {
             `;
         } else if (norm === 'resolved') {
             workflowBtns = `
-                <a href="request_details.html?id=${encodeURIComponent(req.id)}" class="btn btn-sm btn-pv-link" title="Consulter le Procès-Verbal" style="background: rgba(59, 130, 246, 0.12); color: #60A5FA; border: 1px solid rgba(59, 130, 246, 0.35); padding: 0.45rem 0.9rem; font-size: 0.8rem; border-radius: 8px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem; transition: all 0.2s; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15); white-space: nowrap;">
+                <button type="button" class="btn btn-sm btn-pv-link" onclick="openViewPVModal('${escapeHtml(req.id)}')" title="Consulter le Procès-Verbal" style="background: rgba(59, 130, 246, 0.12); color: #60A5FA; border: 1px solid rgba(59, 130, 246, 0.35); padding: 0.45rem 0.9rem; font-size: 0.8rem; border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem; transition: all 0.2s; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15); white-space: nowrap;">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
                     Voir le PV
-                </a>
+                </button>
             `;
         } else if (norm === 'rejected') {
             workflowBtns = `
@@ -904,6 +904,17 @@ function initModalEvents() {
     if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
     if (cancelModalBtn) cancelModalBtn.addEventListener('click', closeModal);
 
+    const closeViewPvBtn = document.getElementById('close-view-pv-modal');
+    const closeViewPvBtnBottom = document.getElementById('close-view-pv-btn');
+    const viewPvModal = document.getElementById('view-pv-modal');
+
+    const closeViewPv = () => {
+        if (viewPvModal) viewPvModal.style.display = 'none';
+    };
+
+    if (closeViewPvBtn) closeViewPvBtn.addEventListener('click', closeViewPv);
+    if (closeViewPvBtnBottom) closeViewPvBtnBottom.addEventListener('click', closeViewPv);
+
     if (editForm) {
         editForm.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -911,6 +922,134 @@ function initModalEvents() {
         });
     }
 }
+
+window.openViewPVModal = function(id) {
+    const req = allRequests.find(r => r.id === id);
+    if (!req) return;
+
+    const modal = document.getElementById('view-pv-modal');
+    const titleElem = document.getElementById('view-pv-modal-title');
+    const bodyElem = document.getElementById('view-pv-modal-body');
+    const fullLink = document.getElementById('view-pv-full-link');
+
+    if (titleElem) titleElem.textContent = `Procès-Verbal d'Intervention - N° ${req.id}`;
+    if (fullLink) fullLink.href = `request_details.html?id=${encodeURIComponent(req.id)}`;
+
+    const verif = req.verification || {};
+    const interv = req.intervention || {};
+    const result = req.result || {};
+    const sig = req.signature || {};
+
+    const sigHtml = (sig.signed || (req.signatures && req.signatures.admin)) ? `
+        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 0.85rem; text-align: center;">
+            <div style="color: #34D399; font-weight: 800; font-size: 0.95rem; display: flex; align-items: center; justify-content: center; gap: 0.4rem; margin-bottom: 0.25rem;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Visa Officiel Apposé
+            </div>
+            <div style="color: #F8FAFC; font-weight: 700; font-size: 0.9rem;">${escapeHtml(sig.signer || req.signatures?.adminName || 'Chef de Département')}</div>
+            <div style="color: #94A3B8; font-size: 0.78rem; margin-top: 2px;">Département ${escapeHtml(sig.department || req.department)} • Date : ${escapeHtml(sig.date || req.signatures?.adminDate || req.date)}</div>
+        </div>
+    ` : `
+        <div style="background: rgba(100, 116, 139, 0.1); border: 1px dashed rgba(100, 116, 139, 0.3); border-radius: 8px; padding: 0.85rem; text-align: center; color: #94A3B8; font-style: italic;">
+            En attente de visa officiel
+        </div>
+    `;
+
+    const emitterSigHtml = (req.signatures && req.signatures.emitter) ? `
+        <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 0.5rem; text-align: center; max-height: 80px; display: flex; align-items: center; justify-content: center;">
+            <img src="${req.signatures.emitter}" style="max-height: 60px; max-width: 100%; object-fit: contain;" alt="Visa Émetteur">
+        </div>
+    ` : `
+        <div style="background: rgba(255, 255, 255, 0.03); border: 1px dashed rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 0.85rem; text-align: center; color: #94A3B8; font-size: 0.8rem;">
+            Signature manuscrite enregistrée lors de l'émission
+        </div>
+    `;
+
+    bodyElem.innerHTML = `
+        <div style="display: flex; flex-direction: column; gap: 1.25rem; font-family: system-ui, -apple-system, sans-serif;">
+            
+            <!-- Summary Banner -->
+            <div style="background: linear-gradient(135deg, rgba(30, 58, 138, 0.6), rgba(30, 64, 175, 0.4)); border: 1px solid rgba(59, 130, 246, 0.3); padding: 1rem; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+                <div>
+                    <div style="font-size: 0.75rem; color: #93C5FD; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Référence Officielle</div>
+                    <div style="font-size: 1.15rem; font-weight: 800; color: #FFFFFF;">Demande N° ${escapeHtml(req.id)}</div>
+                    <div style="font-size: 0.8rem; color: #CBD5E1;">Réf. Code : ${escapeHtml(req.code || 'FM-SI-04')} • Ver. ${escapeHtml(req.version || '02')}</div>
+                </div>
+                <div style="text-align: right;">
+                    <span style="background: #10B981; color: #FFFFFF; font-weight: 800; padding: 0.4rem 0.9rem; border-radius: 9999px; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);">
+                        ● ${escapeHtml(req.status)}
+                    </span>
+                    <div style="font-size: 0.78rem; color: #94A3B8; margin-top: 0.4rem;">Émise le ${escapeHtml(req.date || '—')}</div>
+                </div>
+            </div>
+
+            <!-- Section 1: Demandeur & Anomaly -->
+            <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 1rem;">
+                <div style="font-size: 0.85rem; font-weight: 700; color: #60A5FA; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 0.4rem;">
+                    1. Information Générale de la Demande
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.85rem; font-size: 0.88rem;">
+                    <div><span style="color: #94A3B8;">Émetteur :</span> <strong style="color: #F8FAFC;">${escapeHtml(req.emitter || '—')}</strong></div>
+                    <div><span style="color: #94A3B8;">Email :</span> <strong style="color: #F8FAFC;">${escapeHtml(req.emitterEmail || '—')}</strong></div>
+                    <div><span style="color: #94A3B8;">Département :</span> <strong style="color: #60A5FA;">${escapeHtml(req.department || '—')}</strong></div>
+                    <div><span style="color: #94A3B8;">Priorité :</span> <strong style="color: ${req.priority === 'Urgente' ? '#FCA5A5' : '#F8FAFC'};">${escapeHtml(req.priority || 'Moyenne')}</strong></div>
+                    <div style="grid-column: 1 / -1;"><span style="color: #94A3B8;">Nature d'intervention :</span> <strong style="color: #38BDF8;">${escapeHtml(req.category || '—')}</strong></div>
+                </div>
+                <div style="margin-top: 0.75rem; background: rgba(0, 0, 0, 0.2); padding: 0.75rem; border-radius: 8px; border-left: 3px solid #60A5FA;">
+                    <div style="font-size: 0.78rem; color: #94A3B8; font-weight: 600; margin-bottom: 0.2rem;">Anomalie / Problème signalé :</div>
+                    <div style="font-size: 0.88rem; color: #E2E8F0; white-space: pre-wrap;">${escapeHtml(req.anomaly || 'Aucune description fournie.')}</div>
+                </div>
+            </div>
+
+            <!-- Section 2: Verification (Diagnostic) -->
+            <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 1rem;">
+                <div style="font-size: 0.85rem; font-weight: 700; color: #34D399; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 0.4rem;">
+                    2. Diagnostic Technicien & Vérification
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.85rem; font-size: 0.88rem;">
+                    <div><span style="color: #94A3B8;">Date d'analyse :</span> <strong style="color: #F8FAFC;">${escapeHtml(verif.dateAnalyse || req.date || '—')}</strong></div>
+                    <div><span style="color: #94A3B8;">Analyste / Technicien :</span> <strong style="color: #F8FAFC;">${escapeHtml(verif.verifiedBy || 'Technicien')}</strong></div>
+                    <div><span style="color: #94A3B8;">Mode d'intervention :</span> <strong style="color: #34D399;">${escapeHtml(verif.type || 'Interne')}</strong></div>
+                </div>
+                <div style="margin-top: 0.75rem; background: rgba(0, 0, 0, 0.2); padding: 0.75rem; border-radius: 8px; border-left: 3px solid #34D399;">
+                    <div style="font-size: 0.78rem; color: #94A3B8; font-weight: 600; margin-bottom: 0.2rem;">Diagnostic & Recommandations :</div>
+                    <div style="font-size: 0.88rem; color: #E2E8F0; white-space: pre-wrap;">${escapeHtml(verif.recommendation || 'Diagnostic complété par le technicien.')}</div>
+                </div>
+            </div>
+
+            <!-- Section 3: Travaux Réalisés -->
+            <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 1rem;">
+                <div style="font-size: 0.85rem; font-weight: 700; color: #A78BFA; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 0.4rem;">
+                    3. Travaux Réalisés & Clôture
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.85rem; font-size: 0.88rem;">
+                    <div><span style="color: #94A3B8;">Date de réalisation :</span> <strong style="color: #F8FAFC;">${escapeHtml(interv.date || verif.dateAnalyse || req.date || '—')}</strong></div>
+                    <div><span style="color: #94A3B8;">Service effectué :</span> <strong style="color: #A78BFA;">${escapeHtml(interv.type || 'Dépannage & Maintenance')}</strong></div>
+                    <div><span style="color: #94A3B8;">Résultat :</span> <strong style="color: ${result.effective !== false ? '#34D399' : '#FCA5A5'};">${result.effective !== false ? 'EFFICACE (100%)' : 'NON EFFICACE'}</strong></div>
+                </div>
+                <div style="margin-top: 0.75rem; background: rgba(0, 0, 0, 0.2); padding: 0.75rem; border-radius: 8px; border-left: 3px solid #A78BFA;">
+                    <div style="font-size: 0.78rem; color: #94A3B8; font-weight: 600; margin-bottom: 0.2rem;">Observations & Notes du Technicien :</div>
+                    <div style="font-size: 0.88rem; color: #E2E8F0; white-space: pre-wrap;">${escapeHtml(interv.observations || result.notes || 'Intervention exécutée et clôturée avec succès.')}</div>
+                </div>
+            </div>
+
+            <!-- Section 4: Signatures Grid -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem;">
+                <div>
+                    <div style="font-size: 0.8rem; font-weight: 700; color: #94A3B8; margin-bottom: 0.4rem;">Visa Émetteur :</div>
+                    ${emitterSigHtml}
+                </div>
+                <div>
+                    <div style="font-size: 0.8rem; font-weight: 700; color: #94A3B8; margin-bottom: 0.4rem;">Visa Chef de Département / Signataire :</div>
+                    ${sigHtml}
+                </div>
+            </div>
+
+        </div>
+    `;
+
+    if (modal) modal.style.display = 'flex';
+};
 
 window.openAdminEditModal = function(id) {
     const req = allRequests.find(r => r.id === id);
@@ -1017,6 +1156,13 @@ async function saveAdminEdit() {
         department: req.department || currentAdminDepartment,
         signed: true
     };
+
+    if (!req.signatures) {
+        req.signatures = {};
+    }
+    req.signatures.admin = true;
+    req.signatures.adminName = signerName;
+    req.signatures.adminDate = signatureDate;
 
     if (!req.history) req.history = [];
     req.history.push({
