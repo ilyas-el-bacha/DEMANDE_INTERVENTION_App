@@ -594,6 +594,16 @@ function normalizeDeptCode(dept) {
     return d;
 }
 
+if (typeof getInitials !== 'function') {
+    window.getInitials = function(name) {
+        if (!name || typeof name !== 'string') return 'AU';
+        const parts = name.trim().split(/\s+/).filter(Boolean);
+        if (parts.length === 0) return 'AU';
+        if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    };
+}
+
 function renderEmployeeManagementPanel() {
     const card = document.getElementById('emp-management-card');
     if (!card) return;
