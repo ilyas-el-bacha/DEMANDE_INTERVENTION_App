@@ -82,7 +82,7 @@ function initStorage() {
 
 function getUsers() {
     let users = [];
-    const rawData = localStorage.getItem(USERS_KEY);
+    const rawData = localStorage.getItem(USERS_KEY) || localStorage.getItem('au_users');
 
     if (rawData === null) {
         // First-time initialization of central au_users database:
@@ -149,7 +149,9 @@ function getUsers() {
 
 function saveUsers(users) {
     try {
-        localStorage.setItem(USERS_KEY, JSON.stringify(users));
+        const json = JSON.stringify(users);
+        localStorage.setItem(USERS_KEY, json);
+        localStorage.setItem('au_users', json);
         window.dispatchEvent(new Event('storage'));
         window.dispatchEvent(new CustomEvent('au_data_changed', { detail: { type: 'users' } }));
     } catch(e) {
@@ -164,7 +166,7 @@ function initSeedUsers() {
 
 function getRequests() {
     try {
-        const stored = localStorage.getItem(STORAGE_KEY);
+        const stored = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('au_requests');
         if (stored !== null) {
             const parsed = JSON.parse(stored);
             if (Array.isArray(parsed)) return parsed;
@@ -175,7 +177,9 @@ function getRequests() {
 
 function saveRequests(requests) {
     try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(requests));
+        const json = JSON.stringify(requests);
+        localStorage.setItem(STORAGE_KEY, json);
+        localStorage.setItem('au_requests', json);
         window.dispatchEvent(new Event('storage'));
         window.dispatchEvent(new CustomEvent('au_data_changed', { detail: { type: 'requests' } }));
     } catch(e) {

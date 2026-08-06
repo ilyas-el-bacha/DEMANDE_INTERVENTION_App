@@ -194,6 +194,9 @@ function renderSuperEmployeesTable() {
             statusBadge = '<span class="stat-badge rejected">Inactif / Rejeté</span>';
         }
 
+        const isPending = emp.status === 'pending';
+        const isActive = emp.status === 'approved';
+
         return `
             <tr>
                 <td>
@@ -208,13 +211,101 @@ function renderSuperEmployeesTable() {
                     </span>
                 </td>
                 <td>${statusBadge}</td>
-                <td style="text-align: right; color: #94A3B8; font-size: 0.82rem;">
-                    ${escapeHtml(emp.createdAt || 'Standard')}
+                <td style="text-align: right;">
+                    <div style="display: flex; gap: 0.4rem; justify-content: flex-end; align-items: center;">
+                        ${isPending ? `
+                            <button type="button" class="btn btn-success btn-sm" onclick="approveEmployeeAccount('${emp.id}')" title="Approuver le compte" style="padding: 0.3rem 0.6rem; font-size: 0.75rem; background: rgba(34, 197, 94, 0.2); border-color: rgba(34, 197, 94, 0.4); color: #86EFAC;">
+                                Approuver
+                            </button>
+                        ` : ''}
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="toggleEmployeeStatus('${emp.id}')" title="Changer le statut" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;">
+                            ${isActive ? 'Désactiver' : 'Activer'}
+                        </button>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="resetEmployeePassword('${emp.id}')" title="Réinitialiser le mot de passe" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;">
+                            Reset
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm" onclick="deleteEmployeeAccount('${emp.id}')" title="Supprimer le compte" style="padding: 0.3rem 0.6rem; font-size: 0.75rem; background: rgba(220, 38, 38, 0.2); border-color: rgba(220, 38, 38, 0.4); color: #FCA5A5;">
+                            Suppr.
+                        </button>
+                    </div>
                 </td>
             </tr>
         `;
     }).join('');
 }
+
+// Additional Employee Management Actions for Super Admin
+window.approveEmployeeAccount = function(empId) {
+    const users = getUsers();
+    const idx = users.findIndex(u => u.id === empId);
+    if (idx !== -1) {
+        users[idx].status = 'approved';
+        saveUsers(users);
+        renderSuperAdminPanel();
+        showCustomAlert({
+            title: "Compte Approuvé",
+            message: `Le compte employé de ${users[idx].name || users[idx].firstName} a été approuvé avec succès.`,
+            type: "success"
+        });
+    }
+};
+
+window.toggleEmployeeStatus = function(empId) {
+    const users = getUsers();
+    const idx = users.findIndex(u => u.id === empId);
+    if (idx !== -1) {
+        users[idx].status = users[idx].status === 'approved' ? 'disabled' : 'approved';
+        saveUsers(users);
+        renderSuperAdminPanel();
+    }
+};
+
+window.resetEmployeePassword = async function(empId) {
+    const users = getUsers();
+    const user = users.find(u => u.id === empId);
+    if (!user) return;
+
+    const confirmReset = await showCustomConfirm({
+        title: "Réinitialiser le mot de passe ?",
+        message: `Voulez-vous réinitialiser le mot de passe de ${user.name || user.firstName} à "user123" ?`,
+        confirmText: "Réinitialiser",
+        type: "warning"
+    });
+
+    if (confirmReset) {
+        user.password = 'user123';
+        saveUsers(users);
+        showCustomAlert({
+            title: "Mot de passe réinitialisé",
+            message: `Le nouveau mot de passe pour ${user.name || user.firstName} est : user123`,
+            type: "success"
+        });
+    }
+};
+
+window.deleteEmployeeAccount = async function(empId) {
+    const users = getUsers();
+    const user = users.find(u => u.id === empId);
+    if (!user) return;
+
+    const confirmDelete = await showCustomConfirm({
+        title: "Supprimer le compte employé ?",
+        message: `Êtes-vous sûr de vouloir supprimer définitivement le compte de ${user.name || user.firstName} ? Cette action est irréversible.`,
+        confirmText: "Supprimer",
+        type: "danger"
+    });
+
+    if (confirmDelete) {
+        const updatedUsers = users.filter(u => u.id !== empId);
+        saveUsers(updatedUsers);
+        renderSuperAdminPanel();
+        showCustomAlert({
+            title: "Compte Supprimé",
+            message: `Le compte employé a été supprimé.`,
+            type: "success"
+        });
+    }
+};
 
 // Global Actions for Super Admin
 window.openCreateAdminModal = function() {
