@@ -51,30 +51,13 @@
             <div class="login-card">
                 
                 <div class="login-header">
-                    <div class="badge-official">Portail d'Inscription Sécurisé</div>
-                    <h2>Créer un Nouveau Compte</h2>
-                    <p>Choisissez votre profil d'utilisateur pour commencer la procédure d'inscription.</p>
+                    <div class="badge-official">Création de Compte Employé</div>
+                    <h2>Créer un Compte Employé</h2>
+                    <p>Renseignez vos informations professionnelles pour demander l'accès à votre espace employé.</p>
                 </div>
 
                 <!-- Alert Message Banner -->
                 <div id="signup-alert" class="alert-box" style="display: none; margin-bottom: 1.5rem;"></div>
-
-                <!-- Role Selector Tabs -->
-                <div class="role-selector">
-                    <button type="button" class="role-tab active" id="tab-signup-employee">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
-                        </svg>
-                        Compte Employé
-                    </button>
-                    <button type="button" class="role-tab" id="tab-signup-admin">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                        </svg>
-                        Administrateur
-                    </button>
-                </div>
 
                 <!-- Form: Employee Registration -->
                 <form id="form-register-employee" class="auth-form active">
@@ -117,58 +100,6 @@
                             <line x1="23" y1="11" x2="17" y2="11"></line>
                         </svg>
                         Créer mon Compte Employé
-                    </button>
-                </form>
-
-                <!-- Form: Admin Registration -->
-                <form id="form-register-admin" class="auth-form">
-                    <div class="admin-notice">
-                        <strong>Procédure de validation préalable :</strong>
-                        <p>Après validation du formulaire, votre compte sera soumis à la révision du <strong>Super Administrateur</strong>. Vous ne pourrez vous connecter qu'une fois votre statut passé à "Approuvé".</p>
-                    </div>
-
-                    <div class="form-row gap-row">
-                        <div class="form-group flex-1">
-                            <label for="adm-firstname">Prénom *</label>
-                            <input type="text" id="adm-firstname" class="form-control" placeholder="ex: Omar" required>
-                        </div>
-                        <div class="form-group flex-1">
-                            <label for="adm-lastname">Nom *</label>
-                            <input type="text" id="adm-lastname" class="form-control" placeholder="ex: BENJELLOUN" required>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="adm-department">Département Administré *</label>
-                        <select id="adm-department" class="form-control" required>
-                            <option value="DAF">DAF - Direction Administrative et Financière</option>
-                            <option value="DGUR">DGUR - Direction de la Gestion Urbaine & Réglementation</option>
-                            <option value="DET">DET - Direction des Études Techniques</option>
-                            <option value="SI">SI - Service Informatique et Systèmes d'Information</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="adm-email-signup">Email Professionnel Administrateur *</label>
-                        <input type="email" id="adm-email-signup" class="form-control" placeholder="omar.benjelloun@agenceurbaine.ma" required>
-                    </div>
-
-                    <div class="form-row gap-row">
-                        <div class="form-group flex-1">
-                            <label for="adm-pass-signup">Mot de Passe *</label>
-                            <input type="password" id="adm-pass-signup" class="form-control" placeholder="••••••••" required minlength="4">
-                        </div>
-                        <div class="form-group flex-1">
-                            <label for="adm-pass-confirm">Confirmer le Mot de Passe *</label>
-                            <input type="password" id="adm-pass-confirm" class="form-control" placeholder="••••••••" required minlength="4">
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary btn-block">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                        </svg>
-                        Soumettre la Demande d'Inscription Admin
                     </button>
                 </form>
 

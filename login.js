@@ -5,7 +5,6 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     initLoginForm();
-    initPresets();
     checkUrlParams();
 });
 
@@ -88,24 +87,6 @@ function initLoginForm() {
                 window.location.href = redirectUrl;
             }, 800);
         }
-    });
-}
-
-function initPresets() {
-    const presetBtns = document.querySelectorAll('.preset-btn');
-    presetBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            presetBtns.forEach(b => b.classList.remove('active-preset'));
-            btn.classList.add('active-preset');
-
-            const email = btn.getAttribute('data-email');
-            const pass = btn.getAttribute('data-pass') || 'admin';
-            const emailInput = document.getElementById('login-email');
-            const passInput = document.getElementById('login-password');
-            if (emailInput && email) emailInput.value = email;
-            if (passInput && pass) passInput.value = pass;
-            hideLoginAlert();
-        });
     });
 }
 

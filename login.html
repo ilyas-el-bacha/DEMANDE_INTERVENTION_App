@@ -52,7 +52,7 @@
                 <div class="login-header">
                     <div class="badge-official">Espace d'Authentification Unique</div>
                     <h2>Portail d'Accès Sécurisé</h2>
-                    <p>Saisissez vos identifiants. Le système identifie automatiquement votre rôle (Employé ou Administrateur).</p>
+                    <p>Saisissez vos identifiants pour vous connecter à votre espace.</p>
                 </div>
 
                 <!-- Alert Message Banner -->
@@ -62,20 +62,12 @@
                 <form id="form-login" class="auth-form active">
                     <div class="form-group">
                         <label for="login-email">Adresse Email Professionnelle</label>
-                        <input type="email" id="login-email" class="form-control" placeholder="ilyas.elbacha@agenceurbaine.ma" required autocomplete="email">
+                        <input type="email" id="login-email" class="form-control" placeholder="exemple@agenceurbaine.ma" required autocomplete="email">
                     </div>
 
                     <div class="form-group">
                         <label for="login-password">Mot de passe</label>
                         <input type="password" id="login-password" class="form-control" placeholder="••••••••" required autocomplete="current-password">
-                    </div>
-
-                    <!-- Quick Demo Presets -->
-                    <div class="preset-title">Comptes de démonstration rapide :</div>
-                    <div class="admin-presets" style="grid-template-columns: repeat(3, 1fr);">
-                        <button type="button" class="preset-btn active-preset" data-email="ilyas.elbacha@agenceurbaine.ma" data-pass="user123">Employé SI</button>
-                        <button type="button" class="preset-btn" data-email="si.admin@agenceurbaine.ma" data-pass="admin">Admin SI</button>
-                        <button type="button" class="preset-btn" data-email="daf.admin@agenceurbaine.ma" data-pass="admin">Admin DAF</button>
                     </div>
 
                     <button type="submit" class="btn btn-primary btn-block">
