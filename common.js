@@ -452,7 +452,12 @@ function updateNavbar() {
         const items = navLinks.querySelectorAll('.nav-item');
         items.forEach(item => {
             if (!item.classList.contains('nav-superadmin-link') && !item.classList.contains('nav-admin-link')) {
-                item.style.display = '';
+                const href = item.getAttribute('href') || '';
+                if (!user && (href.includes('intervention.html') || href.includes('my_requests.html') || item.classList.contains('nav-auth-only'))) {
+                    item.style.display = 'none';
+                } else {
+                    item.style.display = '';
+                }
             }
         });
         const superNavBtn = navLinks.querySelector('.nav-superadmin-link');
@@ -863,4 +868,12 @@ document.addEventListener('DOMContentLoaded', () => {
     checkRoleRedirects();
     updateNavbar();
     injectCustomModalStyles();
+});
+
+window.addEventListener('au_data_changed', () => {
+    updateNavbar();
+});
+
+window.addEventListener('storage', () => {
+    updateNavbar();
 });

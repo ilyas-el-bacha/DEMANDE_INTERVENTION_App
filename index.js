@@ -7,16 +7,44 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Initialize System Components
     initNavigation();
     initCurrentYear();
+    updateHomePageAuthUI();
     loadAndAnimateStatistics();
 });
 
 window.addEventListener('storage', () => {
+    updateHomePageAuthUI();
     loadAndAnimateStatistics();
 });
 
 window.addEventListener('au_data_changed', () => {
+    updateHomePageAuthUI();
     loadAndAnimateStatistics();
 });
+
+/**
+ * Toggles visibility of employee-only features vs public visitor UI
+ */
+function updateHomePageAuthUI() {
+    const user = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
+    const statsSection = document.getElementById('stats-section');
+    const heroAuthOnly = document.querySelectorAll('.hero-auth-only');
+    const heroGuestOnly = document.querySelectorAll('.hero-guest-only');
+    const footerAuthOnly = document.querySelectorAll('.footer-auth-only');
+
+    if (user) {
+        // Authenticated user (Employee / Admin)
+        if (statsSection) statsSection.style.display = 'block';
+        heroAuthOnly.forEach(el => el.style.display = 'inline-flex');
+        heroGuestOnly.forEach(el => el.style.display = 'none');
+        footerAuthOnly.forEach(el => el.style.display = 'inline-block');
+    } else {
+        // Unauthenticated visitor
+        if (statsSection) statsSection.style.display = 'none';
+        heroAuthOnly.forEach(el => el.style.display = 'none');
+        heroGuestOnly.forEach(el => el.style.display = 'inline-flex');
+        footerAuthOnly.forEach(el => el.style.display = 'none');
+    }
+}
 
 /**
  * Mobile Navigation Toggle

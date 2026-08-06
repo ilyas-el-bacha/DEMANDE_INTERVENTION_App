@@ -48,91 +48,52 @@ function initFormDefaults() {
     const loginReqBanner = document.getElementById('login-required-banner');
     const loggedUserBanner = document.getElementById('logged-user-banner');
     const form = document.getElementById('intervention-form');
-    const printableDoc = document.getElementById('printable-document');
     const emitterInput = document.getElementById('doc-emitter');
     const deptSelect = document.getElementById('doc-department');
 
     if (!currentUser) {
-        if (loginReqBanner) loginReqBanner.style.display = 'block';
-        if (loggedUserBanner) loggedUserBanner.style.display = 'none';
+        window.location.href = 'login.html?required=1&redirect=intervention.html';
+        return;
+    }
 
-        // Lock all form fields
-        if (form) {
-            const allElements = form.querySelectorAll('input, select, textarea, button');
-            allElements.forEach(el => {
-                el.disabled = true;
-            });
-        }
-
-        if (emitterInput) {
-            emitterInput.value = '';
-            emitterInput.placeholder = 'Nom & Prénom de l\'Émetteur';
-        }
-
-        // Add visual overlay indicator / listener for locked form interaction
-        if (printableDoc) {
-            printableDoc.style.cursor = 'not-allowed';
-
-            let isModalActive = false;
-            const handleLockedClick = (e) => {
-                if (isModalActive) return;
-                isModalActive = true;
-
-                window.showCustomAlert({
-                    title: "Connexion Obligatoire",
-                    message: "Connexion requise pour remplir et soumettre une demande d'intervention.\n\nVeuillez vous connecter avec votre compte employé.",
-                    buttonText: "Se Connecter",
-                    type: "warning"
-                }).then((actionClicked) => {
-                    isModalActive = false;
-                    if (actionClicked === true) {
-                        window.location.href = 'login.html?required=1&redirect=intervention.html';
-                    }
-                });
-            };
-
-            printableDoc.addEventListener('click', handleLockedClick);
-        }
-    } else {
-        if (loginReqBanner) loginReqBanner.style.display = 'none';
-        if (loggedUserBanner) {
-            loggedUserBanner.style.display = 'flex';
-            const bannerName = document.getElementById('banner-user-name');
-            const bannerDept = document.getElementById('banner-user-dept');
-            const userName = currentUser.name || `${currentUser.firstName} ${currentUser.lastName}`;
-            if (bannerName) bannerName.textContent = userName;
-            if (bannerDept) bannerDept.textContent = currentUser.department || 'Non spécifié';
-        }
-
+    if (loginReqBanner) loginReqBanner.style.display = 'none';
+    if (loggedUserBanner) {
+        loggedUserBanner.style.display = 'flex';
+        const bannerName = document.getElementById('banner-user-name');
+        const bannerDept = document.getElementById('banner-user-dept');
         const userName = currentUser.name || `${currentUser.firstName} ${currentUser.lastName}`;
+        if (bannerName) bannerName.textContent = userName;
+        if (bannerDept) bannerDept.textContent = currentUser.department || 'Non spécifié';
+    }
 
-        // Enable form fields
-        if (form) {
-            const allElements = form.querySelectorAll('input, select, textarea, button');
-            allElements.forEach(el => {
-                el.disabled = false;
-            });
-        }
+    const userName = currentUser.name || `${currentUser.firstName} ${currentUser.lastName}`;
 
-        // Prefill and lock Émetteur & Department
-        if (emitterInput) {
-            emitterInput.value = userName;
-            emitterInput.readOnly = true;
-            emitterInput.style.backgroundColor = 'rgba(67, 97, 238, 0.12)';
-            emitterInput.style.color = '#93C5FD';
-            emitterInput.style.fontWeight = '600';
-            emitterInput.style.cursor = 'not-allowed';
-            emitterInput.title = 'Émetteur rempli automatiquement d\'après votre compte connecté';
-        }
+    // Enable form fields
+    if (form) {
+        const allElements = form.querySelectorAll('input, select, textarea, button');
+        allElements.forEach(el => {
+            el.disabled = false;
+        });
+    }
 
-        if (deptSelect && currentUser.department) {
-            deptSelect.value = currentUser.department;
-            deptSelect.style.backgroundColor = 'rgba(67, 97, 238, 0.12)';
-            deptSelect.style.color = '#93C5FD';
-            deptSelect.style.fontWeight = '600';
-            deptSelect.style.pointerEvents = 'none';
-            deptSelect.title = 'Département rempli automatiquement d\'après votre compte connecté';
-        }
+    // Prefill and lock Émetteur & Department
+    if (emitterInput) {
+        emitterInput.value = userName;
+        emitterInput.readOnly = true;
+        emitterInput.style.backgroundColor = 'rgba(67, 97, 238, 0.12)';
+        emitterInput.style.color = '#93C5FD';
+        emitterInput.style.fontWeight = '600';
+        emitterInput.style.cursor = 'not-allowed';
+        emitterInput.title = 'Émetteur rempli automatiquement d\'après votre compte connecté';
+    }
+
+    if (deptSelect && currentUser.department) {
+        deptSelect.value = currentUser.department;
+        deptSelect.style.backgroundColor = 'rgba(67, 97, 238, 0.12)';
+        deptSelect.style.color = '#93C5FD';
+        deptSelect.style.fontWeight = '600';
+        deptSelect.style.pointerEvents = 'none';
+        deptSelect.title = 'Département rempli automatiquement d\'après votre compte connecté';
     }
 }
 

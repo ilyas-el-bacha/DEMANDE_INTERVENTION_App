@@ -9,6 +9,10 @@ let currentUser = null;
 
 document.addEventListener('DOMContentLoaded', () => {
     currentUser = getCurrentUser();
+    if (!currentUser) {
+        window.location.href = 'login.html?required=1&redirect=my_requests.html';
+        return;
+    }
     renderUserContextBanner();
     loadRequests();
 });
