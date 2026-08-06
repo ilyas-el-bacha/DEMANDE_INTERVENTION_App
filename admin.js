@@ -439,9 +439,8 @@ function renderSuperAdminPanel() {
 
     // 1. Department Administrators Count
     setElemText('super-stat-admins-count', deptAdminsTable.length);
-    setElemText('super-admins-total-badge', `${approvedDeptAdmins.length} actifs (${pendingAdmins.length} en attente)`);
+    setElemText('super-admins-total-badge', `${deptAdminsTable.length} administrateurs actifs`);
     setElemText('super-total-badge', `${deptAdminsTable.length} administrateurs`);
-    setElemText('super-pending-badge', `${pendingAdmins.length} en attente`);
 
     // 2. Registered Employees Count
     setElemText('super-stat-employees-count', totalEmpCount);
