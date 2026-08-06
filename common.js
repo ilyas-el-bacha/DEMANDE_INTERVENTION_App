@@ -368,7 +368,7 @@ function getRealtimeStats(department = 'ALL') {
 
 /**
  * Role-Based Route Guard for Super Administrator and Department Administrators
- * Ensures Administrators are strictly restricted from Employee / Public Home pages and stay on their Dashboard page (admin.html).
+ * Ensures Administrators are strictly restricted from Employee / Public Home pages.
  */
 function checkRoleRedirects() {
     const user = getCurrentUser();
@@ -380,7 +380,7 @@ function checkRoleRedirects() {
 
     if (user.role === 'superadmin') {
         if (!isDashboard && !isPrivatePortal) {
-            window.location.href = 'admin.html';
+            window.location.href = 'superadmin.html';
         }
     } else if (user.role === 'admin') {
         if (!isDashboard) {
@@ -396,10 +396,12 @@ function updateNavbar() {
     const user = getCurrentUser();
     const navLinks = document.getElementById('nav-links');
 
-    // Update Brand Link (Admin & Superadmin point to admin.html dashboard, not index.html)
+    // Update Brand Link (Superadmin points to superadmin.html, Admin points to admin.html, Employee points to index.html)
     const brandLinks = document.querySelectorAll('.brand');
     brandLinks.forEach(brand => {
-        if (user && (user.role === 'superadmin' || user.role === 'admin')) {
+        if (user && user.role === 'superadmin') {
+            brand.setAttribute('href', 'superadmin.html');
+        } else if (user && user.role === 'admin') {
             brand.setAttribute('href', 'admin.html');
         } else {
             brand.setAttribute('href', 'index.html');
@@ -409,14 +411,16 @@ function updateNavbar() {
     if (!navLinks) return;
 
     if (user && user.role === 'superadmin') {
-        // Completely hide ALL navigation links for Super Administrator (no redundant panel button)
+        // Super Admin navigation items
         const items = navLinks.querySelectorAll('.nav-item');
         items.forEach(item => {
-            item.style.display = 'none';
+            const href = item.getAttribute('href') || '';
+            if (href.includes('superadmin.html') || href.includes('admin.html')) {
+                item.style.display = 'inline-flex';
+            } else {
+                item.style.display = 'none';
+            }
         });
-
-        const superNavBtn = navLinks.querySelector('.nav-superadmin-link');
-        if (superNavBtn) superNavBtn.remove();
     } else if (user && user.role === 'admin') {
         // Completely hide ALL employee & home navigation links for Department Administrator
         const items = navLinks.querySelectorAll('.nav-item');
