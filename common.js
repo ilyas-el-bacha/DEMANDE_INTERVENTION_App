@@ -415,7 +415,7 @@ function updateNavbar() {
         const items = navLinks.querySelectorAll('.nav-item');
         items.forEach(item => {
             const href = item.getAttribute('href') || '';
-            if (href.includes('superadmin.html') || href.includes('admin.html')) {
+            if (href.includes('superadmin.html')) {
                 item.style.display = 'inline-flex';
             } else {
                 item.style.display = 'none';
