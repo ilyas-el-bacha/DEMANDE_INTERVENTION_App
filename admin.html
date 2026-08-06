@@ -107,7 +107,7 @@
                     </div>
                 </div>
 
-                <!-- Independent Account Statistics Cards -->
+                <!-- Independent Account & System Statistics Cards (Real-time dynamic data) -->
                 <div class="stats-grid" style="margin-top: 1.25rem; margin-bottom: 1.5rem;">
                     <div class="stat-card" style="border-color: rgba(59, 130, 246, 0.3); background: rgba(30, 58, 138, 0.15);">
                         <div class="stat-icon-wrapper blue">
@@ -116,7 +116,7 @@
                             </svg>
                         </div>
                         <div class="stat-details">
-                            <span class="stat-label">Administrateurs de Département Enregistrés</span>
+                            <span class="stat-label">Administrateurs de Département</span>
                             <div class="stat-value-container">
                                 <span class="stat-value" id="super-stat-admins-count">0</span>
                                 <span class="stat-badge total" id="super-admins-total-badge">0 administrateurs</span>
@@ -138,6 +138,68 @@
                             <div class="stat-value-container">
                                 <span class="stat-value" id="super-stat-employees-count">0</span>
                                 <span class="stat-badge progress" id="super-employees-total-badge">0 employés</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card" style="border-color: rgba(245, 158, 11, 0.3); background: rgba(120, 53, 15, 0.15);">
+                        <div class="stat-icon-wrapper amber">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                        </div>
+                        <div class="stat-details">
+                            <span class="stat-label">Comptes en Attente</span>
+                            <div class="stat-value-container">
+                                <span class="stat-value" id="super-stat-pending-accounts-count">0</span>
+                                <span class="stat-badge pending" id="super-pending-accounts-badge">0 en attente</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card" style="border-color: rgba(56, 189, 248, 0.3); background: rgba(12, 74, 110, 0.15);">
+                        <div class="stat-icon-wrapper blue">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            </svg>
+                        </div>
+                        <div class="stat-details">
+                            <span class="stat-label">Demandes d'Intervention</span>
+                            <div class="stat-value-container">
+                                <span class="stat-value" id="super-stat-req-total">0</span>
+                                <span class="stat-badge total">Total global</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card" style="border-color: rgba(168, 85, 247, 0.3); background: rgba(88, 28, 135, 0.15);">
+                        <div class="stat-icon-wrapper purple">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                            </svg>
+                        </div>
+                        <div class="stat-details">
+                            <span class="stat-label">Interventions en Cours</span>
+                            <div class="stat-value-container">
+                                <span class="stat-value" id="super-stat-req-progress">0</span>
+                                <span class="stat-badge progress">En cours</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card" style="border-color: rgba(34, 197, 94, 0.3); background: rgba(20, 83, 45, 0.15);">
+                        <div class="stat-icon-wrapper green">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                        </div>
+                        <div class="stat-details">
+                            <span class="stat-label">Interventions Résolues</span>
+                            <div class="stat-value-container">
+                                <span class="stat-value" id="super-stat-req-resolved">0</span>
+                                <span class="stat-badge resolved">Clôturées</span>
                             </div>
                         </div>
                     </div>

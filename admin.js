@@ -432,14 +432,33 @@ function renderSuperAdminPanel() {
     const rawEmployees = users.filter(u => u && u.role !== 'admin' && u.role !== 'superadmin');
     const totalEmpCount = rawEmployees.length;
 
-    // Independent Stat Counters & Badges
-    setElemText('super-stat-admins-count', approvedDeptAdmins.length);
-    setElemText('super-admins-total-badge', `${approvedDeptAdmins.length} administrateurs actifs`);
-    setElemText('super-total-badge', `${approvedDeptAdmins.length} administrateurs actifs`);
+    // Independent Stat Counters & Badges (Calculated dynamically from real storage)
+    const pendingEmployees = rawEmployees.filter(u => u && u.status === 'pending');
+    const totalPendingAccounts = pendingAdmins.length + pendingEmployees.length;
+    const globalStats = getRealtimeStats('ALL');
+
+    // 1. Department Administrators Count
+    setElemText('super-stat-admins-count', deptAdminsTable.length);
+    setElemText('super-admins-total-badge', `${approvedDeptAdmins.length} actifs (${pendingAdmins.length} en attente)`);
+    setElemText('super-total-badge', `${deptAdminsTable.length} administrateurs`);
     setElemText('super-pending-badge', `${pendingAdmins.length} en attente`);
 
+    // 2. Registered Employees Count
     setElemText('super-stat-employees-count', totalEmpCount);
     setElemText('super-employees-total-badge', `${totalEmpCount} employés enregistrés`);
+
+    // 3. Pending Accounts Count (Admins + Employees)
+    setElemText('super-stat-pending-accounts-count', totalPendingAccounts);
+    setElemText('super-pending-accounts-badge', `${totalPendingAccounts} en attente (${pendingAdmins.length} admin, ${pendingEmployees.length} emp)`);
+
+    // 4. Total Intervention Requests
+    setElemText('super-stat-req-total', globalStats.total);
+
+    // 5. Interventions in Progress
+    setElemText('super-stat-req-progress', globalStats.progress);
+
+    // 6. Interventions Resolved
+    setElemText('super-stat-req-resolved', globalStats.resolved);
 
     // Update Hierarchy Architecture Tree Node live counts
     const allReqs = getRequests();
