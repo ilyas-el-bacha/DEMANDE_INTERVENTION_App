@@ -47,6 +47,21 @@ function setupSuperAdminEventListeners() {
     window.addEventListener('storage', () => {
         renderSuperAdminPanel();
     });
+
+    let lastUsersJsonState = '';
+    let lastRequestsJsonState = '';
+
+    setInterval(() => {
+        try {
+            const uJson = localStorage.getItem('au_users') || '';
+            const rJson = localStorage.getItem('au_intervention_requests') || '';
+            if (uJson !== lastUsersJsonState || rJson !== lastRequestsJsonState) {
+                lastUsersJsonState = uJson;
+                lastRequestsJsonState = rJson;
+                renderSuperAdminPanel();
+            }
+        } catch(e) {}
+    }, 1000);
 }
 
 function renderSuperAdminPanel() {
@@ -68,12 +83,18 @@ function renderSuperAdminPanel() {
     setElemText('super-stat-employees-count', totalEmpCount);
     setElemText('super-employees-total-badge', `${totalEmpCount} employés enregistrés`);
 
-    // Update Hierarchy Architecture Tree Node live counts
-    const allReqs = getRequests();
+    // 3. Intervention Requests Statistics (Global - exact same function & logic as Admin Dashboard)
+    const globalStats = typeof getRealtimeStats === 'function' ? getRealtimeStats('ALL') : { total: 0, pending: 0, progress: 0, resolved: 0 };
+    setElemText('super-stat-req-total', globalStats.total);
+    setElemText('super-stat-req-pending', globalStats.pending);
+    setElemText('super-stat-req-progress', globalStats.progress);
+    setElemText('super-stat-req-resolved', globalStats.resolved);
+
+    // Update Hierarchy Architecture Tree Node live counts using getRealtimeStats per department
     ['DAF', 'DGUR', 'DET', 'SI'].forEach(deptKey => {
         const empCount = users.filter(u => u && u.role === 'employee' && u.department === deptKey).length;
-        const reqCount = allReqs.filter(r => r && r.department === deptKey).length;
-        setElemText(`tree-${deptKey.toLowerCase()}-count`, `${empCount} employé(s) | ${reqCount} demande(s)`);
+        const deptStats = typeof getRealtimeStats === 'function' ? getRealtimeStats(deptKey) : { total: 0 };
+        setElemText(`tree-${deptKey.toLowerCase()}-count`, `${empCount} employé(s) | ${deptStats.total} demande(s)`);
     });
 
     // Render Department Admins Table
