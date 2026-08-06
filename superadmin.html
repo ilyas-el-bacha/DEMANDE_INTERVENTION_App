@@ -3,397 +3,971 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Administrateur — Direction Générale Agence Urbaine</title>
+    <title>Super Administrateur — Agence Urbaine</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="index.css">
-    <link rel="stylesheet" href="my_requests.css">
-    <link rel="stylesheet" href="signup.css">
     <link rel="stylesheet" href="admin.css">
+    <style>
+        /* Custom Modern Styles for Super Admin Interface */
+        :root {
+            --sa-bg: #0F172A;
+            --sa-card-bg: rgba(30, 41, 59, 0.7);
+            --sa-card-border: rgba(255, 255, 255, 0.1);
+            --sa-primary: #3B82F6;
+            --sa-danger: #EF4444;
+            --sa-success: #10B981;
+            --sa-warning: #F59E0B;
+            --sa-purple: #8B5CF6;
+            --sa-text: #F8FAFC;
+            --sa-text-muted: #94A3B8;
+        }
+
+        body {
+            background-color: #090D16;
+            color: var(--sa-text);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+        }
+
+        /* Super Admin Navbar */
+        .sa-navbar {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 0.85rem 1.5rem;
+        }
+
+        .sa-nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .sa-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            text-decoration: none;
+            color: #FFF;
+        }
+
+        .sa-brand-icon {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #DC2626, #991B1B);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4);
+        }
+
+        .sa-brand-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sa-brand-title {
+            font-weight: 800;
+            font-size: 1.05rem;
+            letter-spacing: 0.02em;
+            color: #F8FAFC;
+        }
+
+        .sa-brand-sub {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #EF4444;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .sa-user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .sa-user-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: rgba(220, 38, 38, 0.15);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            padding: 0.4rem 0.85rem;
+            border-radius: 9999px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #FCA5A5;
+        }
+
+        .sa-logout-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #F8FAFC;
+            padding: 0.45rem 0.9rem;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .sa-logout-btn:hover {
+            background: rgba(220, 38, 38, 0.25);
+            border-color: rgba(220, 38, 38, 0.5);
+            color: #FFD1D1;
+        }
+
+        /* Container Layout */
+        .sa-container {
+            max-width: 1400px;
+            margin: 1.75rem auto;
+            padding: 0 1.5rem 3rem 1.5rem;
+        }
+
+        /* Hero / Header Banner */
+        .sa-hero {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 1.75rem 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        }
+
+        .sa-hero-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #FFF;
+            margin-bottom: 0.35rem;
+        }
+
+        .sa-hero-desc {
+            color: var(--sa-text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* 8 Realtime Stats Grid */
+        .sa-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .sa-stat-card {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .sa-stat-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .sa-stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .sa-stat-val {
+            font-size: 1.6rem;
+            font-weight: 800;
+            line-height: 1.1;
+            color: #FFF;
+        }
+
+        .sa-stat-lbl {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--sa-text-muted);
+            margin-top: 0.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        /* Navigation Tabs */
+        .sa-tabs-bar {
+            display: flex;
+            gap: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            padding-bottom: 0.25rem;
+        }
+
+        .sa-tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--sa-text-muted);
+            padding: 0.75rem 1.25rem;
+            font-size: 0.92rem;
+            font-weight: 700;
+            border-radius: 10px 10px 0 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            white-space: nowrap;
+            position: relative;
+        }
+
+        .sa-tab-btn:hover {
+            color: #FFF;
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .sa-tab-btn.active {
+            color: #60A5FA;
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .sa-tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #3B82F6;
+            border-radius: 3px 3px 0 0;
+        }
+
+        /* Section Cards */
+        .sa-section-card {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 2rem;
+        }
+
+        .sa-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .sa-section-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #FFF;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        /* Custom Filter Controls */
+        .sa-filter-row {
+            display: flex;
+            gap: 0.85rem;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            background: rgba(15, 23, 42, 0.5);
+            padding: 0.85rem 1rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .sa-select, .sa-input {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #F8FAFC;
+            padding: 0.5rem 0.85rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .sa-select:focus, .sa-input:focus {
+            border-color: var(--sa-primary);
+        }
+
+        /* Modern Tables */
+        .sa-table-responsive {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .sa-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.88rem;
+        }
+
+        .sa-table th {
+            background: rgba(15, 23, 42, 0.8);
+            color: var(--sa-text-muted);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .sa-table td {
+            padding: 0.95rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            vertical-align: middle;
+        }
+
+        .sa-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Action Buttons */
+        .sa-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.45rem 0.85rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .sa-btn-primary {
+            background: linear-gradient(135deg, #2563EB, #1D4ED8);
+            color: #FFF;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .sa-btn-primary:hover {
+            background: linear-gradient(135deg, #3B82F6, #2563EB);
+        }
+
+        .sa-btn-success {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #6EE7B7;
+        }
+
+        .sa-btn-success:hover {
+            background: rgba(16, 185, 129, 0.3);
+        }
+
+        .sa-btn-warning {
+            background: rgba(245, 158, 11, 0.15);
+            border-color: rgba(245, 158, 11, 0.3);
+            color: #FDE047;
+        }
+
+        .sa-btn-warning:hover {
+            background: rgba(245, 158, 11, 0.3);
+        }
+
+        .sa-btn-danger {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #FCA5A5;
+        }
+
+        .sa-btn-danger:hover {
+            background: rgba(239, 68, 68, 0.3);
+        }
+
+        .sa-btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.12);
+            color: #CBD5E1;
+        }
+
+        .sa-btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #FFF;
+        }
+
+        /* Status Badges */
+        .sa-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.25rem 0.65rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .sa-badge-pending {
+            background: rgba(245, 158, 11, 0.15);
+            color: #FBBF24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .sa-badge-accepted {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60A5FA;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .sa-badge-progress {
+            background: rgba(139, 92, 246, 0.15);
+            color: #C084FC;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .sa-badge-resolved {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34D399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .sa-badge-rejected {
+            background: rgba(239, 68, 68, 0.15);
+            color: #FCA5A5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .sa-badge-dept {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #E2E8F0;
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.75rem;
+        }
+
+        /* Modal Overlay */
+        .sa-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(6px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.25 ease;
+        }
+
+        .sa-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .sa-modal {
+            background: #1E293B;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 550px;
+            padding: 1.75rem;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            transform: translateY(20px);
+            transition: transform 0.25s ease;
+        }
+
+        .sa-modal-overlay.active .sa-modal {
+            transform: translateY(0);
+        }
+
+        .sa-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.85rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .sa-modal-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #FFF;
+        }
+
+        .sa-modal-close {
+            background: transparent;
+            border: none;
+            color: var(--sa-text-muted);
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .sa-form-group {
+            margin-bottom: 1rem;
+        }
+
+        .sa-form-label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #CBD5E1;
+            margin-bottom: 0.4rem;
+        }
+
+        .sa-form-input, .sa-form-select {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #FFF;
+            padding: 0.65rem 0.85rem;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            outline: none;
+        }
+
+        .sa-form-input:focus, .sa-form-select:focus {
+            border-color: var(--sa-primary);
+        }
+    </style>
 </head>
 <body>
 
-    <!-- Header Navigation -->
-    <header class="navbar">
-        <div class="nav-container">
-            <a href="superadmin.html" class="brand">
-                <div class="logo-wrapper">
-                    <svg class="agency-logo" viewBox="0 0 60 60" fill="none">
-                        <rect width="60" height="60" rx="14" fill="url(#logo-grad-sa)"/>
-                        <path d="M18 42V24L30 16L42 24V42H34V32H26V42H18Z" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M12 46H48" stroke="#4895EF" stroke-width="2.5" stroke-linecap="round"/>
-                        <circle cx="30" cy="23" r="3" fill="#4895EF"/>
-                        <defs>
-                            <linearGradient id="logo-grad-sa" x1="0" y1="0" x2="60" y2="60" gradientUnits="userSpaceOnUse">
-                                <stop stop-color="#1E1B4B"/>
-                                <stop offset="1" stop-color="#312E81"/>
-                            </linearGradient>
-                        </defs>
+    <!-- Super Admin Header Navigation -->
+    <header class="sa-navbar">
+        <div class="sa-nav-container">
+            <a href="superadmin.html" class="sa-brand">
+                <div class="sa-brand-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                     </svg>
                 </div>
-                <div class="brand-text">
-                    <span class="brand-title">AGENCE URBAINE</span>
-                    <span class="brand-subtitle">SUPER ADMINISTRATEUR</span>
+                <div class="sa-brand-text">
+                    <span class="sa-brand-title">AGENCE URBAINE</span>
+                    <span class="sa-brand-sub">Super Administrateur Global</span>
                 </div>
             </a>
 
-            <nav class="nav-links" id="nav-links">
-                <a href="superadmin.html" class="nav-item nav-btn active" style="background: linear-gradient(135deg, #DC2626, #991B1B); color: #FFF; border: none;">
-                    ★ Espace Super Admin
-                </a>
-            </nav>
+            <div class="sa-user-menu">
+                <div class="sa-user-badge">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    <span id="sa-user-email">superadmin@agenceurbaine.ma</span>
+                </div>
+                <button type="button" class="sa-logout-btn" onclick="logoutUser()">
+                    Déconnexion
+                </button>
+            </div>
         </div>
     </header>
 
-    <main class="admin-main">
-        <div class="container">
+    <main class="sa-container">
 
-            <!-- Super Admin Central Control Panel -->
-            <div id="superadmin-panel" class="superadmin-card" style="margin-bottom: 2rem;">
-                <div class="superadmin-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+        <!-- Banner / Header -->
+        <div class="sa-hero">
+            <div>
+                <div style="font-size: 0.75rem; font-weight: 800; color: #EF4444; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.25rem;">
+                    ★ Contrôle Central Global
+                </div>
+                <h1 class="sa-hero-title">Tableau de Bord du Super Administrateur</h1>
+                <p class="sa-hero-desc">Supervision complète et synchronisée de l'ensemble des départements, utilisateurs et interventions.</p>
+            </div>
+            <div>
+                <button type="button" class="sa-btn sa-btn-primary" onclick="openCreateAdminModal()" style="padding: 0.65rem 1.2rem; font-size: 0.88rem;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    + Créer un Administrateur
+                </button>
+            </div>
+        </div>
+
+        <!-- 8 Global Realtime Statistics Cards Grid -->
+        <div class="sa-stats-grid">
+            <!-- 1. Total Employees -->
+            <div class="sa-stat-card">
+                <div class="sa-stat-icon" style="background: rgba(59, 130, 246, 0.15); color: #60A5FA;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                </div>
+                <div>
+                    <div class="sa-stat-val" id="sa-stat-total-employees">0</div>
+                    <div class="sa-stat-lbl">Total Employés</div>
+                </div>
+            </div>
+
+            <!-- 2. Total Admins -->
+            <div class="sa-stat-card">
+                <div class="sa-stat-icon" style="background: rgba(239, 68, 68, 0.15); color: #FCA5A5;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <div class="sa-stat-val" id="sa-stat-total-admins">0</div>
+                    <div class="sa-stat-lbl">Admin. Département</div>
+                </div>
+            </div>
+
+            <!-- 3. Total Intervention Requests -->
+            <div class="sa-stat-card">
+                <div class="sa-stat-icon" style="background: rgba(139, 92, 246, 0.15); color: #C084FC;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                </div>
+                <div>
+                    <div class="sa-stat-val" id="sa-stat-total-requests">0</div>
+                    <div class="sa-stat-lbl">Total Demandes</div>
+                </div>
+            </div>
+
+            <!-- 4. Pending Requests -->
+            <div class="sa-stat-card">
+                <div class="sa-stat-icon" style="background: rgba(245, 158, 11, 0.15); color: #FBBF24;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                </div>
+                <div>
+                    <div class="sa-stat-val" id="sa-stat-pending-requests">0</div>
+                    <div class="sa-stat-lbl">Demandes En Attente</div>
+                </div>
+            </div>
+
+            <!-- 5. Accepted Requests -->
+            <div class="sa-stat-card">
+                <div class="sa-stat-icon" style="background: rgba(59, 130, 246, 0.15); color: #60A5FA;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                </div>
+                <div>
+                    <div class="sa-stat-val" id="sa-stat-accepted-requests">0</div>
+                    <div class="sa-stat-lbl">Demandes Acceptées</div>
+                </div>
+            </div>
+
+            <!-- 6. In Progress Requests -->
+            <div class="sa-stat-card">
+                <div class="sa-stat-icon" style="background: rgba(168, 85, 247, 0.15); color: #E9D5FF;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                    </svg>
+                </div>
+                <div>
+                    <div class="sa-stat-val" id="sa-stat-progress-requests">0</div>
+                    <div class="sa-stat-lbl">Interventions en cours</div>
+                </div>
+            </div>
+
+            <!-- 7. Resolved Requests -->
+            <div class="sa-stat-card">
+                <div class="sa-stat-icon" style="background: rgba(16, 185, 129, 0.15); color: #34D399;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 11 12 14 22 4"></polyline>
+                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                    </svg>
+                </div>
+                <div>
+                    <div class="sa-stat-val" id="sa-stat-resolved-requests">0</div>
+                    <div class="sa-stat-lbl">Interventions résolues</div>
+                </div>
+            </div>
+
+            <!-- 8. Rejected Requests -->
+            <div class="sa-stat-card">
+                <div class="sa-stat-icon" style="background: rgba(239, 68, 68, 0.15); color: #FCA5A5;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="15" y1="9" x2="9" y2="15"></line>
+                        <line x1="9" y1="9" x2="15" y2="15"></line>
+                    </svg>
+                </div>
+                <div>
+                    <div class="sa-stat-val" id="sa-stat-rejected-requests">0</div>
+                    <div class="sa-stat-lbl">Demandes Rejetées</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Navigation Tabs -->
+        <div class="sa-tabs-bar">
+            <button type="button" class="sa-tab-btn active" data-tab="admins" onclick="switchTab('admins')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+                Gestion des Administrateurs
+            </button>
+            <button type="button" class="sa-tab-btn" data-tab="employees" onclick="switchTab('employees')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                </svg>
+                Gestion des Employés
+            </button>
+            <button type="button" class="sa-tab-btn" data-tab="requests" onclick="switchTab('requests')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                </svg>
+                Gestion des Demandes d'Intervention
+            </button>
+        </div>
+
+        <!-- TAB 1: GESTION DES ADMINISTRATEURS -->
+        <div id="tab-content-admins" class="sa-tab-content">
+            <div class="sa-section-card">
+                <div class="sa-section-header">
                     <div>
-                        <div class="badge-superadmin">★ Contrôle Central Super Administrateur (Parent Controller)</div>
-                        <h2>Supervision Hiérarchique & Gestion Globale</h2>
-                        <p>Contrôleur central de l'ensemble de la structure : Administrateurs, Employés et Demandes d'Intervention.</p>
+                        <h2 class="sa-section-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2.5">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            </svg>
+                            Administrateurs de Département Enregistrés
+                        </h2>
+                        <p style="color: var(--sa-text-muted); font-size: 0.85rem; margin-top: 0.2rem;">
+                            Comptes responsables de la validation et du suivi des interventions par direction.
+                        </p>
                     </div>
-                    <button type="button" class="btn btn-primary btn-sm" onclick="openCreateAdminModal()" style="background: linear-gradient(135deg, #2563EB, #1D4ED8); border: none; font-weight: 700; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1rem;">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                        </svg>
+                    <button type="button" class="sa-btn sa-btn-primary" onclick="openCreateAdminModal()">
                         + Créer Administrateur
                     </button>
                 </div>
 
-                <!-- Hierarchy Architecture Diagram Card -->
-                <div class="hierarchy-tree-card" style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 16px; padding: 1.25rem; margin-top: 1.25rem; margin-bottom: 1.5rem;">
-                    <div style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: #38BDF8; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                        </svg>
-                        Structure Hiérarchique Unifiée (Source Unique de Données)
-                    </div>
-                    <div class="tree-nodes-container" style="display: flex; flex-direction: column; gap: 0.75rem; align-items: center;">
-                        <!-- Level 1: Super Admin Parent -->
-                        <div class="tree-node parent" style="background: linear-gradient(135deg, #DC2626, #991B1B); color: #FFF; padding: 0.65rem 1.5rem; border-radius: 10px; font-weight: 800; font-size: 0.92rem; box-shadow: 0 4px 20px rgba(220, 38, 38, 0.35); display: flex; align-items: center; gap: 0.6rem;">
-                            <span>★ Super Administrateur (Contrôleur Parent)</span>
-                            <span class="tree-badge" style="background: rgba(255,255,255,0.25); padding: 0.15rem 0.55rem; border-radius: 6px; font-size: 0.75rem; font-weight: 600;">Autorité Centrale</span>
-                        </div>
-                        <div style="width: 2px; height: 16px; background: rgba(255,255,255,0.25);"></div>
-                        <!-- Level 2: Department Administrators -->
-                        <div class="tree-children-row" style="display: flex; gap: 0.85rem; width: 100%; justify-content: center; flex-wrap: wrap;">
-                            <div class="tree-node child" style="flex: 1; min-width: 150px; background: rgba(30, 58, 138, 0.35); border: 1px solid rgba(59, 130, 246, 0.35); padding: 0.6rem 0.85rem; border-radius: 10px; text-align: center;">
-                                <div style="font-weight: 700; color: #93C5FD; font-size: 0.88rem;">Direction DAF</div>
-                                <div style="font-size: 0.76rem; color: #CBD5E1; margin-top: 3px;" id="tree-daf-count">0 employé(s) | 0 demande(s)</div>
-                            </div>
-                            <div class="tree-node child" style="flex: 1; min-width: 150px; background: rgba(88, 28, 135, 0.35); border: 1px solid rgba(168, 85, 247, 0.35); padding: 0.6rem 0.85rem; border-radius: 10px; text-align: center;">
-                                <div style="font-weight: 700; color: #C084FC; font-size: 0.88rem;">Direction DGUR</div>
-                                <div style="font-size: 0.76rem; color: #CBD5E1; margin-top: 3px;" id="tree-dgur-count">0 employé(s) | 0 demande(s)</div>
-                            </div>
-                            <div class="tree-node child" style="flex: 1; min-width: 150px; background: rgba(20, 83, 45, 0.35); border: 1px solid rgba(34, 197, 94, 0.35); padding: 0.6rem 0.85rem; border-radius: 10px; text-align: center;">
-                                <div style="font-weight: 700; color: #4ADE80; font-size: 0.88rem;">Direction DET</div>
-                                <div style="font-size: 0.76rem; color: #CBD5E1; margin-top: 3px;" id="tree-det-count">0 employé(s) | 0 demande(s)</div>
-                            </div>
-                            <div class="tree-node child" style="flex: 1; min-width: 150px; background: rgba(120, 53, 15, 0.35); border: 1px solid rgba(245, 158, 11, 0.35); padding: 0.6rem 0.85rem; border-radius: 10px; text-align: center;">
-                                <div style="font-weight: 700; color: #FCD34D; font-size: 0.88rem;">Service SI</div>
-                                <div style="font-size: 0.76rem; color: #CBD5E1; margin-top: 3px;" id="tree-si-count">0 employé(s) | 0 demande(s)</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Global Intervention Requests Statistics Cards (Synced with Department Admin Dashboard) -->
-                <div class="stats-grid" style="margin-top: 1.25rem; margin-bottom: 1.25rem;">
-                    <div class="stat-card">
-                        <div class="stat-icon-wrapper blue">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            </svg>
-                        </div>
-                        <div class="stat-details">
-                            <span class="stat-label">Total Demandes d'Intervention</span>
-                            <div class="stat-value-container">
-                                <span class="stat-value" id="super-stat-req-total">0</span>
-                                <span class="stat-badge total">Toutes Directions</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-icon-wrapper amber">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <polyline points="12 6 12 12 16 14"></polyline>
-                            </svg>
-                        </div>
-                        <div class="stat-details">
-                            <span class="stat-label">Demandes En Attente</span>
-                            <div class="stat-value-container">
-                                <span class="stat-value" id="super-stat-req-pending">0</span>
-                                <span class="stat-badge pending">À traiter</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-icon-wrapper purple">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
-                            </svg>
-                        </div>
-                        <div class="stat-details">
-                            <span class="stat-label">Interventions en Cours</span>
-                            <div class="stat-value-container">
-                                <span class="stat-value" id="super-stat-req-progress">0</span>
-                                <span class="stat-badge progress">En cours</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-icon-wrapper green">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                            </svg>
-                        </div>
-                        <div class="stat-details">
-                            <span class="stat-label">Interventions Résolues</span>
-                            <div class="stat-value-container">
-                                <span class="stat-value" id="super-stat-req-resolved">0</span>
-                                <span class="stat-badge resolved">Terminées</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Independent Account Statistics Cards -->
-                <div class="stats-grid" style="margin-top: 1.25rem; margin-bottom: 1.5rem;">
-                    <div class="stat-card" style="border-color: rgba(59, 130, 246, 0.3); background: rgba(30, 58, 138, 0.15);">
-                        <div class="stat-icon-wrapper blue">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                            </svg>
-                        </div>
-                        <div class="stat-details">
-                            <span class="stat-label">Administrateurs de Département Enregistrés</span>
-                            <div class="stat-value-container">
-                                <span class="stat-value" id="super-stat-admins-count">0</span>
-                                <span class="stat-badge total" id="super-admins-total-badge">0 administrateurs actifs</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="stat-card" style="border-color: rgba(168, 85, 247, 0.3); background: rgba(88, 28, 135, 0.15);">
-                        <div class="stat-icon-wrapper purple">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="9" cy="7" r="4"></circle>
-                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                            </svg>
-                        </div>
-                        <div class="stat-details">
-                            <span class="stat-label">Employés Enregistrés</span>
-                            <div class="stat-value-container">
-                                <span class="stat-value" id="super-stat-employees-count">0</span>
-                                <span class="stat-badge progress" id="super-employees-total-badge">0 employés enregistrés</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Comptes Administrateurs de Département -->
-                <div class="superadmin-box" style="margin-top: 1.5rem;">
-                    <h3>
-                        <span>Comptes Administrateurs de Département</span>
-                        <span class="stat-badge total" id="super-total-badge">0 administrateurs</span>
-                    </h3>
-                    <div class="superadmin-table-wrapper" style="max-height: 360px;">
-                        <table class="superadmin-table">
-                            <thead>
-                                <tr>
-                                    <th>Nom & Email</th>
-                                    <th>Département</th>
-                                    <th>Statut</th>
-                                    <th style="text-align: right;">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="all-admins-tbody">
-                                <!-- Dynamic content -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Dedicated Read-Only Table for Registered Employees (Super Admin Supervision) -->
-                <div class="superadmin-box" style="margin-top: 1.5rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
-                        <h3>
-                            <span>Registre Global des Employés (Vue Supervision)</span>
-                            <span class="stat-badge progress" id="super-emp-table-badge">0 employés</span>
-                        </h3>
-                        <!-- Department Filtering Options for Employees Table -->
-                        <div class="dept-tabs" id="super-emp-dept-filter-tabs">
-                            <button type="button" class="dept-tab active" data-super-emp-dept="ALL">Tous les départements</button>
-                            <button type="button" class="dept-tab" data-super-emp-dept="DAF">DAF</button>
-                            <button type="button" class="dept-tab" data-super-emp-dept="DGUR">DGUR</button>
-                            <button type="button" class="dept-tab" data-super-emp-dept="DET">DET</button>
-                            <button type="button" class="dept-tab" data-super-emp-dept="SI">SI</button>
-                        </div>
-                    </div>
-                    <div class="superadmin-table-wrapper" style="max-height: 360px;">
-                        <table class="superadmin-table">
-                            <thead>
-                                <tr>
-                                    <th>Nom Complet</th>
-                                    <th>Adresse e-mail</th>
-                                    <th>Département</th>
-                                    <th>Statut du Compte</th>
-                                    <th style="text-align: right;">Actions / Gestion</th>
-                                </tr>
-                            </thead>
-                            <tbody id="all-super-employees-tbody">
-                                <!-- Dynamic supervised content -->
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="sa-table-responsive">
+                    <table class="sa-table">
+                        <thead>
+                            <tr>
+                                <th>Administrateur / Email</th>
+                                <th>Département</th>
+                                <th>Statut du Compte</th>
+                                <th>Date Création</th>
+                                <th style="text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-admins">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
-
         </div>
+
+        <!-- TAB 2: GESTION DES EMPLOYÉS -->
+        <div id="tab-content-employees" class="sa-tab-content" style="display: none;">
+            <div class="sa-section-card">
+                <div class="sa-section-header">
+                    <div>
+                        <h2 class="sa-section-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2.5">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                            </svg>
+                            Liste Globale des Employés Enregistrés
+                        </h2>
+                        <p style="color: var(--sa-text-muted); font-size: 0.85rem; margin-top: 0.2rem;">
+                            Tous les employés inscrits sur la plateforme dans l'ensemble des départements.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="sa-filter-row">
+                    <select id="filter-emp-dept" class="sa-select" onchange="renderEmployeesTable()">
+                        <option value="ALL">Tous les Départements</option>
+                        <option value="DAF">Direction Administrative et Financière (DAF)</option>
+                        <option value="DGUR">Direction de la Gestion Urbaine (DGUR)</option>
+                        <option value="DET">Direction des Études Techniques (DET)</option>
+                        <option value="SI">Service Informatique (SI)</option>
+                    </select>
+
+                    <input type="text" id="filter-emp-search" class="sa-input" placeholder="Rechercher par nom ou email..." oninput="renderEmployeesTable()" style="min-width: 250px;">
+                </div>
+
+                <div class="sa-table-responsive">
+                    <table class="sa-table">
+                        <thead>
+                            <tr>
+                                <th>Employé / Email</th>
+                                <th>Département</th>
+                                <th>Statut du Compte</th>
+                                <th>Date d'Inscription</th>
+                                <th style="text-align: right;">Actions de Gestion</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-employees">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: GESTION DES DEMANDES -->
+        <div id="tab-content-requests" class="sa-tab-content" style="display: none;">
+            <div class="sa-section-card">
+                <div class="sa-section-header">
+                    <div>
+                        <h2 class="sa-section-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2.5">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                            </svg>
+                            Ensemble des Demandes d'Intervention (Toutes Directions)
+                        </h2>
+                        <p style="color: var(--sa-text-muted); font-size: 0.85rem; margin-top: 0.2rem;">
+                            Supervision directe de toutes les demandes émises dans l'application.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="sa-filter-row">
+                    <select id="filter-req-dept" class="sa-select" onchange="renderRequestsTable()">
+                        <option value="ALL">Tous les Départements</option>
+                        <option value="DAF">DAF</option>
+                        <option value="DGUR">DGUR</option>
+                        <option value="DET">DET</option>
+                        <option value="SI">SI</option>
+                    </select>
+
+                    <select id="filter-req-status" class="sa-select" onchange="renderRequestsTable()">
+                        <option value="ALL">Tous les Statuts</option>
+                        <option value="pending">En attente</option>
+                        <option value="accepted">Acceptée</option>
+                        <option value="progress">En cours</option>
+                        <option value="resolved">Résolue</option>
+                        <option value="rejected">Rejetée</option>
+                    </select>
+
+                    <input type="text" id="filter-req-search" class="sa-input" placeholder="Rechercher par titre, code ou demandeur..." oninput="renderRequestsTable()" style="min-width: 250px;">
+                </div>
+
+                <div class="sa-table-responsive">
+                    <table class="sa-table">
+                        <thead>
+                            <tr>
+                                <th>Code / Réf</th>
+                                <th>Titre de la Demande</th>
+                                <th>Demandeur</th>
+                                <th>Département</th>
+                                <th>Date</th>
+                                <th>Statut</th>
+                                <th style="text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-requests">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
     </main>
 
-    <!-- Modal: Create Department Administrator Account -->
-    <div id="modal-create-admin" class="modal-backdrop" style="display: none;">
-        <div class="modal-dialog-styled">
-            <div class="modal-content-styled">
-                <div class="modal-header-styled">
-                    <div class="modal-header-content">
-                        <div class="modal-icon-badge blue">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="9" cy="7" r="4"></circle>
-                                <polyline points="16 11 18 13 22 9"></polyline>
-                            </svg>
-                        </div>
-                        <div>
-                            <h3 class="modal-title-styled">Créer un Administrateur de Département</h3>
-                            <p class="modal-subtitle-styled">Ajouter directement un compte Administrateur de Département validé</p>
-                        </div>
-                    </div>
-                    <button type="button" class="modal-close-btn-styled" onclick="closeCreateAdminModal()">&times;</button>
+    <!-- MODAL: CREER / MODIFIER ADMINISTRATEUR -->
+    <div id="sa-modal-admin" class="sa-modal-overlay">
+        <div class="sa-modal">
+            <div class="sa-modal-header">
+                <h3 class="sa-modal-title" id="sa-modal-admin-title">Créer un Administrateur</h3>
+                <button type="button" class="sa-modal-close" onclick="closeAdminModal()">&times;</button>
+            </div>
+            <form id="form-super-admin" onsubmit="handleAdminFormSubmit(event)">
+                <input type="hidden" id="admin-edit-id" value="">
+
+                <div class="sa-form-group">
+                    <label class="sa-form-label">Prénom & Nom</label>
+                    <input type="text" id="admin-name" class="sa-form-input" placeholder="ex: Reda Bensouda" required>
                 </div>
-                <form id="form-create-admin">
-                    <div class="modal-body-styled">
-                        <div class="form-grid-styled">
-                            <div class="form-group-styled">
-                                <label class="form-label-styled">
-                                    Prénom <span class="required-star">*</span>
-                                </label>
-                                <div class="input-wrapper-styled">
-                                    <span class="input-icon-styled">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                            <circle cx="12" cy="7" r="4"></circle>
-                                        </svg>
-                                    </span>
-                                    <input type="text" id="new-admin-firstname" class="form-input-styled" placeholder="Prénom" required>
-                                </div>
-                            </div>
 
-                            <div class="form-group-styled">
-                                <label class="form-label-styled">
-                                    Nom <span class="required-star">*</span>
-                                </label>
-                                <div class="input-wrapper-styled">
-                                    <span class="input-icon-styled">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                            <circle cx="12" cy="7" r="4"></circle>
-                                        </svg>
-                                    </span>
-                                    <input type="text" id="new-admin-lastname" class="form-input-styled" placeholder="Nom de famille" required>
-                                </div>
-                            </div>
-                        </div>
+                <div class="sa-form-group">
+                    <label class="sa-form-label">Adresse E-mail Officielle</label>
+                    <input type="email" id="admin-email" class="sa-form-input" placeholder="ex: r.bensouda@agenceurbaine.ma" required>
+                </div>
 
-                        <div class="form-group-styled">
-                            <label class="form-label-styled">
-                                Adresse Email Professionnelle <span class="required-star">*</span>
-                            </label>
-                            <div class="input-wrapper-styled">
-                                <span class="input-icon-styled">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                                        <polyline points="22,6 12,13 2,6"></polyline>
-                                    </svg>
-                                </span>
-                                <input type="email" id="new-admin-email" class="form-input-styled" placeholder="nom.admin@agenceurbaine.ma" required>
-                            </div>
-                        </div>
+                <div class="sa-form-group">
+                    <label class="sa-form-label">Mot de Passe</label>
+                    <input type="password" id="admin-password" class="sa-form-input" placeholder="Définir un mot de passe" required>
+                </div>
 
-                        <div class="form-grid-styled">
-                            <div class="form-group-styled">
-                                <label class="form-label-styled">
-                                    Département Assigné <span class="required-star">*</span>
-                                </label>
-                                <div class="input-wrapper-styled">
-                                    <span class="input-icon-styled">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-                                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-                                        </svg>
-                                    </span>
-                                    <select id="new-admin-dept" class="form-input-styled" required style="cursor: pointer;">
-                                        <option value="DAF">Direction DAF</option>
-                                        <option value="DGUR">Direction DGUR</option>
-                                        <option value="DET">Direction DET</option>
-                                        <option value="SI">Service SI</option>
-                                    </select>
-                                </div>
-                            </div>
+                <div class="sa-form-group">
+                    <label class="sa-form-label">Département Assigné</label>
+                    <select id="admin-department" class="sa-form-select" required>
+                        <option value="DAF">Direction Administrative et Financière (DAF)</option>
+                        <option value="DGUR">Direction de la Gestion Urbaine (DGUR)</option>
+                        <option value="DET">Direction des Études Techniques (DET)</option>
+                        <option value="SI">Service Informatique (SI)</option>
+                    </select>
+                </div>
 
-                            <div class="form-group-styled">
-                                <label class="form-label-styled">
-                                    Mot de passe <span class="required-star">*</span>
-                                </label>
-                                <div class="input-wrapper-styled">
-                                    <span class="input-icon-styled">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                                        </svg>
-                                    </span>
-                                    <input type="password" id="new-admin-password" class="form-input-styled" placeholder="••••••••" required minlength="4">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer-styled">
-                        <button type="button" class="btn-cancel-styled" onclick="closeCreateAdminModal()">
-                            Annuler
-                        </button>
-                        <button type="submit" class="btn-submit-styled">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                            </svg>
-                            Créer & Approuver le Compte
-                        </button>
-                    </div>
-                </form>
+                <div class="sa-form-group">
+                    <label class="sa-form-label">Statut du Compte</label>
+                    <select id="admin-status" class="sa-form-select" required>
+                        <option value="approved">Actif (Approuvé)</option>
+                        <option value="disabled">Désactivé (Inactif)</option>
+                    </select>
+                </div>
+
+                <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem;">
+                    <button type="button" class="sa-btn sa-btn-secondary" onclick="closeAdminModal()">Annuler</button>
+                    <button type="submit" class="sa-btn sa-btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: DETAILS DEMANDE -->
+    <div id="sa-modal-request-details" class="sa-modal-overlay">
+        <div class="sa-modal" style="max-width: 650px;">
+            <div class="sa-modal-header">
+                <h3 class="sa-modal-title">Détails de la Demande d'Intervention</h3>
+                <button type="button" class="sa-modal-close" onclick="closeRequestDetailsModal()">&times;</button>
+            </div>
+            <div id="sa-request-modal-body">
+                <!-- Content inserted dynamically -->
             </div>
         </div>
     </div>
 
-    <footer class="footer">
-        <div class="container footer-bottom-content text-center">
-            <p>© <span id="current-year">2026</span> Agence Urbaine — Espace de Supervision Super Administrateur</p>
-        </div>
-    </footer>
-
+    <!-- Core Dependencies -->
     <script src="common.js"></script>
     <script src="superadmin.js"></script>
 </body>
