@@ -50,82 +50,39 @@
         <div class="container login-container" style="max-width: 580px;">
             <div class="login-card">
                 <div class="login-header">
-                    <div class="badge-official">Espace d'Authentification Officiel</div>
+                    <div class="badge-official">Espace d'Authentification Unique</div>
                     <h2>Portail d'Accès Sécurisé</h2>
-                    <p>Veuillez sélectionner votre rôle pour accéder à votre espace de travail.</p>
+                    <p>Saisissez vos identifiants. Le système identifie automatiquement votre rôle (Employé ou Administrateur).</p>
                 </div>
 
                 <!-- Alert Message Banner -->
                 <div id="login-alert" class="alert-box" style="display: none; margin-bottom: 1.5rem;"></div>
 
-                <!-- Role Selector Tabs -->
-                <div class="role-selector">
-                    <button type="button" class="role-tab active" id="tab-employee" data-role="employee">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
-                        </svg>
-                        Employé
-                    </button>
-                    <button type="button" class="role-tab" id="tab-admin" data-role="admin">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                        </svg>
-                        Admin Dept
-                    </button>
-                </div>
-
-                <!-- Employee Login Form -->
-                <form id="form-employee" class="auth-form active">
+                <!-- Unified Login Form -->
+                <form id="form-login" class="auth-form active">
                     <div class="form-group">
-                        <label for="emp-email">Adresse Email Professionnelle</label>
-                        <input type="email" id="emp-email" class="form-control" placeholder="youssef.benali@agenceurbaine.ma" required>
+                        <label for="login-email">Adresse Email Professionnelle</label>
+                        <input type="email" id="login-email" class="form-control" placeholder="ilyas.elbacha@agenceurbaine.ma" required autocomplete="email">
                     </div>
 
                     <div class="form-group">
-                        <label for="emp-password">Mot de passe</label>
-                        <input type="password" id="emp-password" class="form-control" placeholder="••••••••" required>
+                        <label for="login-password">Mot de passe</label>
+                        <input type="password" id="login-password" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+                    </div>
+
+                    <!-- Quick Demo Presets -->
+                    <div class="preset-title">Comptes de démonstration rapide :</div>
+                    <div class="admin-presets" style="grid-template-columns: repeat(3, 1fr);">
+                        <button type="button" class="preset-btn active-preset" data-email="ilyas.elbacha@agenceurbaine.ma" data-pass="user123">Employé SI</button>
+                        <button type="button" class="preset-btn" data-email="si.admin@agenceurbaine.ma" data-pass="admin">Admin SI</button>
+                        <button type="button" class="preset-btn" data-email="daf.admin@agenceurbaine.ma" data-pass="admin">Admin DAF</button>
                     </div>
 
                     <button type="submit" class="btn btn-primary btn-block">
-                        Accéder à l'espace Employé
+                        Se connecter
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <line x1="5" y1="12" x2="19" y2="12"></line>
                             <polyline points="12 5 19 12 12 19"></polyline>
-                        </svg>
-                    </button>
-                </form>
-
-                <!-- Admin Login Form -->
-                <form id="form-admin" class="auth-form">
-                    <div class="admin-notice">
-                        <strong>Administrateurs de Département (DAF, DGUR, DET, SI) :</strong>
-                        <p>Chaque administrateur accède exclusivement aux demandes de sa direction. L'accès requiert l'approbation préalable du Super Administrateur.</p>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="admin-email">Email Administrateur</label>
-                        <input type="email" id="admin-email" class="form-control" placeholder="si.admin@agenceurbaine.ma" required value="si.admin@agenceurbaine.ma">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="admin-pass">Mot de Passe Sécurisé</label>
-                        <input type="password" id="admin-pass" class="form-control" value="admin" required>
-                    </div>
-
-                    <!-- Quick Admin Login Presets -->
-                    <div class="preset-title">Accès rapide démonstration :</div>
-                    <div class="admin-presets">
-                        <button type="button" class="preset-btn" data-email="daf.admin@agenceurbaine.ma">Admin DAF</button>
-                        <button type="button" class="preset-btn" data-email="dgur.admin@agenceurbaine.ma">Admin DGUR</button>
-                        <button type="button" class="preset-btn" data-email="det.admin@agenceurbaine.ma">Admin DET</button>
-                        <button type="button" class="preset-btn active-preset" data-email="si.admin@agenceurbaine.ma">Admin SI</button>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary btn-block">
-                        Se connecter au Tableau de Bord Admin
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                         </svg>
                     </button>
                 </form>
