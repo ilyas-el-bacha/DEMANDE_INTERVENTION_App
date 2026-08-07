@@ -140,21 +140,60 @@ function getUsers() {
         }
     });
 
-    // Ensure initial employee account exists if no employees found
+    // Ensure baseline employees exist for all departments if no employees found
     const hasEmployee = users.some(u => u && u.role !== 'admin' && u.role !== 'superadmin');
     if (!hasEmployee) {
-        users.push({
-            id: 'usr-emp-si-ilyas',
-            firstName: 'Ilyas',
-            lastName: 'El Bacha',
-            name: 'Ilyas El Bacha',
-            email: 'ilyas.elbacha@agenceurbaine.ma',
-            password: 'user123',
-            role: 'employee',
-            department: 'SI',
-            status: 'approved',
-            createdAt: '2026-01-15'
-        });
+        const defaultEmployees = [
+            {
+                id: 'usr-emp-si-ilyas',
+                firstName: 'Ilyas',
+                lastName: 'El Bacha',
+                name: 'Ilyas El Bacha',
+                email: 'ilyas.elbacha@agenceurbaine.ma',
+                password: 'user123',
+                role: 'employee',
+                department: 'SI',
+                status: 'approved',
+                createdAt: '2026-01-15'
+            },
+            {
+                id: 'usr-emp-daf-hassan',
+                firstName: 'Hassan',
+                lastName: 'Amrani',
+                name: 'Hassan Amrani',
+                email: 'hassan.amrani@agenceurbaine.ma',
+                password: 'user123',
+                role: 'employee',
+                department: 'DAF',
+                status: 'approved',
+                createdAt: '2026-01-20'
+            },
+            {
+                id: 'usr-emp-dgur-fatima',
+                firstName: 'Fatima Zahra',
+                lastName: 'El Fassi',
+                name: 'Fatima Zahra El Fassi',
+                email: 'fatima.elfassi@agenceurbaine.ma',
+                password: 'user123',
+                role: 'employee',
+                department: 'DGUR',
+                status: 'approved',
+                createdAt: '2026-02-01'
+            },
+            {
+                id: 'usr-emp-det-karim',
+                firstName: 'Karim',
+                lastName: 'Tazi',
+                name: 'Karim Tazi',
+                email: 'karim.tazi@agenceurbaine.ma',
+                password: 'user123',
+                role: 'employee',
+                department: 'DET',
+                status: 'approved',
+                createdAt: '2026-02-05'
+            }
+        ];
+        defaultEmployees.forEach(emp => users.push(emp));
         updated = true;
     }
 
@@ -187,7 +226,7 @@ function getRequests() {
         const stored = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('au_requests');
         if (stored !== null) {
             const parsed = JSON.parse(stored);
-            if (Array.isArray(parsed)) return parsed;
+            if (Array.isArray(parsed) && parsed.length > 0) return parsed;
         }
     } catch(e) {}
     return initSeedRequests();
@@ -206,7 +245,88 @@ function saveRequests(requests) {
 }
 
 function initSeedRequests() {
-    const seedRequests = [];
+    const seedRequests = [
+        {
+            id: 'INT-2026-0001',
+            date: '2026-08-01',
+            emitter: 'Ilyas El Bacha',
+            emitterEmail: 'ilyas.elbacha@agenceurbaine.ma',
+            emitterId: 'usr-emp-si-ilyas',
+            department: 'SI',
+            category: 'Matériel, Réseau',
+            natureList: ['Matériel', 'Réseau'],
+            priority: 'Urgent',
+            anomaly: 'Poste informatique principal non connecté au réseau local et double écran non détecté.',
+            status: 'En attente',
+            code: 'FM-SI-04',
+            version: '02',
+            appDate: '01/08/2026',
+            history: [
+                { date: '2026-08-01 09:15', label: 'Demande émise par Ilyas El Bacha (SI)' },
+                { date: '2026-08-01 09:15', label: 'Demande transmise à l\'Administrateur SI' }
+            ]
+        },
+        {
+            id: 'INT-2026-0002',
+            date: '2026-08-02',
+            emitter: 'Hassan Amrani',
+            emitterEmail: 'hassan.amrani@agenceurbaine.ma',
+            emitterId: 'usr-emp-daf-hassan',
+            department: 'DAF',
+            category: 'Matériel',
+            natureList: ['Matériel'],
+            priority: 'Moyenne',
+            anomaly: 'Imprimante réseau multifonction DAF bloquée par un bourrage papier répété.',
+            status: 'En cours',
+            code: 'FM-SI-04',
+            version: '02',
+            appDate: '02/08/2026',
+            history: [
+                { date: '2026-08-02 10:00', label: 'Demande émise par Hassan Amrani (DAF)' },
+                { date: '2026-08-02 11:30', label: 'Intervention prise en charge par l\'Administrateur DAF' }
+            ]
+        },
+        {
+            id: 'INT-2026-0003',
+            date: '2026-08-03',
+            emitter: 'Fatima Zahra El Fassi',
+            emitterEmail: 'fatima.elfassi@agenceurbaine.ma',
+            emitterId: 'usr-emp-dgur-fatima',
+            department: 'DGUR',
+            category: 'Logiciel / Application',
+            natureList: ['Logiciel / Application'],
+            priority: 'Urgent',
+            anomaly: 'Message d\'erreur d\'autorisation lors de l\'accès au logiciel de cartographie SIG urbanisme.',
+            status: 'Acceptée',
+            code: 'FM-SI-04',
+            version: '02',
+            appDate: '03/08/2026',
+            history: [
+                { date: '2026-08-03 14:20', label: 'Demande émise par Fatima Zahra El Fassi (DGUR)' },
+                { date: '2026-08-03 15:00', label: 'Demande validée et acceptée par l\'Administrateur DGUR' }
+            ]
+        },
+        {
+            id: 'INT-2026-0004',
+            date: '2026-08-04',
+            emitter: 'Karim Tazi',
+            emitterEmail: 'karim.tazi@agenceurbaine.ma',
+            emitterId: 'usr-emp-det-karim',
+            department: 'DET',
+            category: 'Matériel, Logiciel / Application',
+            natureList: ['Matériel', 'Logiciel / Application'],
+            priority: 'Élevée',
+            anomaly: 'Optimisation de la station de calcul et réinstallation de la licence DAO.',
+            status: 'Résolue',
+            code: 'FM-SI-04',
+            version: '02',
+            appDate: '04/08/2026',
+            history: [
+                { date: '2026-08-04 08:30', label: 'Demande émise par Karim Tazi (DET)' },
+                { date: '2026-08-04 16:45', label: 'Intervention résolue avec succès par l\'équipe technique' }
+            ]
+        }
+    ];
 
     saveRequests(seedRequests);
     return seedRequests;

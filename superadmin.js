@@ -34,14 +34,14 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(() => {
         try {
             const uJson = localStorage.getItem('au_users') || '';
-            const rJson = localStorage.getItem('au_intervention_requests') || '';
+            const rJson = localStorage.getItem('au_requests') || localStorage.getItem('au_intervention_requests') || '';
             if (uJson !== lastUsersJson || rJson !== lastRequestsJson) {
                 lastUsersJson = uJson;
                 lastRequestsJson = rJson;
                 refreshAllSuperAdminData();
             }
         } catch(e) {}
-    }, 1000);
+    }, 500);
 });
 
 /**
