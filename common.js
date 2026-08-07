@@ -199,7 +199,7 @@ function getCurrentUser() {
         const stored = localStorage.getItem(CURRENT_USER_KEY);
         if (stored) {
             const user = JSON.parse(stored);
-            if (user && user.id) {
+            if (user && (user.id || user.email || user.role)) {
                 const users = getUsers();
                 const freshUser = users.find(u => u.id === user.id || (u.email && user.email && u.email.toLowerCase().trim() === user.email.toLowerCase().trim()));
                 if (freshUser) {
@@ -211,10 +211,8 @@ function getCurrentUser() {
                         localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(freshUser));
                     }
                     return freshUser;
-                } else {
-                    localStorage.removeItem(CURRENT_USER_KEY);
-                    return null;
                 }
+                return user;
             }
         }
     } catch(e) {}
@@ -491,9 +489,9 @@ function updateNavbar() {
             navLinks.appendChild(userNavBtn);
         }
 
-        let roleBadge = 'Employé';
-        if (user.role === 'superadmin') roleBadge = 'Super Admin';
-        else if (user.role === 'admin') roleBadge = `Admin ${user.department || ''}`;
+        let roleBadge = 'EMPLOYÉ';
+        if (user.role === 'superadmin') roleBadge = 'SUPER ADMIN';
+        else if (user.role === 'admin') roleBadge = `ADMIN ${user.department || ''}`;
 
         const displayName = user.name || (user.firstName ? (user.firstName + (user.lastName ? ' ' + user.lastName : '')) : 'Utilisateur');
 
@@ -502,16 +500,16 @@ function updateNavbar() {
                 <span class="user-role-badge ${user.role}">${escapeHtml(roleBadge)}</span>
                 <span class="user-name-text">${escapeHtml(displayName)}</span>
                 <button type="button" class="btn-logout" title="Se déconnecter de la session" onclick="logoutUser()">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                         <polyline points="16 17 21 12 16 7"></polyline>
                         <line x1="21" y1="12" x2="9" y2="12"></line>
                     </svg>
-                    Déconnexion
+                    Sortir
                 </button>
             </div>
         `;
-        userNavBtn.style.display = 'flex';
+        userNavBtn.style.display = 'inline-flex';
     } else {
         if (userNavBtn) userNavBtn.remove();
     }
@@ -1078,6 +1076,10 @@ document.addEventListener('DOMContentLoaded', () => {
     checkRoleRedirects();
     updateNavbar();
     injectCustomModalStyles();
+});
+
+window.addEventListener('load', () => {
+    updateNavbar();
 });
 
 window.addEventListener('au_data_changed', () => {
