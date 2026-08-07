@@ -18,11 +18,22 @@ document.addEventListener('DOMContentLoaded', () => {
  * Prefills current date, auto-generates Request ID, and loads user session data if available
  */
 function initFormDefaults() {
-    // 1. Current Date
+    // 1. Current Date & Date d'application
+    const todayObj = new Date();
+    const day = String(todayObj.getDate()).padStart(2, '0');
+    const month = String(todayObj.getMonth() + 1).padStart(2, '0');
+    const year = todayObj.getFullYear();
+    const formattedAppDate = `${day}/${month}/${year}`;
+    const todayIso = todayObj.toISOString().split('T')[0];
+
     const dateInput = document.getElementById('doc-date');
     if (dateInput) {
-        const today = new Date().toISOString().split('T')[0];
-        dateInput.value = today;
+        dateInput.value = todayIso;
+    }
+
+    const appDateSpan = document.getElementById('doc-app-date');
+    if (appDateSpan) {
+        appDateSpan.textContent = formattedAppDate;
     }
 
     // 2. Generate Next Request ID
@@ -251,7 +262,7 @@ function initFormSubmission() {
             status: 'En attente',
             code: 'FM-SI-04',
             version: '02',
-            appDate: '01/02/2026',
+            appDate: document.getElementById('doc-app-date')?.textContent || `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`,
             signatures: {
                 emitter: signatureDataUrl,
                 emitterDate: dateEmission
