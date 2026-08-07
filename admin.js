@@ -1289,7 +1289,25 @@ window.rejectRequest = async function(reqId) {
     const req = allRequests.find(r => r.id === reqId);
     if (!req) return;
 
-    const reason = prompt(`Motif du rejet pour la demande N° ${reqId} (optionnel) :`, "Demande non conforme ou non éligible");
+    const emitterName = req.emitter || 'l\'employé';
+    const dept = req.department || currentAdminDepartment || 'Service';
+
+    const reason = await window.showCustomPrompt({
+        title: `Rejet de la Demande N° ${reqId}`,
+        subtitle: `Spécifiez le motif du rejet pour la demande soumise par ${emitterName} (${dept}) :`,
+        defaultValue: "Demande non conforme ou non éligible",
+        placeholder: "Rédigez la raison du rejet...",
+        confirmText: "Confirmer le rejet",
+        cancelText: "Annuler",
+        type: "danger",
+        suggestions: [
+            "Demande non conforme",
+            "Informations incomplètes",
+            "Hors périmètre du service",
+            "Doublon / Déjà traitée"
+        ]
+    });
+
     if (reason === null) return; // User cancelled prompt
 
     req.status = 'Rejetée';
@@ -1299,7 +1317,7 @@ window.rejectRequest = async function(reqId) {
     if (!req.history) req.history = [];
     req.history.push({
         date: formattedTime,
-        label: `Demande REJETÉE par l'Administrateur ${req.department}. Motif : ${reason}`
+        label: `Demande REJETÉE par l'Administrateur ${dept}. Motif : ${reason}`
     });
 
     saveRequests(allRequests);
@@ -1307,7 +1325,7 @@ window.rejectRequest = async function(reqId) {
 
     await window.showCustomAlert({
         title: "Demande Rejetée",
-        message: `La demande N° ${reqId} a été marquée comme "Rejetée".`,
+        message: `La demande N° ${reqId} a été marquée comme "Rejetée".\n\nMotif enregistré : ${reason}`,
         buttonText: "Compris",
         type: "warning"
     });
@@ -1317,8 +1335,23 @@ window.requestInfo = async function(reqId) {
     const req = allRequests.find(r => r.id === reqId);
     if (!req) return;
 
-    const infoText = prompt(`Précisez les informations complémentaires requises pour la demande N° ${reqId} :`, "Veuillez apporter des précisions sur la localisation exacte du problème.");
-    if (!infoText) return;
+    const infoText = await window.showCustomPrompt({
+        title: `Demande d'Informations — N° ${reqId}`,
+        subtitle: `Indiquez les précisions ou compléments d'informations nécessaires de la part du demandeur :`,
+        defaultValue: "Veuillez apporter des précisions sur la localisation exacte du problème.",
+        placeholder: "Saisissez les détails requis...",
+        confirmText: "Transmettre la demande",
+        cancelText: "Annuler",
+        type: "info",
+        suggestions: [
+            "Préciser le bâtiment et le bureau",
+            "Fournir la référence du matériel",
+            "Transmettre une capture d'écran",
+            "Préciser le niveau d'urgence"
+        ]
+    });
+
+    if (infoText === null) return;
 
     req.status = 'Infos requises';
     const now = new Date();

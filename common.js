@@ -679,6 +679,49 @@ function injectCustomModalStyles() {
             gap: 0.5rem;
             transition: all 0.2s ease;
         }
+
+        .custom-prompt-input {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.75);
+            border: 1.5px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            color: #F8FAFC;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            padding: 0.85rem 1rem;
+            outline: none;
+            transition: all 0.2s ease;
+            resize: vertical;
+            min-height: 85px;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+
+        .custom-prompt-input:focus {
+            border-color: #EF4444;
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2);
+            background: rgba(15, 23, 42, 0.95);
+        }
+
+        .custom-prompt-chip {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #CBD5E1;
+            font-size: 0.78rem;
+            padding: 0.32rem 0.7rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            user-select: none;
+        }
+
+        .custom-prompt-chip:hover {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.4);
+            color: #FFFFFF;
+            transform: translateY(-1px);
+        }
     `;
     document.head.appendChild(style);
 }
@@ -864,6 +907,159 @@ window.showCustomAlert = function(options = {}) {
             if (e.key === 'Escape') {
                 document.removeEventListener('keydown', handleKeyDown);
                 close(false);
+            }
+        };
+        document.addEventListener('keydown', handleKeyDown);
+    });
+};
+
+/**
+ * Universal Modern Prompt Modal (Promise-based) for inputting rejection reasons, notes, etc.
+ */
+window.showCustomPrompt = function(options = {}) {
+    const {
+        title = "Motif du rejet",
+        subtitle = "Veuillez préciser la raison du rejet de cette demande d'intervention :",
+        defaultValue = "Demande non conforme ou non éligible",
+        placeholder = "Saisissez le motif du rejet...",
+        confirmText = "Confirmer le rejet",
+        cancelText = "Annuler",
+        type = "danger",
+        suggestions = ["Demande non conforme", "Informations incomplètes", "Hors périmètre du service", "Doublon / Déjà traitée"]
+    } = typeof options === 'string' ? { subtitle: options } : options;
+
+    return new Promise((resolve) => {
+        injectCustomModalStyles();
+
+        const oldModal = document.getElementById('app-custom-modal');
+        if (oldModal) oldModal.remove();
+
+        const backdrop = document.createElement('div');
+        backdrop.id = 'app-custom-modal';
+        backdrop.className = 'custom-modal-backdrop';
+
+        let iconSvg = '';
+        if (type === 'danger') {
+            iconSvg = `
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>`;
+        } else if (type === 'warning') {
+            iconSvg = `
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>`;
+        } else {
+            iconSvg = `
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>`;
+        }
+
+        const confirmBtnStyle = type === 'danger'
+            ? 'background: linear-gradient(135deg, #EF4444, #DC2626); color: #FFFFFF; border: none; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);'
+            : 'background: linear-gradient(135deg, #3B82F6, #2563EB); color: #FFFFFF; border: none; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);';
+
+        const chipsHtml = (suggestions && suggestions.length > 0) ? `
+            <div style="margin-top: 0.85rem; text-align: left;">
+                <span style="font-size: 0.78rem; font-weight: 600; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 0.4rem;">Suggestions rapides :</span>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.4rem;">
+                    ${suggestions.map(s => `
+                        <button type="button" class="custom-prompt-chip" data-val="${escapeHtml(s)}">${escapeHtml(s)}</button>
+                    `).join('')}
+                </div>
+            </div>
+        ` : '';
+
+        backdrop.innerHTML = `
+            <div class="custom-modal-card" style="max-width: 500px; text-align: left; padding: 2rem 2rem 1.75rem 2rem;">
+                <button type="button" class="custom-modal-close-btn" id="custom-modal-close-x" aria-label="Fermer">&times;</button>
+                
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem;">
+                    <div class="custom-modal-icon-glow ${type}" style="margin: 0; flex-shrink: 0; width: 56px; height: 56px;">
+                        ${iconSvg}
+                    </div>
+                    <div>
+                        <h3 class="custom-modal-title" style="margin: 0; font-size: 1.2rem; line-height: 1.3;">${escapeHtml(title)}</h3>
+                        <p style="margin: 0.25rem 0 0 0; font-size: 0.88rem; color: #94A3B8; line-height: 1.4;">${escapeHtml(subtitle)}</p>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 1.25rem;">
+                    <label for="custom-prompt-textarea" style="display: block; font-size: 0.82rem; font-weight: 700; color: #CBD5E1; margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.5px;">Motif / Explication :</label>
+                    <textarea id="custom-prompt-textarea" class="custom-prompt-input" rows="3" placeholder="${escapeHtml(placeholder)}">${escapeHtml(defaultValue)}</textarea>
+                    ${chipsHtml}
+                </div>
+
+                <div class="custom-modal-actions" style="margin-top: 1.5rem;">
+                    <button type="button" class="btn btn-secondary" id="custom-prompt-cancel-btn" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); color: #CBD5E1; border-radius: 12px; font-weight: 600; padding: 0.75rem 1.25rem; font-size: 0.92rem;">
+                        ${escapeHtml(cancelText)}
+                    </button>
+                    <button type="button" class="btn" id="custom-prompt-confirm-btn" style="${confirmBtnStyle} border-radius: 12px; font-weight: 700; padding: 0.75rem 1.4rem; font-size: 0.92rem; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                        <span>${escapeHtml(confirmText)}</span>
+                    </button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(backdrop);
+
+        const textarea = document.getElementById('custom-prompt-textarea');
+        if (textarea) {
+            textarea.focus();
+            textarea.select();
+        }
+
+        // Attach Chip Click Listeners
+        const chips = backdrop.querySelectorAll('.custom-prompt-chip');
+        chips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                const val = chip.getAttribute('data-val');
+                if (textarea && val) {
+                    textarea.value = val;
+                    textarea.focus();
+                }
+            });
+        });
+
+        let resolved = false;
+        const close = (resultVal) => {
+            if (resolved) return;
+            resolved = true;
+            backdrop.style.opacity = '0';
+            backdrop.style.transition = 'opacity 0.2s ease';
+            setTimeout(() => {
+                if (backdrop.parentNode) backdrop.parentNode.removeChild(backdrop);
+                resolve(resultVal);
+            }, 200);
+        };
+
+        document.getElementById('custom-prompt-confirm-btn').addEventListener('click', () => {
+            const val = textarea ? textarea.value.trim() : '';
+            close(val || defaultValue || "Motif non précisé");
+        });
+
+        document.getElementById('custom-prompt-cancel-btn').addEventListener('click', () => close(null));
+        document.getElementById('custom-modal-close-x').addEventListener('click', () => close(null));
+
+        backdrop.addEventListener('click', (e) => {
+            if (e.target === backdrop) close(null);
+        });
+
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') {
+                document.removeEventListener('keydown', handleKeyDown);
+                close(null);
+            } else if (e.key === 'Enter' && e.ctrlKey) {
+                document.removeEventListener('keydown', handleKeyDown);
+                const val = textarea ? textarea.value.trim() : '';
+                close(val || defaultValue || "Motif non précisé");
             }
         };
         document.addEventListener('keydown', handleKeyDown);
