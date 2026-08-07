@@ -140,61 +140,71 @@ function getUsers() {
         }
     });
 
-    // Ensure baseline employees exist for all departments if no employees found
-    const hasEmployee = users.some(u => u && u.role !== 'admin' && u.role !== 'superadmin');
-    if (!hasEmployee) {
-        const defaultEmployees = [
-            {
-                id: 'usr-emp-si-ilyas',
-                firstName: 'Ilyas',
-                lastName: 'El Bacha',
-                name: 'Ilyas El Bacha',
-                email: 'ilyas.elbacha@agenceurbaine.ma',
-                password: 'user123',
-                role: 'employee',
-                department: 'SI',
-                status: 'approved',
-                createdAt: '2026-01-15'
-            },
-            {
-                id: 'usr-emp-daf-hassan',
-                firstName: 'Hassan',
-                lastName: 'Amrani',
-                name: 'Hassan Amrani',
-                email: 'hassan.amrani@agenceurbaine.ma',
-                password: 'user123',
-                role: 'employee',
-                department: 'DAF',
-                status: 'approved',
-                createdAt: '2026-01-20'
-            },
-            {
-                id: 'usr-emp-dgur-fatima',
-                firstName: 'Fatima Zahra',
-                lastName: 'El Fassi',
-                name: 'Fatima Zahra El Fassi',
-                email: 'fatima.elfassi@agenceurbaine.ma',
-                password: 'user123',
-                role: 'employee',
-                department: 'DGUR',
-                status: 'approved',
-                createdAt: '2026-02-01'
-            },
-            {
-                id: 'usr-emp-det-karim',
-                firstName: 'Karim',
-                lastName: 'Tazi',
-                name: 'Karim Tazi',
-                email: 'karim.tazi@agenceurbaine.ma',
-                password: 'user123',
-                role: 'employee',
-                department: 'DET',
-                status: 'approved',
-                createdAt: '2026-02-05'
+    // Ensure baseline default employees exist for all departments
+    const defaultEmployees = [
+        {
+            id: 'usr-emp-si-ilyas',
+            firstName: 'Ilyas',
+            lastName: 'El Bacha',
+            name: 'Ilyas El Bacha',
+            email: 'ilyas.elbacha@agenceurbaine.ma',
+            password: 'user123',
+            role: 'employee',
+            department: 'SI',
+            status: 'approved',
+            createdAt: '2026-01-15'
+        },
+        {
+            id: 'usr-emp-daf-hassan',
+            firstName: 'Hassan',
+            lastName: 'Amrani',
+            name: 'Hassan Amrani',
+            email: 'hassan.amrani@agenceurbaine.ma',
+            password: 'user123',
+            role: 'employee',
+            department: 'DAF',
+            status: 'approved',
+            createdAt: '2026-01-20'
+        },
+        {
+            id: 'usr-emp-dgur-fatima',
+            firstName: 'Fatima Zahra',
+            lastName: 'El Fassi',
+            name: 'Fatima Zahra El Fassi',
+            email: 'fatima.elfassi@agenceurbaine.ma',
+            password: 'user123',
+            role: 'employee',
+            department: 'DGUR',
+            status: 'approved',
+            createdAt: '2026-02-01'
+        },
+        {
+            id: 'usr-emp-det-karim',
+            firstName: 'Karim',
+            lastName: 'Tazi',
+            name: 'Karim Tazi',
+            email: 'karim.tazi@agenceurbaine.ma',
+            password: 'user123',
+            role: 'employee',
+            department: 'DET',
+            status: 'approved',
+            createdAt: '2026-02-05'
+        }
+    ];
+
+    const hasAnyEmployee = users.some(u => {
+        if (!u) return false;
+        const role = (u.role || '').toLowerCase();
+        return role === 'employee' || (role !== 'admin' && role !== 'superadmin' && role !== 'department_admin');
+    });
+
+    if (!hasAnyEmployee) {
+        defaultEmployees.forEach(emp => {
+            if (!users.some(u => u.id === emp.id || u.email === emp.email)) {
+                users.push(emp);
+                updated = true;
             }
-        ];
-        defaultEmployees.forEach(emp => users.push(emp));
-        updated = true;
+        });
     }
 
     if (updated) {

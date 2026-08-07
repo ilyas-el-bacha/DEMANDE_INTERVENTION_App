@@ -61,19 +61,22 @@ function refreshAllSuperAdminData() {
 function renderGlobalStats() {
     const users = getUsers();
     const requests = getRequests();
+    const globalStats = typeof getRealtimeStats === 'function' ? getRealtimeStats('ALL') : { total: 0, pending: 0, progress: 0, resolved: 0 };
 
-    // 1. Total Employees
-    const employees = users.filter(u => u && u.role !== 'admin' && u.role !== 'superadmin');
+    // 1. Total Employees (All accounts with role === 'employee' or non-admin/superadmin)
+    const employees = users.filter(u => {
+        if (!u) return false;
+        const role = (u.role || '').toLowerCase();
+        return role === 'employee' || (role !== 'admin' && role !== 'superadmin' && role !== 'department_admin');
+    });
     const totalEmployees = employees.length;
 
     // 2. Total Department Admins
     const admins = users.filter(u => u && (u.role === 'admin' || u.role === 'department_admin'));
     const totalAdmins = admins.length;
 
-    // 3. Total Requests
+    // 3. Realtime Request Stats (Exactly identical to homepage & admin statistics)
     const totalRequests = requests.length;
-
-    // Request Status Counters
     let pendingRequests = 0;
     let acceptedRequests = 0;
     let inProgressRequests = 0;
@@ -100,7 +103,7 @@ function renderGlobalStats() {
 
     // Live Department Hierarchy Breakdown
     ['DAF', 'DGUR', 'DET', 'SI'].forEach(deptKey => {
-        const dEmps = users.filter(u => u && u.role !== 'admin' && u.role !== 'superadmin' && u.department && u.department.toUpperCase().includes(deptKey));
+        const dEmps = employees.filter(e => e.department && e.department.toUpperCase().includes(deptKey));
         const dReqs = requests.filter(r => r && r.department && r.department.toUpperCase().includes(deptKey));
         setElemText(`sa-dept-${deptKey.toLowerCase()}-count`, `${dEmps.length} employé(s) | ${dReqs.length} demande(s)`);
     });
@@ -402,7 +405,11 @@ function renderEmployeesTable() {
     const searchText = (document.getElementById('filter-emp-search')?.value || '').toLowerCase().trim();
 
     const users = getUsers();
-    let employees = users.filter(u => u && u.role !== 'admin' && u.role !== 'superadmin');
+    let employees = users.filter(u => {
+        if (!u) return false;
+        const role = (u.role || '').toLowerCase();
+        return role === 'employee' || (role !== 'admin' && role !== 'superadmin' && role !== 'department_admin');
+    });
 
     // Apply Department Filter
     if (deptFilter !== 'ALL') {
