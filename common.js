@@ -393,7 +393,7 @@ function checkRoleRedirects() {
  */
 function updateNavbar() {
     const user = getCurrentUser();
-    const navLinks = document.getElementById('nav-links');
+    const navLinks = document.getElementById('nav-links') || document.querySelector('.nav-links');
 
     // Update Brand Link (Superadmin points to superadmin.html, Admin points to admin.html, Employee points to index.html)
     const brandLinks = document.querySelectorAll('.brand');
