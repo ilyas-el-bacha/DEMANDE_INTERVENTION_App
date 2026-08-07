@@ -74,7 +74,12 @@ function initLoginForm() {
         setCurrentUser(user);
 
         // AUTO-DETECT ROLE AND REDIRECT
-        if (user.role === 'admin' || user.role === 'superadmin') {
+        if (user.role === 'superadmin') {
+            showLoginAlert(`Connexion réussie en tant que Super Administrateur. Redirection vers le Portail Super Administrateur...`, 'success');
+            setTimeout(() => {
+                window.location.href = 'superadmin.html';
+            }, 800);
+        } else if (user.role === 'admin') {
             showLoginAlert(`Connexion réussie en tant qu'Administrateur (${user.department || 'Général'}). Redirection vers l'espace administration...`, 'success');
             setTimeout(() => {
                 window.location.href = 'admin.html';

@@ -124,30 +124,8 @@ function initAdminSession() {
         const tableCard = document.querySelector('.table-container-card');
         if (tableCard) tableCard.style.display = 'block';
     } else if (currentUser.role === 'superadmin') {
-        // SUPER ADMIN DASHBOARD - PARENT CONTROLLER
-        currentAdminDepartment = 'ALL';
-        if (superPanel) superPanel.style.display = 'block';
-
-        const adminTopBar = document.getElementById('admin-top-bar');
-        if (adminTopBar) adminTopBar.style.display = 'flex';
-
-        const statsGridContainer = document.getElementById('stats-grid-container');
-        if (statsGridContainer) statsGridContainer.style.display = 'grid';
-
-        // Hide department switcher for requests
-        const deptSwitcherBox = document.getElementById('dept-switcher-container');
-        if (deptSwitcherBox) deptSwitcherBox.style.display = 'none';
-
-        // Keep department employee management card hidden for superadmin (superadmin uses dedicated supervision view)
-        const empCard = document.getElementById('emp-management-card');
-        if (empCard) empCard.style.display = 'none';
-
-        // HIDE INTERVENTION REQUESTS TABLE & FILTERS FOR SUPER ADMIN
-        const filtersCard = document.querySelector('.filters-card');
-        if (filtersCard) filtersCard.style.display = 'none';
-
-        const tableCard = document.querySelector('.table-container-card');
-        if (tableCard) tableCard.style.display = 'none';
+        window.location.href = 'superadmin.html';
+        return;
     }
 
     updateAdminUIHeader();

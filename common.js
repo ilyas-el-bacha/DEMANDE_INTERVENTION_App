@@ -376,7 +376,7 @@ function checkRoleRedirects() {
     const isPrivatePortal = path.endsWith('superadmin.html');
 
     if (user.role === 'superadmin') {
-        if (!isDashboard && !isPrivatePortal) {
+        if (!isPrivatePortal) {
             window.location.href = 'superadmin.html';
         }
     } else if (user.role === 'admin') {
