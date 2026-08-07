@@ -97,6 +97,13 @@ function renderGlobalStats() {
     setElemText('sa-stat-progress-requests', inProgressRequests);
     setElemText('sa-stat-resolved-requests', resolvedRequests);
     setElemText('sa-stat-rejected-requests', rejectedRequests);
+
+    // Live Department Hierarchy Breakdown
+    ['DAF', 'DGUR', 'DET', 'SI'].forEach(deptKey => {
+        const dEmps = users.filter(u => u && u.role !== 'admin' && u.role !== 'superadmin' && u.department && u.department.toUpperCase().includes(deptKey));
+        const dReqs = requests.filter(r => r && r.department && r.department.toUpperCase().includes(deptKey));
+        setElemText(`sa-dept-${deptKey.toLowerCase()}-count`, `${dEmps.length} employé(s) | ${dReqs.length} demande(s)`);
+    });
 }
 
 function setElemText(id, val) {
@@ -586,9 +593,10 @@ function renderRequestsTable() {
     if (searchText) {
         requests = requests.filter(r => {
             const code = (r.code || r.id || '').toLowerCase();
-            const title = (r.title || r.type || '').toLowerCase();
-            const author = (r.authorName || r.authorEmail || '').toLowerCase();
-            return code.includes(searchText) || title.includes(searchText) || author.includes(searchText);
+            const title = (r.anomaly || (Array.isArray(r.natureList) ? r.natureList.join(', ') : r.category) || r.title || r.type || '').toLowerCase();
+            const author = (r.emitter || r.authorName || r.emitterEmail || r.authorEmail || '').toLowerCase();
+            const dept = (r.department || '').toLowerCase();
+            return code.includes(searchText) || title.includes(searchText) || author.includes(searchText) || dept.includes(searchText);
         });
     }
 
@@ -612,10 +620,10 @@ function renderRequestsTable() {
         if (normStatus === 'rejected') badgeHtml = '<span class="sa-badge sa-badge-rejected">Rejetée</span>';
 
         const codeStr = escapeHtml(req.code || req.id || 'N/A');
-        const titleStr = escapeHtml(req.title || req.type || 'Demande sans titre');
-        const authorStr = escapeHtml(req.authorName || req.authorEmail || 'Employé');
+        const titleStr = escapeHtml(req.anomaly || (Array.isArray(req.natureList) ? req.natureList.join(', ') : req.category) || req.title || req.type || 'Demande d\'intervention');
+        const authorStr = escapeHtml(req.emitter || req.authorName || req.emitterEmail || req.authorEmail || 'Employé');
         const deptStr = escapeHtml(req.department || 'N/A');
-        const dateStr = escapeHtml(req.createdAt || req.date || 'Récents');
+        const dateStr = escapeHtml(req.date || req.createdAt || 'Récents');
 
         return `
             <tr>
@@ -655,12 +663,12 @@ window.openRequestDetailsModal = function(reqId) {
 
     const normStatus = getNormalizedStatus(req.status);
     const codeStr = escapeHtml(req.code || req.id || 'N/A');
-    const titleStr = escapeHtml(req.title || req.type || 'Intervention');
-    const descStr = escapeHtml(req.description || 'Aucune description fournie.');
-    const authorStr = escapeHtml(req.authorName || 'Non spécifié');
-    const emailStr = escapeHtml(req.authorEmail || 'Non spécifié');
+    const titleStr = escapeHtml(req.anomaly || (Array.isArray(req.natureList) ? req.natureList.join(', ') : req.category) || req.title || req.type || 'Intervention');
+    const descStr = escapeHtml(req.anomaly || req.description || 'Aucune description fournie.');
+    const authorStr = escapeHtml(req.emitter || req.authorName || 'Non spécifié');
+    const emailStr = escapeHtml(req.emitterEmail || req.authorEmail || 'Non spécifié');
     const deptStr = escapeHtml(req.department || 'GLOBAL');
-    const dateStr = escapeHtml(req.createdAt || req.date || 'Maintenant');
+    const dateStr = escapeHtml(req.date || req.createdAt || 'Maintenant');
 
     modalBody.innerHTML = `
         <div style="margin-bottom: 1.25rem; background: rgba(15, 23, 42, 0.6); padding: 1rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.08);">

@@ -140,6 +140,24 @@ function getUsers() {
         }
     });
 
+    // Ensure initial employee account exists if no employees found
+    const hasEmployee = users.some(u => u && u.role !== 'admin' && u.role !== 'superadmin');
+    if (!hasEmployee) {
+        users.push({
+            id: 'usr-emp-si-ilyas',
+            firstName: 'Ilyas',
+            lastName: 'El Bacha',
+            name: 'Ilyas El Bacha',
+            email: 'ilyas.elbacha@agenceurbaine.ma',
+            password: 'user123',
+            role: 'employee',
+            department: 'SI',
+            status: 'approved',
+            createdAt: '2026-01-15'
+        });
+        updated = true;
+    }
+
     if (updated) {
         saveUsers(users);
     }
