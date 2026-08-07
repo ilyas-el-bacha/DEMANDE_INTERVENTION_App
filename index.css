@@ -738,12 +738,12 @@ a {
 .btn-logout {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: var(--text-secondary);
-    padding: 0.3rem 0.65rem;
-    font-size: 0.78rem;
+    gap: 0.4rem;
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #FCA5A5;
+    padding: 0.35rem 0.8rem;
+    font-size: 0.82rem;
     font-weight: 600;
     border-radius: var(--radius-full);
     cursor: pointer;
@@ -751,7 +751,9 @@ a {
 }
 
 .btn-logout:hover {
-    background: rgba(239, 68, 68, 0.2);
-    border-color: rgba(239, 68, 68, 0.4);
-    color: #FCA5A5;
+    background: rgba(239, 68, 68, 0.25);
+    border-color: rgba(239, 68, 68, 0.5);
+    color: #FFFFFF;
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.3);
+    transform: translateY(-1px);
 }

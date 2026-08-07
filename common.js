@@ -231,14 +231,9 @@ function setCurrentUser(user) {
 }
 
 function logoutUser() {
-    const user = getCurrentUser();
-    const isSuperAdmin = user && user.role === 'superadmin';
     localStorage.removeItem(CURRENT_USER_KEY);
-    if (isSuperAdmin) {
-        window.location.href = 'superadmin.html';
-    } else {
-        window.location.href = 'login.html';
-    }
+    window.dispatchEvent(new CustomEvent('au_data_changed', { detail: { type: 'session' } }));
+    window.location.href = 'index.html';
 }
 
 function getNormalizedStatus(rawStatus) {
@@ -463,6 +458,8 @@ function updateNavbar() {
                 const href = item.getAttribute('href') || '';
                 if (!user && (href.includes('intervention.html') || href.includes('my_requests.html') || item.classList.contains('nav-auth-only'))) {
                     item.style.display = 'none';
+                } else if (user && href.includes('login.html')) {
+                    item.style.display = 'none';
                 } else {
                     item.style.display = '';
                 }
@@ -474,13 +471,20 @@ function updateNavbar() {
         if (adminNavBtn) adminNavBtn.remove();
     }
 
-    // Check if user badge exists or create/update it
+    // Always hide any login links/buttons if user is logged in
+    const allLoginLinks = document.querySelectorAll('a[href*="login.html"]');
+    allLoginLinks.forEach(loginBtn => {
+        if (user) {
+            loginBtn.style.setProperty('display', 'none', 'important');
+        } else {
+            loginBtn.style.display = '';
+        }
+    });
+
+    // Check if user badge / logout section exists or create/update it
     let userNavBtn = navLinks.querySelector('.nav-user-info');
-    let loginBtn = navLinks.querySelector('.nav-btn:not(.nav-superadmin-link)');
 
     if (user) {
-        if (loginBtn) loginBtn.style.display = 'none';
-
         if (!userNavBtn) {
             userNavBtn = document.createElement('div');
             userNavBtn.className = 'nav-user-info';
@@ -489,25 +493,27 @@ function updateNavbar() {
 
         let roleBadge = 'Employé';
         if (user.role === 'superadmin') roleBadge = 'Super Admin';
-        else if (user.role === 'admin') roleBadge = `Admin ${user.department}`;
+        else if (user.role === 'admin') roleBadge = `Admin ${user.department || ''}`;
+
+        const displayName = user.name || (user.firstName ? (user.firstName + (user.lastName ? ' ' + user.lastName : '')) : 'Utilisateur');
 
         userNavBtn.innerHTML = `
             <div class="user-pill">
                 <span class="user-role-badge ${user.role}">${escapeHtml(roleBadge)}</span>
-                <span class="user-name-text">${escapeHtml(user.name || user.firstName + ' ' + user.lastName)}</span>
-                <button type="button" class="btn-logout" title="Déconnexion" onclick="logoutUser()">
+                <span class="user-name-text">${escapeHtml(displayName)}</span>
+                <button type="button" class="btn-logout" title="Se déconnecter de la session" onclick="logoutUser()">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                         <polyline points="16 17 21 12 16 7"></polyline>
                         <line x1="21" y1="12" x2="9" y2="12"></line>
                     </svg>
-                    Sortir
+                    Déconnexion
                 </button>
             </div>
         `;
+        userNavBtn.style.display = 'flex';
     } else {
         if (userNavBtn) userNavBtn.remove();
-        if (loginBtn) loginBtn.style.display = 'inline-flex';
     }
 }
 
